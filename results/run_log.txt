@@ -1,0 +1,537 @@
+### free disk before start
+/dev/root       145G   42G  103G  29% /
+duckdb 1.5.5
+
+### step 1: list FTP directory (authoritative filenames)
+=== LISTING: https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited ===
+Index of /pub/clinvar/tab_delimited	
+body {}
+th, td {
+    padding-right: 1em;
+    font-family: monospace; }
+th.lj { text-align: left; }
+td.rj,th.rj { text-align: right; }
+Index of /pub/clinvar/tab_delimited	
+Name	
+Size	
+Released	
+Last Modified	
+Parent Directory	-	supplements/	-	 	2021-12-03 09:41:31	
+special_requests/	-	 	2021-12-03 09:41:31	
+archive/	-	 	2026-07-02 00:05:44	
+allele_gene.txt.gz	91,627,043	2024-03-31 05:31:50	2026-07-28 00:06:20	
+allele_gene.txt.gz.md5	87	2024-03-31 19:46:12	2026-07-28 18:07:34	
+cross_references.txt	111,554,462	2024-03-31 04:43:28	2026-07-27 23:29:24	
+cross_references.txt.md5	89	2024-03-31 19:46:01	2026-07-28 18:07:31	
+gene_specific_summary.txt	3,489,437	2024-03-31 04:45:50	2026-07-27 23:30:59	
+gene_specific_summary.txt.md5	94	2024-03-31 19:46:01	2026-07-28 18:07:30	
+hgvs4variation.txt.gz	520,918,783	2024-03-31 05:04:34	2026-07-27 23:57:16	
+hgvs4variation.txt.gz.md5	90	2024-03-31 19:46:09	2026-07-28 18:07:37	
+organization_summary.txt	914,445	2024-03-31 04:52:33	2026-07-27 23:45:30	
+organization_summary.txt.md5	93	2024-03-31 19:46:06	2026-07-28 18:07:42	
+README	47,147	2024-03-07 04:06:55	2026-01-13 16:25:43	
+submission_summary.txt.gz	385,669,884	2021-11-30 02:41:14	2026-07-28 00:38:51	
+submission_summary.txt.gz.md5	94	2024-03-31 19:46:08	2026-07-28 18:07:37	
+summary_of_conflicting_interpretations.txt	1,797,546,544	2021-11-30 02:39:52	2026-07-28 00:01:25	
+summary_of_conflicting_interpretations.txt.md5	111	2024-03-31 19:46:21	2026-07-28 18:07:52	
+var_citations.txt	229,107,486	2024-03-31 04:44:43	2026-07-27 23:32:01	
+var_citations.txt.md5	86	2024-03-31 19:46:05	2026-07-28 18:07:44	
+variant_summary.txt.gz	441,573,728	2024-03-31 19:30:16	2026-07-28 04:57:47	
+variant_summary.txt.gz.md5	91	2024-03-31 19:46:01	2026-07-28 18:07:42	
+variation_allele.txt.gz	24,067,544	2024-03-31 05:03:31	2026-07-27 23:43:36	
+variation_allele.txt.gz.md5	92	2024-03-31 19:46:11	2026-07-28 18:07:34	
+
+=== LISTING: https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/archive ===
+Index of /pub/clinvar/tab_delimited/archive	
+body {}
+th, td {
+    padding-right: 1em;
+    font-family: monospace; }
+th.lj { text-align: left; }
+td.rj,th.rj { text-align: right; }
+Index of /pub/clinvar/tab_delimited/archive	
+Name	
+Size	
+Released	
+Last Modified	
+Parent Directory	-	2015/	-	 	2021-12-03 09:41:31	
+2014/	-	 	2021-12-03 09:41:31	
+2016/	-	 	2021-12-03 09:41:31	
+2021/	-	 	2024-06-17 15:41:07	
+2022/	-	 	2024-06-17 15:41:07	
+2023/	-	 	2024-06-17 15:41:07	
+2024/	-	 	2025-12-05 08:58:02	
+2017/	-	 	2021-12-03 09:41:31	
+2018/	-	 	2021-12-03 09:41:31	
+2019/	-	 	2021-12-03 09:41:32	
+2020/	-	 	2024-06-17 15:41:07	
+gene_specific_summary_2025-01.txt.gz	770,198	2025-01-02 00:05:03	2025-01-02 00:05:03	
+gene_specific_summary_2025-02.txt.gz	770,471	2025-02-06 00:05:07	2025-02-06 00:05:07	
+gene_specific_summary_2025-03.txt.gz	774,331	2025-03-07 09:13:45	2025-03-07 09:13:45	
+gene_specific_summary_2025-04.txt.gz	774,435	2025-04-03 00:05:03	2025-04-03 00:05:03	
+gene_specific_summary_2025-05.txt.gz	774,779	2025-05-01 00:05:04	2025-05-01 00:05:04	
+gene_specific_summary_2025-06.txt.gz	777,017	2025-06-05 00:05:03	2025-06-05 00:05:03	
+gene_specific_summary_2025-07.txt.gz	777,034	2025-07-03 00:05:04	2025-07-03 00:05:04	
+gene_specific_summary_2025-08.txt.gz	779,728	2025-08-07 12:56:52	2025-08-07 12:56:52	
+gene_specific_summary_2025-09.txt.gz	779,883	2025-09-04 00:05:03	2025-09-04 00:05:03	
+gene_specific_summary_2025-10.txt.gz	781,348	2025-10-02 00:05:02	2025-10-02 00:05:02	
+gene_specific_summary_2025-11.txt.gz	785,985	2025-11-06 00:05:04	2025-11-06 00:05:04	
+gene_specific_summary_2025-12.txt.gz	786,100	2025-12-04 00:05:02	2025-12-04 00:05:02	
+gene_specific_summary_2026-01.txt.gz	795,630	2026-01-01 00:05:02	2026-01-01 00:05:02	
+gene_specific_summary_2026-02.txt.gz	796,195	2026-02-05 00:05:06	2026-02-05 00:05:06	
+gene_specific_summary_2026-03.txt.gz	798,146	2026-03-05 00:05:02	2026-03-05 00:05:02	
+gene_specific_summary_2026-04.txt.gz	798,601	2026-04-02 00:05:03	2026-04-02 00:05:03	
+gene_specific_summary_2026-05.txt.gz	801,368	2026-05-07 00:05:04	2026-05-07 00:05:04	
+gene_specific_summary_2026-06.txt.gz	801,508	2026-06-04 00:05:02	2026-06-04 00:05:02	
+gene_specific_summary_2026-07.txt.gz	801,635	2026-07-02 00:05:03	2026-07-02 00:05:03	
+submission_summary_2025-01.txt.gz	283,755,743	2025-01-02 00:05:39	2025-01-02 00:05:39	
+submission_summary_2025-02.txt.gz	297,442,974	2025-02-06 00:05:47	2025-02-06 00:05:47	
+submission_summary_2025-03.txt.gz	308,843,441	2025-03-07 09:14:21	2025-03-07 09:14:21	
+submission_summary_2025-04.txt.gz	312,772,651	2025-04-03 00:05:40	2025-04-03 00:05:40	
+submission_summary_2025-05.txt.gz	314,411,344	2025-05-01 00:05:42	2025-05-01 00:05:42	
+submission_summary_2025-06.txt.gz	323,510,381	2025-06-05 00:05:39	2025-06-05 00:05:39	
+submission_summary_2025-07.txt.gz	325,127,776	2025-07-03 00:05:41	2025-07-03 00:05:41	
+submission_summary_2025-08.txt.gz	334,204,042	2025-08-07 12:57:28	2025-08-07 12:57:28	
+submission_summary_2025-09.txt.gz	334,851,972	2025-09-04 00:05:37	2025-09-04 00:05:37	
+submission_summary_2025-10.txt.gz	336,409,343	2025-10-02 00:05:37	2025-10-02 00:05:37	
+submission_summary_2025-11.txt.gz	348,275,487	2025-11-06 00:05:42	2025-11-06 00:05:42	
+submission_summary_2025-12.txt.gz	349,592,777	2025-12-04 00:05:40	2025-12-04 00:05:40	
+submission_summary_2026-01.txt.gz	351,445,028	2026-01-01 00:05:39	2026-01-01 00:05:39	
+submission_summary_2026-02.txt.gz	361,310,561	2026-02-05 00:05:50	2026-02-05 00:05:50	
+submission_summary_2026-03.txt.gz	372,547,268	2026-03-05 00:05:41	2026-03-05 00:05:41	
+submission_summary_2026-04.txt.gz	373,962,702	2026-04-02 00:05:41	2026-04-02 00:05:41	
+submission_summary_2026-05.txt.gz	380,512,398	2026-05-07 00:05:49	2026-05-07 00:05:49	
+submission_summary_2026-06.txt.gz	381,749,668	2026-06-04 00:05:46	2026-06-04 00:05:46	
+submission_summary_2026-07.txt.gz	383,437,686	2026-07-02 00:05:46	2026-07-02 00:05:46	
+summary_of_conflicting_interpretations_2025-01.txt.gz	128,106,380	2025-01-02 00:05:37	2025-01-02 00:05:37	
+summary_of_conflicting_interpretations_2025-02.txt.gz	134,639,041	2025-02-06 00:05:43	2025-02-06 00:05:43	
+summary_of_conflicting_interpretations_2025-03.txt.gz	135,429,219	2025-03-07 09:14:19	2025-03-07 09:14:19	
+summary_of_conflicting_interpretations_2025-04.txt.gz	138,536,345	2025-04-03 00:05:37	2025-04-03 00:05:37	
+summary_of_conflicting_interpretations_2025-05.txt.gz	143,982,715	2025-05-01 00:05:40	2025-05-01 00:05:40	
+summary_of_conflicting_interpretations_2025-06.txt.gz	146,125,356	2025-06-05 00:05:37	2025-06-05 00:05:37	
+summary_of_conflicting_interpretations_2025-07.txt.gz	148,400,911	2025-07-03 00:05:39	2025-07-03 00:05:39	
+summary_of_conflicting_interpretations_2025-08.txt.gz	151,879,043	2025-08-07 12:57:26	2025-08-07 12:57:26	
+summary_of_conflicting_interpretations_2025-09.txt.gz	152,629,072	2025-09-04 00:05:36	2025-09-04 00:05:36	
+summary_of_conflicting_interpretations_2025-10.txt.gz	154,684,592	2025-10-02 00:05:35	2025-10-02 00:05:35	
+summary_of_conflicting_interpretations_2025-11.txt.gz	156,721,197	2025-11-06 00:05:39	2025-11-06 00:05:39	
+summary_of_conflicting_interpretations_2025-12.txt.gz	159,807,589	2025-12-04 00:05:38	2025-12-04 00:05:38	
+summary_of_conflicting_interpretations_2026-01.txt.gz	161,654,373	2026-01-01 00:05:37	2026-01-01 00:05:37	
+summary_of_conflicting_interpretations_2026-02.txt.gz	167,222,297	2026-02-05 00:05:49	2026-02-05 00:05:49	
+summary_of_conflicting_interpretations_2026-03.txt.gz	168,322,064	2026-03-05 00:05:39	2026-03-05 00:05:39	
+summary_of_conflicting_interpretations_2026-04.txt.gz	170,216,967	2026-04-02 00:05:39	2026-04-02 00:05:39	
+summary_of_conflicting_interpretations_2026-05.txt.gz	177,013,499	2026-05-07 00:05:47	2026-05-07 00:05:47	
+summary_of_conflicting_interpretations_2026-06.txt.gz	179,763,304	2026-06-04 00:05:44	2026-06-04 00:05:44	
+summary_of_conflicting_interpretations_2026-07.txt.gz	180,153,267	2026-07-02 00:05:44	2026-07-02 00:05:44	
+variant_summary_2025-01.txt.gz	288,267,418	2025-01-02 00:05:03	2025-01-02 00:05:03	
+variant_summary_2025-02.txt.gz	334,887,755	2025-02-06 00:05:06	2025-02-06 00:05:06	
+variant_summary_2025-03.txt.gz	351,455,927	2025-03-07 09:13:45	2025-03-07 09:13:45	
+variant_summary_2025-04.txt.gz	352,730,813	2025-04-03 00:05:03	2025-04-03 00:05:03	
+variant_summary_2025-05.txt.gz	360,763,643	2025-05-01 00:05:04	2025-05-01 00:05:04	
+variant_summary_2025-06.txt.gz	372,259,542	2025-06-05 00:05:03	2025-06-05 00:05:03	
+variant_summary_2025-07.txt.gz	372,755,443	2025-07-03 00:05:04	2025-07-03 00:05:04	
+variant_summary_2025-08.txt.gz	382,542,427	2025-08-07 12:56:52	2025-08-07 12:56:52	
+variant_summary_2025-09.txt.gz	383,312,838	2025-09-04 00:05:02	2025-09-04 00:05:02	
+variant_summary_2025-10.txt.gz	384,432,958	2025-10-02 00:05:01	2025-10-02 00:05:01	
+variant_summary_2025-11.txt.gz	411,580,849	2025-11-06 00:05:03	2025-11-06 00:05:03	
+variant_summary_2025-12.txt.gz	412,142,377	2025-12-04 00:05:02	2025-12-04 00:05:02	
+variant_summary_2026-01.txt.gz	412,880,955	2026-01-01 00:05:02	2026-01-01 00:05:02	
+variant_summary_2026-02.txt.gz	422,086,052	2026-02-05 00:05:06	2026-02-05 00:05:06	
+variant_summary_2026-03.txt.gz	434,541,812	2026-03-05 00:05:02	2026-03-05 00:05:02	
+variant_summary_2026-04.txt.gz	435,575,707	2026-04-02 00:05:03	2026-04-02 00:05:03	
+variant_summary_2026-05.txt.gz	438,947,296	2026-05-07 00:05:03	2026-05-07 00:05:03	
+variant_summary_2026-06.txt.gz	439,287,089	2026-06-04 00:05:02	2026-06-04 00:05:02	
+variant_summary_2026-07.txt.gz	439,937,684	2026-07-02 00:05:02	2026-07-02 00:05:02	
+
+=== LISTING: https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38 ===
+ 	
+  	Index of /pub/clinvar/vcf_GRCh38	
+ 	
+ 	
+Index of /pub/clinvar/vcf_GRCh38	
+Name                             Last modified      Size  	Parent Directory	                                      -   
+archive_1.0/	                     2017-05-12 11:45    -   
+archive_2.0/	                     2026-01-04 16:20    -   
+weekly/	                          2026-07-28 18:07    -   
+clinvar.vcf.error.txt	            2026-07-28 18:07  1.1K  
+clinvar.vcf.gz	                   2026-07-28 18:07  184M  
+clinvar.vcf.gz.md5	               2026-07-28 18:07  132   
+clinvar.vcf.gz.tbi	               2026-07-28 18:07  595K  
+clinvar_20260728.vcf.error.txt	   2026-07-28 18:07  1.1K  
+clinvar_20260728.vcf.gz	          2026-07-28 18:07  184M  
+clinvar_20260728.vcf.gz.md5	      2026-07-28 18:07  132   
+clinvar_20260728.vcf.gz.tbi	      2026-07-28 18:07  595K  
+clinvar_20260728_papu.vcf.gz	     2026-07-28 18:07   70K  
+clinvar_20260728_papu.vcf.gz.md5	 2026-07-28 18:07  137   
+clinvar_20260728_papu.vcf.gz.tbi	 2026-07-28 18:07  777   
+clinvar_papu.vcf.gz	              2026-07-28 18:07   70K  
+clinvar_papu.vcf.gz.md5	          2026-07-28 18:07  137   
+clinvar_papu.vcf.gz.tbi	          2026-07-28 18:07  777   
+HHS Vulnerability Disclosure	
+
+=== candidate variant_summary files (current) ===
+variant_summary.txt.gz
+=== candidate variant_summary files (archive, loose) ===
+variant_summary_2025-01.txt.gz
+variant_summary_2025-02.txt.gz
+variant_summary_2025-03.txt.gz
+variant_summary_2025-04.txt.gz
+variant_summary_2025-05.txt.gz
+variant_summary_2025-06.txt.gz
+variant_summary_2025-07.txt.gz
+variant_summary_2025-08.txt.gz
+variant_summary_2025-09.txt.gz
+variant_summary_2025-10.txt.gz
+variant_summary_2025-11.txt.gz
+variant_summary_2025-12.txt.gz
+variant_summary_2026-01.txt.gz
+variant_summary_2026-02.txt.gz
+variant_summary_2026-03.txt.gz
+variant_summary_2026-04.txt.gz
+variant_summary_2026-05.txt.gz
+variant_summary_2026-06.txt.gz
+variant_summary_2026-07.txt.gz
+=== archive/ year subdirectories (older snapshots live here) ===
+2014/
+2015/
+2016/
+2017/
+2018/
+2019/
+2020/
+2021/
+2022/
+2023/
+2024/
+=== submission_summary files ===
+submission_summary.txt.gz
+=== GRCh38 VCF files (source of molecular consequence via MC) ===
+clinvar.vcf.gz
+clinvar_20260728.vcf.gz
+clinvar_20260728_papu.vcf.gz
+clinvar_papu.vcf.gz
+
+### step 2: fetch current snapshot
+current snapshot: data/variant_summary.txt.gz
+
+### step 3: header of current snapshot
+=== data/variant_summary.txt.gz ===
+43 columns
+    1  AlleleID
+    2  Type
+    3  Name
+    4  GeneID
+    5  GeneSymbol
+    6  HGNC_ID
+    7  ClinicalSignificance
+    8  ClinSigSimple
+    9  LastEvaluated
+   10  RS# (dbSNP)
+   11  nsv/esv (dbVar)
+   12  RCVaccession
+   13  PhenotypeIDS
+   14  PhenotypeList
+   15  Origin
+   16  OriginSimple
+   17  Assembly
+   18  ChromosomeAccession
+   19  Chromosome
+   20  Start
+   21  Stop
+   22  ReferenceAllele
+   23  AlternateAllele
+   24  Cytogenetic
+   25  ReviewStatus
+   26  NumberSubmitters
+   27  Guidelines
+   28  TestedInGTR
+   29  OtherIDs
+   30  SubmitterCategories
+   31  VariationID
+   32  PositionVCF
+   33  ReferenceAlleleVCF
+   34  AlternateAlleleVCF
+   35  SomaticClinicalImpact
+   36  SomaticClinicalImpactLastEvaluated
+   37  ReviewStatusClinicalImpact
+   38  Oncogenicity
+   39  OncogenicityLastEvaluated
+   40  ReviewStatusOncogenicity
+   41  SCVsForAggregateGermlineClassification
+   42  SCVsForAggregateSomaticClinicalImpact
+   43  SCVsForAggregateOncogenicityClassification
+  resolved ->
+      classification   = ClinicalSignificance
+      review_status    = ReviewStatus
+      variationid      = VariationID
+      genesymbol       = GeneSymbol
+      name             = Name
+      assembly         = Assembly
+      type             = Type
+      consequence      = None
+
+
+### step 3b: molecular consequence from the ClinVar VCF MC field
+VCF: data/clinvar.vcf.gz
+VCF data lines: 4,458,175; with a numeric ID (VariationID): 4,458,175
+VariationIDs in map: 4,458,175; carrying an MC field: 4,438,223 (99.55%)
+
+consequence distribution across the whole VCF:
+  missense      2,529,454
+  other         1,562,425
+  frameshift      153,037
+  splice          109,049
+  nonsense        104,210
+
+top SO terms falling into 'other' (audit for anything miscategorised):
+  SO:0001819|synonymous_variant                              762,369
+  SO:0001627|intron_variant                                  733,446
+  SO:0001619|non-coding_transcript_variant                   134,486
+  SO:0001624|3_prime_UTR_variant                              81,913
+  SO:0001623|5_prime_UTR_variant                              54,482
+  SO:0001822|inframe_deletion                                 20,010
+  SO:0001821|inframe_insertion                                 8,460
+  SO:0001820|inframe_indel                                     4,820
+  SO:0001578|stop_lost                                         1,368
+  SO:0002153|genic_upstream_transcript_variant                 1,109
+  SO:0002073|no_sequence_alteration                              900
+  SO:0002152|genic_downstream_transcript_variant                 449
+  SO:0001582|initiator_codon_variant                             276
+
+wrote data/consequence_map.parquet
+wrote results/_vcf_mc_stats.json
+deleting raw VCF (the parquet map is all we need downstream): data/clinvar.vcf.gz
+/dev/root       145G   43G  103G  30% /
+
+############ baseline 2021-06 ############
+baseline snapshot: data/variant_summary_2021-06.txt.gz
+=== data/variant_summary_2021-06.txt.gz ===
+34 columns
+    1  AlleleID
+    2  Type
+    3  Name
+    4  GeneID
+    5  GeneSymbol
+    6  HGNC_ID
+    7  ClinicalSignificance
+    8  ClinSigSimple
+    9  LastEvaluated
+   10  RS# (dbSNP)
+   11  nsv/esv (dbVar)
+   12  RCVaccession
+   13  PhenotypeIDS
+   14  PhenotypeList
+   15  Origin
+   16  OriginSimple
+   17  Assembly
+   18  ChromosomeAccession
+   19  Chromosome
+   20  Start
+   21  Stop
+   22  ReferenceAllele
+   23  AlternateAllele
+   24  Cytogenetic
+   25  ReviewStatus
+   26  NumberSubmitters
+   27  Guidelines
+   28  TestedInGTR
+   29  OtherIDs
+   30  SubmitterCategories
+   31  VariationID
+   32  PositionVCF
+   33  ReferenceAlleleVCF
+   34  AlternateAlleleVCF
+  resolved ->
+      classification   = ClinicalSignificance
+      review_status    = ReviewStatus
+      variationid      = VariationID
+      genesymbol       = GeneSymbol
+      name             = Name
+      assembly         = Assembly
+      type             = Type
+      consequence      = None
+
+=== HEADER: data/variant_summary_2021-06.txt.gz ===
+34 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF']
+resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
+[baseline 2021-06] rows=1,908,821 GRCh38=927,078 after dedupe on VariationID=926,800 (collapsed 278)
+=== HEADER: data/variant_summary.txt.gz ===
+43 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF', 'SomaticClinicalImpact', 'SomaticClinicalImpactLastEvaluated', 'ReviewStatusClinicalImpact', 'Oncogenicity', 'OncogenicityLastEvaluated', 'ReviewStatusOncogenicity', 'SCVsForAggregateGermlineClassification', 'SCVsForAggregateSomaticClinicalImpact', 'SCVsForAggregateOncogenicityClassification']
+resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
+[current] rows=9,029,235 GRCh38=4,480,843 after dedupe on VariationID=4,478,492 (collapsed 2,351)
+[2021-06] baseline VUS (criteria provided): 382,704 (excluded 15,983 with no assertion criteria)
+consequence map: 4,458,175 VariationIDs from consequence_map.parquet
+
+=== [2021-06] transition table ===
+  Still VUS           299,002  78.13%
+  Conflicting          59,970  15.67%
+  B/LB                 10,646   2.78%
+  Retired/absent        8,285   2.16%
+  P/LP                  4,771   1.25%
+  Other                    30   0.01%
+
+=== [2021-06] VUS -> P/LP: 4,771 variants, 1,102 distinct genes ===
+  by molecular consequence (source: ClinVar VCF MC field):
+    missense         2,921
+    frameshift         591
+    other              456
+    nonsense           433
+    splice             334
+    not_in_vcf          36
+    (36 of 4,771 have no VCF record — 0.75% — reported separately, not folded into 'other')
+  cross-check vs HGVS derivation: 4,382/4,735 agree (92.54%) — diagnostic only
+  by current review status:
+    [1*] criteria provided, single submitter                         2,534
+    [2*] criteria provided, multiple submitters, no conflicts        1,790
+    [3*] reviewed by expert panel                                      435
+    [0*] no assertion criteria provided                                 12
+
+  HARD STRATUM (missense AND >=2-star): 1,612 variants across 510 genes
+
+  wrote 4,771 rows -> results/reclassified_pathogenic.tsv
+  wrote results/_counts_2021-06.json
+deleting raw baseline snapshot to reclaim disk: data/variant_summary_2021-06.txt.gz
+/dev/root       145G   43G  103G  30% /
+
+############ baseline 2022-12 ############
+baseline snapshot: data/variant_summary_2022-12.txt.gz
+=== data/variant_summary_2022-12.txt.gz ===
+34 columns
+    1  AlleleID
+    2  Type
+    3  Name
+    4  GeneID
+    5  GeneSymbol
+    6  HGNC_ID
+    7  ClinicalSignificance
+    8  ClinSigSimple
+    9  LastEvaluated
+   10  RS# (dbSNP)
+   11  nsv/esv (dbVar)
+   12  RCVaccession
+   13  PhenotypeIDS
+   14  PhenotypeList
+   15  Origin
+   16  OriginSimple
+   17  Assembly
+   18  ChromosomeAccession
+   19  Chromosome
+   20  Start
+   21  Stop
+   22  ReferenceAllele
+   23  AlternateAllele
+   24  Cytogenetic
+   25  ReviewStatus
+   26  NumberSubmitters
+   27  Guidelines
+   28  TestedInGTR
+   29  OtherIDs
+   30  SubmitterCategories
+   31  VariationID
+   32  PositionVCF
+   33  ReferenceAlleleVCF
+   34  AlternateAlleleVCF
+  resolved ->
+      classification   = ClinicalSignificance
+      review_status    = ReviewStatus
+      variationid      = VariationID
+      genesymbol       = GeneSymbol
+      name             = Name
+      assembly         = Assembly
+      type             = Type
+      consequence      = None
+
+=== HEADER: data/variant_summary_2022-12.txt.gz ===
+34 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF']
+resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
+[baseline 2022-12] rows=3,238,153 GRCh38=1,588,842 after dedupe on VariationID=1,588,306 (collapsed 536)
+=== HEADER: data/variant_summary.txt.gz ===
+43 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF', 'SomaticClinicalImpact', 'SomaticClinicalImpactLastEvaluated', 'ReviewStatusClinicalImpact', 'Oncogenicity', 'OncogenicityLastEvaluated', 'ReviewStatusOncogenicity', 'SCVsForAggregateGermlineClassification', 'SCVsForAggregateSomaticClinicalImpact', 'SCVsForAggregateOncogenicityClassification']
+resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
+[current] rows=9,029,235 GRCh38=4,480,843 after dedupe on VariationID=4,478,492 (collapsed 2,351)
+[2022-12] baseline VUS (criteria provided): 620,907 (excluded 16,277 with no assertion criteria)
+consequence map: 4,458,175 VariationIDs from consequence_map.parquet
+
+=== [2022-12] transition table ===
+  Still VUS           531,679  85.63%
+  Conflicting          58,916   9.49%
+  B/LB                 17,336   2.79%
+  Retired/absent        7,841   1.26%
+  P/LP                  5,104   0.82%
+  Other                    31   0.00%
+
+=== [2022-12] VUS -> P/LP: 5,104 variants, 1,240 distinct genes ===
+  by molecular consequence (source: ClinVar VCF MC field):
+    missense         2,734
+    frameshift         824
+    nonsense           572
+    other              495
+    splice             461
+    not_in_vcf          18
+    (18 of 5,104 have no VCF record — 0.35% — reported separately, not folded into 'other')
+  cross-check vs HGVS derivation: 4,679/5,086 agree (92.00%) — diagnostic only
+  by current review status:
+    [1*] criteria provided, single submitter                         3,377
+    [2*] criteria provided, multiple submitters, no conflicts        1,354
+    [3*] reviewed by expert panel                                      362
+    [0*] no assertion criteria provided                                 11
+
+  HARD STRATUM (missense AND >=2-star): 1,169 variants across 466 genes
+
+  wrote 5,104 rows -> results/reclassified_pathogenic.tsv
+  wrote results/_counts_2022-12.json
+deleting raw baseline snapshot to reclaim disk: data/variant_summary_2022-12.txt.gz
+/dev/root       145G   43G  103G  30% /
+
+### step 7: submission_summary date-coverage probe
+=== HEAD https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/submission_summary.txt.gz ===
+HTTP/1.1 200 OK
+Date: Fri, 31 Jul 2026 20:06:34 GMT
+Server: Apache
+Last-Modified: Tue, 28 Jul 2026 04:38:51 GMT
+Accept-Ranges: bytes
+Content-Length: 385669884
+Cache-Control: public, max-age=86400
+Expires: Fri, 07 Aug 2026 20:06:34 GMT
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET,POST,PUT,OPTIONS
+Access-Control-Allow-Headers: RANGE, Cache-control, If-None-Match, Content-Type
+Access-Control-Expose-Headers: Content-Length, Content-Range, Content-Type
+Content-Type: application/x-gzip
+
+Remote size: 385669884 bytes (0.36 GiB)
+
+=== header + first 3 data rows ===
+  ##Overview of interpretation, phenotypes, observations, and methods reported in each current submission 
+  ##Explanation of the columns in this report
+  #VariationID:                   the identifier assigned by ClinVar and used to build the URL, namely https://ncbi.nlm.nih.gov/clinvar/VariationID
+  #ClinicalSignificance:          the germline classification on this submitted record
+  #DateLastEvaluated:             the last date the classification on this record was evaluated by the submitter
+  #Description:                   an optional free text description comment describing the rationale for the classification
+  #SubmittedPhenotypeInfo:        the name(s) or identifier(s) submitted as the condition for the classification 
+  #ReportedPhenotypeInfo:         the MedGen identifier/name combinations that the submitted condition for the classification maps to. 'na' means there is no public identifer in MedGen for the condition.
+  #ReviewStatus:                  the level of review for this submitted record; see http//www.ncbi.nlm.nih.gov/clinvar/docs/variation_report/#review_status
+  #CollectionMethod:              the method by which the submitter collected the data for the classification; see https://www.ncbi.nlm.nih.gov/clinvar/docs/spreadsheet/#collection
+  #OriginCounts:                  the allele origin reported by the submitter and the number of observations for each origin. ‘na’ means that the number of observations was not provided by the submitter.
+  #Submitter:                     the submitter of this record
+  #SCV:                            the accession and current version assigned by ClinVar to this submitted record
+  #SubmittedGeneSymbol:           the gene symbol reported in this submitted record
+  #ExplanationOfInterpretation:   more details if the germline classification (ClinicalSignificance) is 'other' or 'drug response'
+  #SomaticClinicalImpact:         the somatic classification of clinical impact on this submitted record
+  #Oncogenicity:                  the somatic classification of oncogenicity on this submitted record
+  #ContributesToAggregateClassification: indicate if the SCV contributes to the aggregate classification
+  #VariationID	ClinicalSignificance	DateLastEvaluated	Description	SubmittedPhenotypeInfo	ReportedPhenotypeInfo	ReviewStatus	CollectionMethod	OriginCounts	Submitter	SCV	SubmittedGeneSymbol	ExplanationOfInterpretation	SomaticClinicalImpact	Oncogenicity	ContributesToAggregateClassification
+  2	Pathogenic	-	-	OMIM:613647	C3150901:Hereditary spastic paraplegia 48	criteria provided, single submitter	clinical testing	unknown:2	Paris Brain Institute, Inserm - ICM	SCV001451119.1	-	-	-	-	yes
+
+gzip: stdout: Broken pipe
+(probe exited non-zero — see message above)
+
+### assembling report
+wrote results/transitions.md
+
+### cleaning up current snapshot
+reclassified_pathogenic.tsv: 1874012 bytes
+
+### free disk at end
+/dev/root       145G   43G  103G  30% /
+DONE. See results/transitions.md
