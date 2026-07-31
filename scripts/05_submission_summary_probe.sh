@@ -39,11 +39,17 @@ gzip -t "$DATA/$NAME"
 
 echo
 echo "=== header + first 3 data rows ==="
-zcat "$DATA/$NAME" | head -20 | sed -e 's/^/  /'
+# `zcat | head` makes zcat die on SIGPIPE; under `set -o pipefail` that would
+# abort the probe before it reports anything useful. Tolerate it explicitly.
+{ zcat "$DATA/$NAME" | head -25 | sed -e 's/^/  /'; } || true
 
 echo
 echo "=== date-bearing columns ==="
 # The header is the last commented line before data begins.
-zcat "$DATA/$NAME" | grep -m1 '^#Variation\|^#VariationID' | tr '\t' '\n' | nl \
-  | grep -i 'date\|submitted\|evaluated' || \
-  echo "  (no column name matched date/submitted/evaluated — inspect header above)"
+{ zcat "$DATA/$NAME" | grep -m1 '^#VariationID' | tr '\t' '\n' | nl \
+    | grep -i 'date\|evaluated\|scv\|submitter'; } \
+  || echo "  (no column name matched — inspect the header printed above)"
+
+echo
+echo "=== quantifying per-submission date coverage ==="
+python3 "$(dirname "$0")/05b_submission_dates.py" "$DATA/$NAME"

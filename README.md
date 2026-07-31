@@ -5,9 +5,10 @@ significance (VUS) were later reclassified to a definitive call — and sizing t
 pathogenic arm specifically, so it can be used to evaluate variant
 interpretation methods.
 
-> **Status:** the analysis code is complete and validated against a synthetic
-> fixture, but **no real counts have been produced yet** — this sandbox's egress
-> policy blocks `ftp.ncbi.nlm.nih.gov`. See
+> **Measured results:** [`results/transitions.md`](results/transitions.md),
+> produced by `scripts/run_all.sh` on a GitHub Actions runner and committed
+> straight from that run, with the full run log alongside them in
+> `results/run_log.txt`. Provenance notes in
 > [`results/STATUS.md`](results/STATUS.md). No estimated or placeholder numbers
 > appear anywhere in this repository.
 
@@ -69,9 +70,21 @@ for rather than ignored.
 **Frozen-evidence caveat.** Selecting the cohort from a past snapshot is not the
 same as reconstructing what a lab could have known at that date. Any prediction
 method evaluated here must not use post-baseline evidence.
-`scripts/05_submission_summary_probe.sh` checks whether ClinVar's
-`submission_summary` carries per-submission dates that would support a properly
-frozen reconstruction.
+
+`submission_summary.txt.gz` does carry per-submission dates: it has one row per
+SCV (per submission, not per variant) with a `DateLastEvaluated` column, plus
+`Submitter`, `ReviewStatus` and the `SCV` accession. So a frozen reconstruction
+is feasible in principle. Two limits matter, and
+`scripts/05b_submission_dates.py` measures the first one directly rather than
+assuming it:
+
+- `DateLastEvaluated` is **not always populated** — it is `-` on some records.
+  The measured coverage is reported in `results/_submission_dates.json`.
+- It is the date the **submitter last evaluated** the record, not the date
+  ClinVar published it. A record evaluated in 2019 may have reached ClinVar
+  years later, so filtering on this date bounds what was *knowable* rather than
+  replaying what was *public*. Treat a frozen-date cohort built this way as
+  approximate, and say so in any write-up.
 
 ## Method
 

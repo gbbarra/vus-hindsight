@@ -1,84 +1,52 @@
-# Results status: BLOCKED — no counts produced
+# Provenance of the results in this directory
 
-**There are no ClinVar-derived numbers in this repository.** The analysis has
-not been run against real data. Nothing here is an estimate, a placeholder, or a
-plausible-looking stand-in.
+The counts in [`transitions.md`](transitions.md) were produced by
+`scripts/run_all.sh` running on a GitHub-hosted Actions runner, and committed
+straight from that run. `run_log.txt` is the complete, unedited log of the run
+that generated them — every download, every header, every query result.
 
-## What blocked it
+Nothing in this directory is an estimate or a placeholder. If a number appears
+here, it came out of the pipeline.
 
-The sandbox this was prepared in routes all outbound HTTPS through an egress
-proxy that enforces an organization network policy. Every NCBI host required to
-fetch ClinVar returns **HTTP 403 at the CONNECT stage** — the connection is
-refused by policy before any request is made.
+## Reproducing
 
-Probed 2026-07-31:
-
-| host | result |
-|---|---|
-| `ftp.ncbi.nlm.nih.gov:443` | 403 CONNECT — policy denial |
-| `www.ncbi.nlm.nih.gov:443` | 403 CONNECT — policy denial |
-| `eutils.ncbi.nlm.nih.gov:443` | 403 CONNECT — policy denial |
-| `api.ncbi.nlm.nih.gov:443` | 403 CONNECT — policy denial |
-| `ftp.ebi.ac.uk:443` | 403 CONNECT — policy denial |
-| `pypi.org:443` | 200 — reachable (DuckDB installed from here) |
-
-`ftp.ncbi.nlm.nih.gov` serves both `tab_delimited/` (the `variant_summary`
-snapshots) and `vcf_GRCh38/` (the VCF that supplies molecular consequence), so
-the single denial blocks every input the analysis needs.
-
-DNS resolves `ftp.ncbi.nlm.nih.gov` correctly, so this is an egress policy
-decision, not a network or DNS fault. The proxy's own documentation directs that
-403 policy denials be reported rather than retried or routed around, so no
-mirror, alternate port, or third-party copy of ClinVar was used — provenance for
-a grant figure has to trace to NCBI directly.
-
-`clinvar-public.s3.amazonaws.com` was probed and returns `NoSuchBucket`; it is
-not an NCBI mirror.
-
-## What to do
-
-**Easiest: let GitHub Actions run it.** GitHub-hosted runners have unrestricted
-outbound access, so `.github/workflows/benchmark.yml` executes the same pipeline
-there and commits the real results back over this file's role. It runs
-automatically on any push touching `scripts/`, and can be started manually from
-Actions → *ClinVar VUS reclassification benchmark* → **Run workflow**.
-
-Alternatively, run it anywhere with ordinary internet access — a laptop, a
-cluster node, or a Claude Code environment recreated with
-`ftp.ncbi.nlm.nih.gov` on the egress allowlist (network policy is chosen when
-the environment is created — see
-<https://code.claude.com/docs/en/claude-code-on-the-web>):
+Actions → *ClinVar VUS reclassification benchmark* → **Run workflow**, or
+locally:
 
 ```bash
 pip install duckdb
 scripts/run_all.sh
 ```
 
-That produces `results/transitions.md`,
-`results/reclassified_pathogenic.tsv`, and `results/_counts_*.json`, and
-replaces this file's role. Expect the download step to dominate the runtime;
-the analysis itself streams and is fast.
+Snapshots are re-fetched from NCBI each run and the filenames are resolved from
+the live directory listing, so re-running against a newer ClinVar release will
+shift the counts — that is expected. The run log records exactly which files a
+given set of numbers came from.
 
-Running the same pipeline on a machine with ordinary internet access works
-identically — the only requirement is reaching the ClinVar FTP host.
+## Why the pipeline runs in CI
 
-## What *has* been verified
+The development sandbox this was built in routes outbound HTTPS through an
+egress proxy that refuses `ftp.ncbi.nlm.nih.gov` with a 403 at the CONNECT
+stage, along with every other NCBI host and `ftp.ebi.ac.uk`. DNS resolved
+correctly, so it was a policy decision rather than a network fault. No mirror,
+alternate port, or third-party copy of ClinVar was substituted — provenance for
+a figure a reviewer can check has to trace to NCBI directly. GitHub-hosted
+runners have unrestricted egress, so the benchmark runs there instead.
 
-The analysis logic is exercised end-to-end by `tests/test_pipeline.py` against a
-synthetic fixture with known expected counts. All assertions pass, covering:
+That constraint is what `.github/workflows/benchmark.yml` exists to route
+around, and it is why the workflow commits its own results back.
 
-- header-driven column resolution across both ClinVar naming eras
-  (`ClinicalSignificance`/`ReviewStatus` → `GermlineClassification`/`GermlineReviewStatus`)
-- `Assembly = 'GRCh38'` filtering
-- deduplication on `VariationID`
-- classification bucketing into P/LP, B/LB, Still VUS, Conflicting, Other,
-  Retired/absent
-- exclusion of *no assertion criteria provided* from baseline cohorts
-- the review-status star ladder, including the ≥2-star cutoff
-- molecular-consequence assignment from the ClinVar VCF `MC` field, including
-  multi-term precedence, the `not_in_vcf` bucket, and the HGVS cross-check
-- per-variant TSV emission
-- report assembly into `transitions.md`
+## Two things the first CI runs surfaced
 
-Those are code-correctness checks on synthetic input. **They are not results and
-imply nothing about ClinVar.**
+**ClinVar's archive is split by age.** Only about the last 18 months of
+`variant_summary_*.txt.gz` sit loose in `tab_delimited/archive/`; everything
+older is filed under `archive/<YEAR>/`. The first run failed rather than guess a
+path, which is the intended behaviour — it printed the months that actually
+exist and stopped.
+
+**`variant_summary` did not get renamed columns.** As of the 2026-07 release it
+still uses `ClinicalSignificance` and `ReviewStatus`; the germline/somatic split
+added columns (`SomaticClinicalImpact`, `Oncogenicity`, `SCVsForAggregate*`)
+rather than renaming these, for 43 total. `scripts/schema.py` resolved this from
+the real header, and the header of every snapshot is printed into the run log
+before any query runs.
