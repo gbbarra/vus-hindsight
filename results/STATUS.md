@@ -37,9 +37,17 @@ not an NCBI mirror.
 
 ## What to do
 
-Recreate the environment with `ftp.ncbi.nlm.nih.gov` on the egress allowlist
-(network policy is chosen when the environment is created — see
-<https://code.claude.com/docs/en/claude-code-on-the-web>), then run:
+**Easiest: let GitHub Actions run it.** GitHub-hosted runners have unrestricted
+outbound access, so `.github/workflows/benchmark.yml` executes the same pipeline
+there and commits the real results back over this file's role. It runs
+automatically on any push touching `scripts/`, and can be started manually from
+Actions → *ClinVar VUS reclassification benchmark* → **Run workflow**.
+
+Alternatively, run it anywhere with ordinary internet access — a laptop, a
+cluster node, or a Claude Code environment recreated with
+`ftp.ncbi.nlm.nih.gov` on the egress allowlist (network policy is chosen when
+the environment is created — see
+<https://code.claude.com/docs/en/claude-code-on-the-web>):
 
 ```bash
 pip install duckdb

@@ -143,10 +143,26 @@ breakdowns use `MC` alone.
 
 ## Reproduce
 
+### On GitHub Actions (no local setup)
+
+`.github/workflows/benchmark.yml` runs the whole pipeline on a GitHub-hosted
+runner and commits the results back to the branch. Actions → *ClinVar VUS
+reclassification benchmark* → **Run workflow**, optionally overriding the
+baseline months. It also re-runs automatically whenever anything under
+`scripts/` changes. The full run log is committed as `results/run_log.txt`, and
+the outputs are additionally attached to the run as an artifact.
+
+The `workflow_dispatch` button only appears once this workflow file exists on
+the repository's default branch — that is a GitHub requirement, not a project
+one. Until then it still runs on push.
+
+### Locally
+
 ```bash
 pip install duckdb
 scripts/run_all.sh                                # baselines 2021-06 and 2022-12
 BASELINES="2021-06 2022-12" scripts/run_all.sh    # or choose your own
+SUBMISSION_CONFIRM=1 scripts/run_all.sh           # allow the >2 GB submission_summary
 ```
 
 Requires outbound access to `ftp.ncbi.nlm.nih.gov`. Roughly 10 GB of free disk

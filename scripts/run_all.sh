@@ -52,7 +52,11 @@ for MONTH in $BASELINES; do
 done
 
 echo; echo "### step 7: submission_summary date-coverage probe"
-scripts/05_submission_summary_probe.sh || echo "(probe exited non-zero — see message above)"
+# Stops at the 2 GB threshold unless SUBMISSION_CONFIRM=1 is set.
+PROBE_ARGS=()
+[[ "${SUBMISSION_CONFIRM:-0}" == "1" ]] && PROBE_ARGS+=(--confirm)
+scripts/05_submission_summary_probe.sh "${PROBE_ARGS[@]}" \
+  || echo "(probe exited non-zero — see message above)"
 
 echo; echo "### assembling report"
 PYTHONPATH=scripts python3 scripts/06_report.py

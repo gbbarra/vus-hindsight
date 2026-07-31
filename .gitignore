@@ -20,6 +20,8 @@ tests/fixtures/
 *.tsv.gz
 !results/*.tsv
 !results/*.tsv.gz
+# The CI run log is committed as run provenance.
+!results/*.txt
 
 # Python
 __pycache__/
