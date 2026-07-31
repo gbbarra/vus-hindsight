@@ -37,15 +37,57 @@ elif [[ "$MODE" == "vcf" ]]; then
   URL="$VCF_BASE/$NAME"
 else
   [[ -n "$MONTH" ]] || { echo "FATAL: archive mode needs YYYY-MM" >&2; exit 1; }
-  NAME=$(grep -o 'variant_summary[^"[:space:]]*\.txt\.gz' "$DATA/listing_archive.txt" \
-         | sort -u | grep -- "$MONTH" | head -1 || true)
-  if [[ -z "$NAME" ]]; then
-    echo "FATAL: no archived variant_summary matching '$MONTH'." >&2
-    echo "Available archived snapshots:" >&2
-    grep -o 'variant_summary[^"[:space:]]*\.txt\.gz' "$DATA/listing_archive.txt" | sort -u >&2
-    exit 1
+  YEAR="${MONTH%%-*}"
+
+  # ClinVar keeps roughly the last 18 months loose in archive/ and files
+  # everything older under archive/<YEAR>/. Look in the flat listing first,
+  # then in the year subdirectory. Both are read from the live listing.
+  # Prefer an exact variant_summary_<MONTH>.txt.gz; fall back to a substring
+  # match so an older naming convention still resolves. The candidate list is
+  # materialised first — piping into `grep A || grep B` would let the first
+  # grep swallow stdin, leaving the fallback nothing to read.
+  pick_name () {  # $1 = listing file
+    local listing="$1" all exact
+    all=$(grep -o 'variant_summary[^"[:space:]]*\.txt\.gz' "$listing" | sort -u || true)
+    if [[ -z "$all" ]]; then
+      return 0
+    fi
+    exact=$(printf '%s\n' "$all" | grep -x "variant_summary_${MONTH}\.txt\.gz" || true)
+    if [[ -n "$exact" ]]; then
+      printf '%s\n' "$exact" | head -1
+      return 0
+    fi
+    printf '%s\n' "$all" | grep -- "$MONTH" | head -1 || true
+  }
+
+  NAME=$(pick_name "$DATA/listing_archive.txt")
+  if [[ -n "$NAME" ]]; then
+    URL="$BASE/archive/$NAME"
+  else
+    YEAR_LISTING="$DATA/listing_archive_$YEAR.txt"
+    if [[ ! -s "$YEAR_LISTING" ]]; then
+      echo "'$MONTH' is not in the flat archive listing; reading archive/$YEAR/ ..."
+      if ! curl -sSfL --max-time 300 --retry 3 --retry-delay 2 \
+             "$BASE/archive/$YEAR/" -o "$YEAR_LISTING.html"; then
+        echo "FATAL: no archived variant_summary matching '$MONTH', and" >&2
+        echo "archive/$YEAR/ could not be listed (does that year exist?)." >&2
+        echo "Months available loose in archive/:" >&2
+        grep -o 'variant_summary[^"[:space:]]*\.txt\.gz' \
+             "$DATA/listing_archive.txt" | sort -u >&2
+        exit 1
+      fi
+      sed -e 's/<[^>]*>/\t/g' "$YEAR_LISTING.html" \
+        | tr -s '\t' '\t' | sed -e 's/^\t*//' -e '/^$/d' > "$YEAR_LISTING"
+    fi
+    NAME=$(pick_name "$YEAR_LISTING")
+    if [[ -z "$NAME" ]]; then
+      echo "FATAL: no variant_summary matching '$MONTH' in archive/$YEAR/." >&2
+      echo "Available in archive/$YEAR/:" >&2
+      grep -o 'variant_summary[^"[:space:]]*\.txt\.gz' "$YEAR_LISTING" | sort -u >&2
+      exit 1
+    fi
+    URL="$BASE/archive/$YEAR/$NAME"
   fi
-  URL="$BASE/archive/$NAME"
 fi
 
 echo "Resolved filename from listing: $NAME"

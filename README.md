@@ -75,11 +75,14 @@ frozen reconstruction.
 
 ## Method
 
-- Source: ClinVar `variant_summary.txt.gz` (current) and two archived snapshots
-  from `tab_delimited/archive/`, plus the GRCh38 `clinvar.vcf.gz` for molecular
-  consequence. Filenames are **resolved from the live directory listing at
-  runtime**, never hardcoded, and md5-verified against NCBI's published
-  checksum where one exists.
+- Source: ClinVar `variant_summary.txt.gz` (current) and two archived snapshots,
+  plus the GRCh38 `clinvar.vcf.gz` for molecular consequence. Filenames are
+  **resolved from the live directory listing at runtime**, never hardcoded, and
+  md5-verified against NCBI's published checksum where one exists.
+- ClinVar keeps only about the last 18 months loose in `tab_delimited/archive/`
+  and files older snapshots under `archive/<YEAR>/`. The fetch step looks in the
+  flat listing first, then in the year subdirectory, and fails loudly listing
+  what *is* available rather than guessing a path.
 - Restricted to `Assembly = 'GRCh38'`; deduplicated on `VariationID`.
 - Baseline VUS cohort **excludes** review status
   *no assertion criteria provided* (0-star).
@@ -89,11 +92,21 @@ frozen reconstruction.
 
 ### Column naming
 
-ClinVar renamed its classification columns around 2024. Older snapshots use
-`ClinicalSignificance` / `ReviewStatus`; current ones use
-`GermlineClassification` / `GermlineReviewStatus`. `scripts/schema.py` resolves
-these from the actual header of each file and raises if a required column is
-absent — it never assumes a layout.
+`scripts/schema.py` resolves the classification and review columns from the
+actual header of each file and raises if a required column is absent — it never
+assumes a layout. It accepts both `ClinicalSignificance` / `ReviewStatus` and
+`GermlineClassification` / `GermlineReviewStatus`.
+
+Worth recording, because it is easy to get wrong from memory: as of the
+2026-07 release, `variant_summary.txt.gz` **still uses
+`ClinicalSignificance` and `ReviewStatus`**. ClinVar's germline/somatic split
+did not rename those columns here — it added separate ones alongside them
+(`SomaticClinicalImpact`, `ReviewStatusClinicalImpact`, `Oncogenicity`,
+`ReviewStatusOncogenicity`, and the `SCVsForAggregate*` family), for 43 columns
+total. `ClinicalSignificance` remains the aggregate **germline** classification,
+which is what this benchmark measures; the somatic and oncogenicity columns are
+deliberately untouched. The header of every snapshot is printed into the run log
+before any query executes, so this can be checked rather than trusted.
 
 ### Molecular consequence comes from the ClinVar VCF
 
