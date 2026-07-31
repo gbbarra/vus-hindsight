@@ -1,0 +1,240 @@
+#!/usr/bin/env python3
+"""Count VUS -> definitive-classification transitions between two ClinVar snapshots.
+
+Streams both gzipped snapshots through DuckDB's read_csv (never pandas, never a
+full in-memory load), filters to GRCh38, deduplicates on VariationID, and emits:
+
+  * the baseline -> current transition table
+  * for the VUS -> P/LP arm: consequence breakdown, review-status breakdown,
+    distinct gene count, and the missense AND >=2-star stratum
+  * results/_counts_<label>.json   (machine-readable, consumed by 06_report.py)
+  * results/reclassified_pathogenic.tsv rows for this baseline
+
+Usage:
+  04_transitions.py --baseline data/variant_summary_2021-06.txt.gz \
+                    --current  data/variant_summary.txt.gz \
+                    --label    2021-06
+"""
+import argparse
+import csv
+import gzip
+import json
+import os
+import sys
+
+import duckdb
+
+from schema import bucket_sql, consequence_sql, resolve_columns, stars_sql
+
+RESULTS = "results"
+
+
+def header_of(path):
+    with gzip.open(path, "rt", encoding="utf-8", errors="replace") as fh:
+        return fh.readline().rstrip("\n").lstrip("#").split("\t")
+
+
+def reader_sql(path, cols):
+    """A read_csv call with explicit column names.
+
+    header=false + skip=1 + explicit names sidesteps the leading '#' that some
+    snapshots put on the header line. quote/escape are disabled because ClinVar
+    ships unbalanced double quotes inside unquoted fields.
+    """
+    names = ", ".join(f"'{c.replace(chr(39), chr(39) * 2)}'" for c in cols)
+    return (
+        f"read_csv('{path}', delim='\\t', header=false, skip=1, "
+        f"names=[{names}], all_varchar=true, quote='', escape='', "
+        f"ignore_errors=false)"
+    )
+
+
+def build_view(con, alias, path, label):
+    cols = header_of(path)
+    print(f"=== HEADER: {path} ===")
+    print(f"{len(cols)} columns: {cols}")
+    res = resolve_columns(cols)
+    print(f"resolved: classification={res['classification']!r} "
+          f"review_status={res['review_status']!r} "
+          f"consequence={res['consequence']!r}")
+    sys.stdout.flush()
+
+    con.execute(f"CREATE OR REPLACE VIEW {alias}_raw AS SELECT * FROM {reader_sql(path, cols)}")
+
+    total = con.execute(f"SELECT count(*) FROM {alias}_raw").fetchone()[0]
+    grch38 = con.execute(
+        f"SELECT count(*) FROM {alias}_raw WHERE Assembly = 'GRCh38'"
+    ).fetchone()[0]
+
+    # Deduplicate on VariationID. Ordering by Name makes the pick deterministic.
+    con.execute(f"""
+        CREATE OR REPLACE TABLE {alias} AS
+        SELECT
+            TRY_CAST(VariationID AS BIGINT)          AS variation_id,
+            {res['genesymbol']}                      AS gene,
+            {res['name']}                            AS hgvs,
+            {res['type']}                            AS var_type,
+            {res['classification']}                  AS raw_class,
+            {res['review_status']}                   AS raw_review,
+            {bucket_sql(res['classification'])}      AS bucket,
+            {stars_sql(res['review_status'])}         AS stars,
+            {consequence_sql(res['name'], res['type'], res['consequence'])} AS consequence
+        FROM {alias}_raw
+        WHERE Assembly = 'GRCh38' AND TRY_CAST(VariationID AS BIGINT) IS NOT NULL
+        QUALIFY row_number() OVER (PARTITION BY VariationID ORDER BY {res['name']}) = 1
+    """)
+    deduped = con.execute(f"SELECT count(*) FROM {alias}").fetchone()[0]
+    print(f"[{label}] rows={total:,} GRCh38={grch38:,} "
+          f"after dedupe on VariationID={deduped:,} "
+          f"(collapsed {grch38 - deduped:,})")
+    sys.stdout.flush()
+    return {"rows_total": total, "rows_grch38": grch38, "rows_deduped": deduped,
+            "classification_column": res["classification"],
+            "review_column": res["review_status"],
+            "consequence_source": res["consequence"] or "derived from HGVS in Name"}
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--baseline", required=True)
+    ap.add_argument("--current", required=True)
+    ap.add_argument("--label", required=True)
+    ap.add_argument("--memory-limit", default="6GB")
+    ap.add_argument("--temp-dir", default="data/duckdb_tmp")
+    args = ap.parse_args()
+
+    os.makedirs(RESULTS, exist_ok=True)
+    os.makedirs(args.temp_dir, exist_ok=True)
+
+    con = duckdb.connect()
+    con.execute(f"PRAGMA memory_limit='{args.memory_limit}'")
+    con.execute(f"PRAGMA temp_directory='{args.temp_dir}'")
+
+    meta = {"label": args.label,
+            "baseline_file": os.path.basename(args.baseline),
+            "current_file": os.path.basename(args.current)}
+    meta["baseline"] = build_view(con, "base", args.baseline, f"baseline {args.label}")
+    meta["current"] = build_view(con, "cur", args.current, "current")
+
+    # Baseline VUS cohort: uncertain at baseline, with assertion criteria.
+    con.execute("""
+        CREATE OR REPLACE TABLE vus_base AS
+        SELECT * FROM base
+        WHERE bucket = 'Still VUS' AND stars >= 1
+    """)
+    n_vus = con.execute("SELECT count(*) FROM vus_base").fetchone()[0]
+    n_vus_excluded = con.execute("""
+        SELECT count(*) FROM base WHERE bucket = 'Still VUS' AND stars = 0
+    """).fetchone()[0]
+    print(f"[{args.label}] baseline VUS (criteria provided): {n_vus:,} "
+          f"(excluded {n_vus_excluded:,} with no assertion criteria)")
+    meta["baseline_vus"] = n_vus
+    meta["baseline_vus_excluded_no_criteria"] = n_vus_excluded
+
+    # Follow each baseline VUS into the current snapshot.
+    con.execute("""
+        CREATE OR REPLACE TABLE followed AS
+        SELECT b.variation_id,
+               coalesce(c.gene, b.gene)   AS gene,
+               coalesce(c.hgvs, b.hgvs)   AS hgvs,
+               coalesce(c.consequence, b.consequence) AS consequence,
+               b.raw_class  AS baseline_class,
+               b.raw_review AS baseline_review,
+               c.raw_class  AS current_class,
+               c.raw_review AS current_review,
+               c.stars      AS current_stars,
+               CASE WHEN c.variation_id IS NULL THEN 'Retired/absent'
+                    ELSE c.bucket END AS current_bucket
+        FROM vus_base b
+        LEFT JOIN cur c USING (variation_id)
+    """)
+
+    rows = con.execute("""
+        SELECT current_bucket, count(*) AS n
+        FROM followed GROUP BY 1 ORDER BY n DESC
+    """).fetchall()
+    print(f"\n=== [{args.label}] transition table ===")
+    for bucket, n in rows:
+        print(f"  {bucket:16s} {n:>10,}  {100.0 * n / n_vus:5.2f}%")
+    meta["transitions"] = [{"current_bucket": b, "n": n,
+                            "pct": round(100.0 * n / n_vus, 4)} for b, n in rows]
+
+    # --- VUS -> P/LP arm ------------------------------------------------------
+    plp_n = con.execute(
+        "SELECT count(*) FROM followed WHERE current_bucket = 'P/LP'").fetchone()[0]
+    genes = con.execute("""
+        SELECT count(DISTINCT gene) FROM followed
+        WHERE current_bucket = 'P/LP' AND gene IS NOT NULL AND gene NOT IN ('','-')
+    """).fetchone()[0]
+    meta["vus_to_plp"] = plp_n
+    meta["vus_to_plp_distinct_genes"] = genes
+    print(f"\n=== [{args.label}] VUS -> P/LP: {plp_n:,} variants, "
+          f"{genes:,} distinct genes ===")
+
+    by_cons = con.execute("""
+        SELECT consequence, count(*) n FROM followed
+        WHERE current_bucket = 'P/LP' GROUP BY 1 ORDER BY n DESC
+    """).fetchall()
+    print("  by molecular consequence:")
+    for c, n in by_cons:
+        print(f"    {c:12s} {n:>9,}")
+    meta["vus_to_plp_by_consequence"] = [{"consequence": c, "n": n} for c, n in by_cons]
+
+    by_rev = con.execute("""
+        SELECT current_review, current_stars, count(*) n FROM followed
+        WHERE current_bucket = 'P/LP' GROUP BY 1,2 ORDER BY n DESC
+    """).fetchall()
+    print("  by current review status:")
+    for r, s, n in by_rev:
+        print(f"    [{s}*] {str(r):55s} {n:>9,}")
+    meta["vus_to_plp_by_review"] = [
+        {"review_status": r, "stars": s, "n": n} for r, s, n in by_rev]
+
+    # The hard stratum: missense AND >= "criteria provided, multiple submitters".
+    hard = con.execute("""
+        SELECT count(*) FROM followed
+        WHERE current_bucket = 'P/LP' AND consequence = 'missense' AND current_stars >= 2
+    """).fetchone()[0]
+    hard_genes = con.execute("""
+        SELECT count(DISTINCT gene) FROM followed
+        WHERE current_bucket = 'P/LP' AND consequence = 'missense' AND current_stars >= 2
+          AND gene IS NOT NULL AND gene NOT IN ('','-')
+    """).fetchone()[0]
+    meta["vus_to_plp_missense_2star_plus"] = hard
+    meta["vus_to_plp_missense_2star_plus_genes"] = hard_genes
+    print(f"\n  HARD STRATUM (missense AND >=2-star): {hard:,} variants "
+          f"across {hard_genes:,} genes")
+
+    # --- Per-variant output ---------------------------------------------------
+    out_tsv = os.path.join(RESULTS, "reclassified_pathogenic.tsv")
+    write_header = not os.path.exists(out_tsv)
+    cur = con.execute("""
+        SELECT variation_id, gene, hgvs, consequence,
+               baseline_class, current_class, current_review
+        FROM followed WHERE current_bucket = 'P/LP'
+        ORDER BY variation_id
+    """)
+    n_written = 0
+    with open(out_tsv, "a", newline="") as fh:
+        w = csv.writer(fh, delimiter="\t", lineterminator="\n")
+        if write_header:
+            w.writerow(["baseline", "VariationID", "gene", "HGVS", "consequence",
+                        "baseline_class", "current_class", "review_status"])
+        while True:
+            batch = cur.fetchmany(50_000)
+            if not batch:
+                break
+            for row in batch:
+                w.writerow([args.label] + list(row))
+                n_written += 1
+    print(f"\n  wrote {n_written:,} rows -> {out_tsv}")
+    meta["tsv_rows_written"] = n_written
+
+    with open(os.path.join(RESULTS, f"_counts_{args.label}.json"), "w") as fh:
+        json.dump(meta, fh, indent=2)
+    print(f"  wrote results/_counts_{args.label}.json")
+    con.close()
+
+
+if __name__ == "__main__":
+    main()

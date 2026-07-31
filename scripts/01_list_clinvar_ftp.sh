@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# List the ClinVar tab_delimited directory and its archive/ subdirectory.
+#
+# We NEVER hardcode snapshot filenames. This script prints the authoritative
+# listing so that 02_fetch_snapshot.sh can resolve exact names from it.
+# Output is saved to data/listing_*.txt for the fetch step to consume.
+set -euo pipefail
+
+BASE="https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited"
+OUT="${1:-data}"
+mkdir -p "$OUT"
+
+fetch_listing () {
+  local url="$1" dest="$2"
+  echo "=== LISTING: $url ==="
+  if ! curl -sSfL --max-time 300 --retry 3 --retry-delay 2 "$url/" -o "$dest.html"; then
+    echo "FATAL: could not list $url" >&2
+    echo "If this is a 403 from the agent proxy, ftp.ncbi.nlm.nih.gov is not on" >&2
+    echo "the session's egress allowlist. Stop and fix the network policy." >&2
+    exit 1
+  fi
+  # Extract href targets and their listed size/date columns.
+  sed -e 's/<[^>]*>/\t/g' "$dest.html" \
+    | tr -s '\t' '\t' | sed -e 's/^\t*//' -e '/^$/d' > "$dest"
+  cat "$dest"
+  echo
+}
+
+fetch_listing "$BASE"         "$OUT/listing_tab_delimited.txt"
+fetch_listing "$BASE/archive" "$OUT/listing_archive.txt"
+
+echo "=== candidate variant_summary files (current) ==="
+grep -o 'variant_summary[^"[:space:]]*\.txt\.gz' "$OUT/listing_tab_delimited.txt" | sort -u || true
+echo "=== candidate variant_summary files (archive) ==="
+grep -o 'variant_summary[^"[:space:]]*\.txt\.gz' "$OUT/listing_archive.txt" | sort -u || true
+echo "=== submission_summary files ==="
+grep -o 'submission_summary[^"[:space:]]*\.txt\.gz' "$OUT/listing_tab_delimited.txt" | sort -u || true
