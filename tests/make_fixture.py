@@ -67,6 +67,43 @@ def row(vid, gene, name, assembly, cls, review):
     return "\t".join(d[c] for c in COLS)
 
 
+# Synthetic VCF MC terms, keyed by VariationID. Two deliberate design choices:
+#   * VID 2 is nonsense by HGVS but frameshift by MC — proves the VCF wins.
+#   * VID 10 is absent entirely — proves 'not_in_vcf' is reported, not folded
+#     into 'other'.
+#   * VID 1 carries two terms — proves missense outranks intron_variant.
+VCF_MC = {
+    1:  "SO:0001627|intron_variant,SO:0001583|missense_variant",
+    2:  "SO:0001589|frameshift_variant",
+    3:  "SO:0001819|synonymous_variant",
+    4:  "SO:0001627|intron_variant",
+    11: "SO:0001589|frameshift_variant",
+    12: "SO:0001575|splice_donor_variant",
+    13: "SO:0001583|missense_variant",
+}
+
+VCF_HEADER = [
+    "##fileformat=VCFv4.1",
+    '##INFO=<ID=ALLELEID,Number=1,Type=Integer,Description="ClinVar Allele ID">',
+    '##INFO=<ID=GENEINFO,Number=1,Type=String,Description="Gene(s)">',
+    '##INFO=<ID=MC,Number=.,Type=String,Description="comma separated list of '
+    'molecular consequence in the form of Sequence Ontology ID|molecular_consequence">',
+    "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO",
+]
+
+
+def write_vcf(path):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    gene_by_vid = {vid: gene for vid, gene, *_ in CASES}
+    with gzip.open(path, "wt") as fh:
+        for line in VCF_HEADER:
+            fh.write(line + "\n")
+        for vid, mc in sorted(VCF_MC.items()):
+            info = (f"ALLELEID={vid * 10};GENEINFO={gene_by_vid[vid]}:{vid};MC={mc}")
+            fh.write(f"17\t{43000000 + vid}\t{vid}\tG\tA\t.\t.\t{info}\n")
+    print(f"wrote {path} ({len(VCF_MC)} records)")
+
+
 def write(path, header_cols, rows):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with gzip.open(path, "wt") as fh:
@@ -92,6 +129,7 @@ def main():
 
     write(os.path.join(OUT, "baseline_fixture.txt.gz"), base_cols, base_rows)
     write(os.path.join(OUT, "current_fixture.txt.gz"), cur_cols, cur_rows)
+    write_vcf(os.path.join(OUT, "clinvar_fixture.vcf.gz"))
 
 
 if __name__ == "__main__":

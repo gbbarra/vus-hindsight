@@ -76,8 +76,10 @@ frozen reconstruction.
 ## Method
 
 - Source: ClinVar `variant_summary.txt.gz` (current) and two archived snapshots
-  from `tab_delimited/archive/`. Filenames are **resolved from the live
-  directory listing at runtime**, never hardcoded.
+  from `tab_delimited/archive/`, plus the GRCh38 `clinvar.vcf.gz` for molecular
+  consequence. Filenames are **resolved from the live directory listing at
+  runtime**, never hardcoded, and md5-verified against NCBI's published
+  checksum where one exists.
 - Restricted to `Assembly = 'GRCh38'`; deduplicated on `VariationID`.
 - Baseline VUS cohort **excludes** review status
   *no assertion criteria provided* (0-star).
@@ -93,25 +95,51 @@ ClinVar renamed its classification columns around 2024. Older snapshots use
 these from the actual header of each file and raises if a required column is
 absent — it never assumes a layout.
 
-### Molecular consequence is derived, not read
+### Molecular consequence comes from the ClinVar VCF
 
-`variant_summary` carries **no molecular-consequence column**. Consequence is
-therefore derived from the HGVS expression in the `Name` field, in this
-precedence order:
+`variant_summary` carries no molecular-consequence column. Rather than infer
+consequence from a name string, this benchmark reads it from the **`MC` field of
+the ClinVar GRCh38 VCF** (`vcf_GRCh38/clinvar.vcf.gz`), which states a Sequence
+Ontology term directly:
 
-| class | matched on |
+```
+MC=SO:0001627|intron_variant,SO:0001583|missense_variant
+```
+
+The VCF's `ID` column is the `VariationID`, which joins straight back to
+`variant_summary`. `scripts/03b_extract_mc.py` streams the VCF and writes a
+compact `VariationID → consequence` map.
+
+A variant may carry several `MC` terms (one per affected transcript), so a fixed
+precedence applies — truncating classes outrank missense, missense outranks
+non-coding terms:
+
+| class | Sequence Ontology terms |
 |---|---|
-| frameshift | `p.Xxx###fs` |
-| nonsense | `p.Xxx###Ter` / `p.Xxx###*` |
-| splice | `c.###+N` / `c.###-N` (intronic offset) |
-| missense | `p.Xxx###Yyy`, excluding synonymous `p.Xxx###=` |
-| other | everything else |
+| frameshift | `SO:0001589` frameshift_variant |
+| nonsense | `SO:0001587` nonsense / stop_gained |
+| splice | `SO:0001574` splice_acceptor_variant, `SO:0001575` splice_donor_variant |
+| missense | `SO:0001583` missense_variant |
+| other | everything else (synonymous, intronic, UTR, …) |
 
-Truncating classes are matched before missense so a frameshift is never counted
-as a substitution. If a future snapshot adds a real consequence column,
-`schema.py` prefers it automatically and the report records which source was
-used. This derivation is the one methodological substitution in the pipeline and
-is called out here because reviewers should be able to check it.
+Both the SO accession and the term name are matched, so an upstream rename
+cannot silently reroute variants into `other`. Two reporting choices keep the
+result auditable:
+
+- Variants with **no VCF record** (typically those without a precise genomic
+  placement) are reported as their own `not_in_vcf` row, never folded into
+  `other`.
+- `03b_extract_mc.py` prints the SO terms that landed in `other`, with counts, so
+  nothing is miscategorised without being visible. It exits non-zero rather than
+  degrading if the `MC` field is absent entirely.
+
+The per-variant TSV carries the raw `MC` string alongside the assigned class, so
+every single call can be checked against its source.
+
+**Cross-check.** The older HGVS-based derivation is retained purely as an
+independent second opinion: the report states what fraction of consequences
+assigned from `MC` agree with it. That number is a diagnostic. Published
+breakdowns use `MC` alone.
 
 ## Reproduce
 
@@ -142,7 +170,8 @@ consequence derivation.
 scripts/01_list_clinvar_ftp.sh         list FTP dir + archive/ (authoritative names)
 scripts/02_fetch_snapshot.sh           fetch one snapshot by resolved exact name
 scripts/03_headers.py                  print real header before any query runs
-scripts/schema.py                      column resolution, buckets, stars, consequence
+scripts/03b_extract_mc.py              VariationID -> consequence from the VCF MC field
+scripts/schema.py                      column resolution, buckets, stars, MC mapping
 scripts/04_transitions.py              the analysis (DuckDB streaming)
 scripts/05_submission_summary_probe.sh size-check + date-column probe
 scripts/06_report.py                   assemble results/transitions.md
@@ -155,9 +184,10 @@ results/                               committed outputs
 
 - `results/transitions.md` — every count and table
 - `results/reclassified_pathogenic.tsv` — per-variant VUS → P/LP records
-  (`VariationID`, gene, HGVS, consequence, baseline class, current class, review
-  status), gzipped if over 50 MB
+  (`VariationID`, gene, HGVS, consequence, raw `MC` string, baseline class,
+  current class, review status), gzipped if over 50 MB
 - `results/_counts_<baseline>.json` — machine-readable counts
+- `results/_vcf_mc_stats.json` — VCF coverage and the SO terms binned as `other`
 
 ## Review-status star ladder
 

@@ -4,6 +4,11 @@
 # (excluded wholesale; run_all.sh recreates it with mkdir -p)
 data/
 
+# Generated test fixtures (rebuilt by tests/make_fixture.py on every run)
+tests/fixtures/
+*.vcf.gz
+*.parquet
+
 # DuckDB working databases
 *.duckdb
 *.duckdb.wal

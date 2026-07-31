@@ -16,7 +16,8 @@ echo "### free disk before start"; df -h . | tail -1
 python3 -c "import duckdb; print('duckdb', duckdb.__version__)"
 
 # Fresh run: the TSV is appended to per baseline, so clear stale output.
-rm -f results/reclassified_pathogenic.tsv results/_counts_*.json
+rm -f results/reclassified_pathogenic.tsv results/reclassified_pathogenic.tsv.gz \
+      results/_counts_*.json results/_vcf_mc_stats.json
 
 echo; echo "### step 1: list FTP directory (authoritative filenames)"
 scripts/01_list_clinvar_ftp.sh "$DATA"
@@ -26,14 +27,25 @@ CURRENT=$(scripts/02_fetch_snapshot.sh current | tail -1)
 echo "current snapshot: $CURRENT"
 
 echo; echo "### step 3: header of current snapshot"
-python3 scripts/03_headers.py "$CURRENT"
+PYTHONPATH=scripts python3 scripts/03_headers.py "$CURRENT"
+
+echo; echo "### step 3b: molecular consequence from the ClinVar VCF MC field"
+VCF=$(scripts/02_fetch_snapshot.sh vcf | tail -1)
+echo "VCF: $VCF"
+PYTHONPATH=scripts python3 scripts/03b_extract_mc.py "$VCF" \
+    --out "$DATA/consequence_map.parquet"
+echo "deleting raw VCF (the parquet map is all we need downstream): $VCF"
+rm -f "$VCF" "$VCF.md5"
+df -h . | tail -1
 
 for MONTH in $BASELINES; do
   echo; echo "############ baseline $MONTH ############"
   BASE=$(scripts/02_fetch_snapshot.sh archive "$MONTH" | tail -1)
   echo "baseline snapshot: $BASE"
-  python3 scripts/03_headers.py "$BASE"
-  python3 scripts/04_transitions.py --baseline "$BASE" --current "$CURRENT" --label "$MONTH"
+  PYTHONPATH=scripts python3 scripts/03_headers.py "$BASE"
+  PYTHONPATH=scripts python3 scripts/04_transitions.py \
+      --baseline "$BASE" --current "$CURRENT" --label "$MONTH" \
+      --consequence-map "$DATA/consequence_map.parquet"
   echo "deleting raw baseline snapshot to reclaim disk: $BASE"
   rm -f "$BASE"
   df -h . | tail -1
@@ -43,7 +55,7 @@ echo; echo "### step 7: submission_summary date-coverage probe"
 scripts/05_submission_summary_probe.sh || echo "(probe exited non-zero — see message above)"
 
 echo; echo "### assembling report"
-python3 scripts/06_report.py
+PYTHONPATH=scripts python3 scripts/06_report.py
 
 echo; echo "### cleaning up current snapshot"
 rm -f "$CURRENT"

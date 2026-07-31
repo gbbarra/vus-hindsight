@@ -6,7 +6,9 @@
 # Output is saved to data/listing_*.txt for the fetch step to consume.
 set -euo pipefail
 
-BASE="https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited"
+ROOT="https://ftp.ncbi.nlm.nih.gov/pub/clinvar"
+BASE="$ROOT/tab_delimited"
+VCF_BASE="$ROOT/vcf_GRCh38"
 OUT="${1:-data}"
 mkdir -p "$OUT"
 
@@ -28,6 +30,7 @@ fetch_listing () {
 
 fetch_listing "$BASE"         "$OUT/listing_tab_delimited.txt"
 fetch_listing "$BASE/archive" "$OUT/listing_archive.txt"
+fetch_listing "$VCF_BASE"     "$OUT/listing_vcf_grch38.txt"
 
 echo "=== candidate variant_summary files (current) ==="
 grep -o 'variant_summary[^"[:space:]]*\.txt\.gz' "$OUT/listing_tab_delimited.txt" | sort -u || true
@@ -35,3 +38,5 @@ echo "=== candidate variant_summary files (archive) ==="
 grep -o 'variant_summary[^"[:space:]]*\.txt\.gz' "$OUT/listing_archive.txt" | sort -u || true
 echo "=== submission_summary files ==="
 grep -o 'submission_summary[^"[:space:]]*\.txt\.gz' "$OUT/listing_tab_delimited.txt" | sort -u || true
+echo "=== GRCh38 VCF files (source of molecular consequence via MC) ==="
+grep -o 'clinvar[^"[:space:]]*\.vcf\.gz' "$OUT/listing_vcf_grch38.txt" | sort -u || true

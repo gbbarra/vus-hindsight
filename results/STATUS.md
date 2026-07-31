@@ -22,6 +22,10 @@ Probed 2026-07-31:
 | `ftp.ebi.ac.uk:443` | 403 CONNECT — policy denial |
 | `pypi.org:443` | 200 — reachable (DuckDB installed from here) |
 
+`ftp.ncbi.nlm.nih.gov` serves both `tab_delimited/` (the `variant_summary`
+snapshots) and `vcf_GRCh38/` (the VCF that supplies molecular consequence), so
+the single denial blocks every input the analysis needs.
+
 DNS resolves `ftp.ncbi.nlm.nih.gov` correctly, so this is an egress policy
 decision, not a network or DNS fault. The proxy's own documentation directs that
 403 policy denials be reported rather than retried or routed around, so no
@@ -63,8 +67,10 @@ synthetic fixture with known expected counts. All assertions pass, covering:
   Retired/absent
 - exclusion of *no assertion criteria provided* from baseline cohorts
 - the review-status star ladder, including the ≥2-star cutoff
-- molecular-consequence derivation from HGVS
+- molecular-consequence assignment from the ClinVar VCF `MC` field, including
+  multi-term precedence, the `not_in_vcf` bucket, and the HGVS cross-check
 - per-variant TSV emission
+- report assembly into `transitions.md`
 
 Those are code-correctness checks on synthetic input. **They are not results and
 imply nothing about ClinVar.**

@@ -110,11 +110,44 @@ def stars_sql(col):
     END"""
 
 
-# --- Molecular consequence ----------------------------------------------------
-# variant_summary carries no consequence column, so we derive it from the HGVS
-# in `Name`, e.g. "NM_000059.4(BRCA2):c.1234A>T (p.Lys412Ter)".
-# Order matters: frameshift and nonsense are checked before missense so that a
-# truncating change is never counted as a substitution.
+# --- Molecular consequence: primary source is the ClinVar VCF `MC` field ------
+# The VCF INFO column carries MC=SO:0001583|missense_variant[,...], a stated
+# Sequence Ontology term rather than something inferred from a name string.
+# A variant may carry several terms (different transcripts), so we apply a fixed
+# precedence: truncating classes win over missense, and missense wins over
+# non-coding terms. Both the SO accession and the term name are matched, so a
+# rename upstream cannot silently reroute variants into 'other'.
+
+MC_PRECEDENCE = [
+    ("frameshift", ["SO:0001589", "frameshift_variant"]),
+    ("nonsense",   ["SO:0001587", "nonsense", "stop_gained"]),
+    ("splice",     ["SO:0001574", "splice_acceptor_variant",
+                    "SO:0001575", "splice_donor_variant"]),
+    ("missense",   ["SO:0001583", "missense_variant"]),
+]
+
+
+def mc_bucket_sql(mc_col):
+    """Map a raw MC string to one of frameshift/nonsense/splice/missense/other."""
+    branches = []
+    for label, needles in MC_PRECEDENCE:
+        tests = " OR ".join(f"{mc_col} LIKE '%{n}%'" for n in needles)
+        branches.append(f"WHEN {tests} THEN '{label}'")
+    joined = "\n      ".join(branches)
+    return f"""
+    CASE
+      WHEN {mc_col} IS NULL OR {mc_col} = '' THEN 'other'
+      {joined}
+      ELSE 'other'
+    END"""
+
+
+# --- Molecular consequence: secondary HGVS derivation (cross-check only) -------
+# Retained so each VCF-assigned consequence can be compared against an
+# independent derivation from the HGVS in `Name`, e.g.
+# "NM_000059.4(BRCA2):c.1234A>T (p.Lys412Ter)". The concordance rate is reported
+# in the output. This is a diagnostic; it is NOT the source of the published
+# consequence breakdown.
 
 def consequence_sql(name_col, type_col, explicit_col=None):
     if explicit_col:

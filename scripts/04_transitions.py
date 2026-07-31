@@ -78,7 +78,7 @@ def build_view(con, alias, path, label):
             {res['review_status']}                   AS raw_review,
             {bucket_sql(res['classification'])}      AS bucket,
             {stars_sql(res['review_status'])}         AS stars,
-            {consequence_sql(res['name'], res['type'], res['consequence'])} AS consequence
+            {consequence_sql(res['name'], res['type'], res['consequence'])} AS hgvs_consequence
         FROM {alias}_raw
         WHERE Assembly = 'GRCh38' AND TRY_CAST(VariationID AS BIGINT) IS NOT NULL
         QUALIFY row_number() OVER (PARTITION BY VariationID ORDER BY {res['name']}) = 1
@@ -99,6 +99,8 @@ def main():
     ap.add_argument("--baseline", required=True)
     ap.add_argument("--current", required=True)
     ap.add_argument("--label", required=True)
+    ap.add_argument("--consequence-map", required=True,
+                    help="parquet from 03b_extract_mc.py (VCF MC field)")
     ap.add_argument("--memory-limit", default="6GB")
     ap.add_argument("--temp-dir", default="data/duckdb_tmp")
     args = ap.parse_args()
@@ -131,13 +133,32 @@ def main():
     meta["baseline_vus"] = n_vus
     meta["baseline_vus_excluded_no_criteria"] = n_vus_excluded
 
+    # Molecular consequence comes from the ClinVar VCF MC field, not from HGVS.
+    if not os.path.exists(args.consequence_map):
+        raise SystemExit(
+            f"FATAL: consequence map {args.consequence_map!r} not found. "
+            "Run scripts/03b_extract_mc.py against the ClinVar VCF first — "
+            "consequence is sourced from the VCF, never inferred here.")
+    con.execute(f"""
+        CREATE OR REPLACE TABLE cons AS
+        SELECT * FROM read_parquet('{args.consequence_map}')
+    """)
+    n_cons = con.execute("SELECT count(*) FROM cons").fetchone()[0]
+    print(f"consequence map: {n_cons:,} VariationIDs from "
+          f"{os.path.basename(args.consequence_map)}")
+    meta["consequence_map_rows"] = n_cons
+
     # Follow each baseline VUS into the current snapshot.
+    # 'not_in_vcf' is kept as its own bucket rather than folded into 'other',
+    # so unmatched variants are visible instead of silently miscounted.
     con.execute("""
         CREATE OR REPLACE TABLE followed AS
         SELECT b.variation_id,
                coalesce(c.gene, b.gene)   AS gene,
                coalesce(c.hgvs, b.hgvs)   AS hgvs,
-               coalesce(c.consequence, b.consequence) AS consequence,
+               coalesce(m.consequence, 'not_in_vcf') AS consequence,
+               m.mc_raw                   AS mc_raw,
+               coalesce(c.hgvs_consequence, b.hgvs_consequence) AS hgvs_consequence,
                b.raw_class  AS baseline_class,
                b.raw_review AS baseline_review,
                c.raw_class  AS current_class,
@@ -147,6 +168,7 @@ def main():
                     ELSE c.bucket END AS current_bucket
         FROM vus_base b
         LEFT JOIN cur c USING (variation_id)
+        LEFT JOIN cons m USING (variation_id)
     """)
 
     rows = con.execute("""
@@ -175,10 +197,37 @@ def main():
         SELECT consequence, count(*) n FROM followed
         WHERE current_bucket = 'P/LP' GROUP BY 1 ORDER BY n DESC
     """).fetchall()
-    print("  by molecular consequence:")
+    print("  by molecular consequence (source: ClinVar VCF MC field):")
     for c, n in by_cons:
         print(f"    {c:12s} {n:>9,}")
     meta["vus_to_plp_by_consequence"] = [{"consequence": c, "n": n} for c, n in by_cons]
+
+    not_in_vcf = con.execute("""
+        SELECT count(*) FROM followed
+        WHERE current_bucket = 'P/LP' AND consequence = 'not_in_vcf'
+    """).fetchone()[0]
+    meta["vus_to_plp_not_in_vcf"] = not_in_vcf
+    if plp_n:
+        print(f"    ({not_in_vcf:,} of {plp_n:,} have no VCF record — "
+              f"{100.0 * not_in_vcf / plp_n:.2f}% — reported separately, "
+              "not folded into 'other')")
+
+    # Diagnostic only: agreement between the VCF MC term and an independent
+    # derivation from HGVS. Not used for any published count.
+    conc = con.execute("""
+        SELECT
+          count(*) FILTER (WHERE consequence <> 'not_in_vcf')                        AS matched,
+          count(*) FILTER (WHERE consequence <> 'not_in_vcf'
+                             AND consequence = hgvs_consequence)                     AS agree
+        FROM followed WHERE current_bucket = 'P/LP'
+    """).fetchone()
+    matched, agree = conc
+    meta["consequence_concordance"] = {
+        "matched": matched, "agree": agree,
+        "pct": round(100.0 * agree / matched, 4) if matched else None}
+    if matched:
+        print(f"  cross-check vs HGVS derivation: {agree:,}/{matched:,} agree "
+              f"({100.0 * agree / matched:.2f}%) — diagnostic only")
 
     by_rev = con.execute("""
         SELECT current_review, current_stars, count(*) n FROM followed
@@ -209,7 +258,7 @@ def main():
     out_tsv = os.path.join(RESULTS, "reclassified_pathogenic.tsv")
     write_header = not os.path.exists(out_tsv)
     cur = con.execute("""
-        SELECT variation_id, gene, hgvs, consequence,
+        SELECT variation_id, gene, hgvs, consequence, mc_raw,
                baseline_class, current_class, current_review
         FROM followed WHERE current_bucket = 'P/LP'
         ORDER BY variation_id
@@ -219,7 +268,7 @@ def main():
         w = csv.writer(fh, delimiter="\t", lineterminator="\n")
         if write_header:
             w.writerow(["baseline", "VariationID", "gene", "HGVS", "consequence",
-                        "baseline_class", "current_class", "review_status"])
+                        "mc_raw", "baseline_class", "current_class", "review_status"])
         while True:
             batch = cur.fetchmany(50_000)
             if not batch:

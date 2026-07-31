@@ -47,8 +47,18 @@ def main():
     L.append(table(["snapshot", "file", "GRCh38 variants (deduped)",
                     "classification column", "review column"], rows))
     L.append("")
-    L.append(f"Molecular consequence source: "
-             f"{metas[0]['current']['consequence_source']}.\n")
+
+    vcf_stats_path = os.path.join(RESULTS, "_vcf_mc_stats.json")
+    if os.path.exists(vcf_stats_path):
+        v = json.load(open(vcf_stats_path))
+        L.append(f"Molecular consequence is read from the `MC` (Sequence Ontology) "
+                 f"field of the ClinVar GRCh38 VCF `{v['vcf_file']}` — "
+                 f"{v['variation_ids']:,} VariationIDs, of which "
+                 f"{v['with_mc_field']:,} carry an `MC` term. It is not inferred "
+                 f"from HGVS.\n")
+    else:
+        L.append("Molecular consequence source: ClinVar VCF `MC` field "
+                 "(VCF stats file absent).\n")
 
     for m in metas:
         lab = m["label"]
@@ -64,11 +74,23 @@ def main():
         L.append(f"**{m['vus_to_plp']:,}** variants moved from Uncertain significance "
                  f"to Pathogenic/Likely pathogenic, across "
                  f"**{m['vus_to_plp_distinct_genes']:,}** distinct genes.\n")
-        L.append("By molecular consequence:\n")
+        L.append("By molecular consequence (ClinVar VCF `MC` field):\n")
         L.append(table(["consequence", "n"],
                        [[c["consequence"], f"{c['n']:,}"]
                         for c in m["vus_to_plp_by_consequence"]]))
         L.append("")
+        if m.get("vus_to_plp_not_in_vcf"):
+            L.append(f"`not_in_vcf` = {m['vus_to_plp_not_in_vcf']:,} variants have no "
+                     "record in the GRCh38 VCF (typically no precise genomic "
+                     "placement). They are reported as their own row rather than "
+                     "folded into `other`.\n")
+        conc = m.get("consequence_concordance") or {}
+        if conc.get("matched"):
+            L.append(f"*Diagnostic:* an independent derivation of consequence from "
+                     f"HGVS agrees with the `MC` term for "
+                     f"{conc['agree']:,}/{conc['matched']:,} "
+                     f"({conc['pct']:.2f}%) of these variants. The published "
+                     f"breakdown above uses `MC` alone.\n")
         L.append("By current review status:\n")
         L.append(table(["review status", "stars", "n"],
                        [[r["review_status"], r["stars"], f"{r['n']:,}"]
