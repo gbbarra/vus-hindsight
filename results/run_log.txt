@@ -485,13 +485,13 @@ deleting raw baseline snapshot to reclaim disk: data/variant_summary_2022-12.txt
 ### step 7: submission_summary date-coverage probe
 === HEAD https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/submission_summary.txt.gz ===
 HTTP/1.1 200 OK
-Date: Fri, 31 Jul 2026 20:06:34 GMT
+Date: Fri, 31 Jul 2026 20:24:46 GMT
 Server: Apache
 Last-Modified: Tue, 28 Jul 2026 04:38:51 GMT
 Accept-Ranges: bytes
 Content-Length: 385669884
 Cache-Control: public, max-age=86400
-Expires: Fri, 07 Aug 2026 20:06:34 GMT
+Expires: Fri, 07 Aug 2026 20:24:46 GMT
 Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: GET,POST,PUT,OPTIONS
@@ -522,9 +522,95 @@ Remote size: 385669884 bytes (0.36 GiB)
   #ContributesToAggregateClassification: indicate if the SCV contributes to the aggregate classification
   #VariationID	ClinicalSignificance	DateLastEvaluated	Description	SubmittedPhenotypeInfo	ReportedPhenotypeInfo	ReviewStatus	CollectionMethod	OriginCounts	Submitter	SCV	SubmittedGeneSymbol	ExplanationOfInterpretation	SomaticClinicalImpact	Oncogenicity	ContributesToAggregateClassification
   2	Pathogenic	-	-	OMIM:613647	C3150901:Hereditary spastic paraplegia 48	criteria provided, single submitter	clinical testing	unknown:2	Paris Brain Institute, Inserm - ICM	SCV001451119.1	-	-	-	-	yes
+  2	Likely pathogenic	Dec 17, 2024	This change likely results in a nonsense-mediated mRNA decay. It is not present in gnomAD v2.1.1 and was previously observed in individuals with complicated spastic paraplegia (reported in ClinVar). It was identified in an affected individual with macular dystrophy, without extraocular features. This variant was classified as Likely pathogenic based on ACMG criteria: PVS1_vstrong, PM2_mod.	Macular dystrophy with or without extraocular features	na:Macular dystrophy with or without extraocular features	criteria provided, single submitter	research	germline:1	Ophthalmic Genetics Group, Institute of Molecular and Clinical Ophthalmology Basel	SCV005909190.1	AP5Z1	-	-	-	yes
+  2	Pathogenic	Jun 25, 2024	This variant is expected to result in the loss of a functional protein. This variant has not been reported in large, multi-ethnic general populations. (http://gnomad.broadinstitute.org) This variant has been identified in at least one individual with clinical features associated with this gene. This variant appears to segregate with disease associated with this gene in at least one family.	not provided	C3661900:not provided	criteria provided, single submitter	clinical testing	unknown:na	Athena Diagnostics	SCV005622007.1	-	-	-	-	yes
+  2	Pathogenic	Jun 29, 2010	-	SPASTIC PARAPLEGIA 48, AUTOSOMAL RECESSIVE	C3150901:Hereditary spastic paraplegia 48	no assertion criteria provided	literature only	germline:na	OMIM	SCV000020155.3	AP5Z1	-	-	-	no
+  3	Pathogenic	Jun 29, 2010	-	SPASTIC PARAPLEGIA 48	C3150901:Hereditary spastic paraplegia 48	no assertion criteria provided	literature only	germline:na	OMIM	SCV000020156.6	AP5Z1	-	-	-	yes
+  4	Uncertain significance	Jun 29, 2015	-	RECLASSIFIED - VARIANT OF UNKNOWN SIGNIFICANCE	C4551772:Galloway-Mowat syndrome 1	no assertion criteria provided	literature only	germline:na	OMIM	SCV000020157.2	ZNF592	-	-	-	yes
 
 gzip: stdout: Broken pipe
-(probe exited non-zero — see message above)
+
+=== date-bearing columns ===
+
+gzip: stdout: Broken pipe
+  (no column name matched — inspect the header printed above)
+
+=== quantifying per-submission date coverage ===
+submission rows (one per SCV): 6,409,838
+distinct VariationIDs:         4,306,909
+distinct SCV accessions:       6,409,832
+rows with a DateLastEvaluated: 6,102,834 (95.21%)
+rows with no usable date:      307,004 (4.79%)
+
+DateLastEvaluated by year:
+  1964           1
+  1965           1
+  1967           2
+  1968           3
+  1969           1
+  1970           3
+  1971           1
+  1972           3
+  1973           3
+  1974           2
+  1975           3
+  1976           6
+  1977           1
+  1978          12
+  1979           5
+  1980          10
+  1981           9
+  1982          12
+  1983          19
+  1984          30
+  1985          15
+  1986          35
+  1987          38
+  1988          83
+  1989         177
+  1990         233
+  1991         326
+  1992         592
+  1993         507
+  1994         537
+  1995         539
+  1996         564
+  1997         763
+  1998       1,098
+  1999       1,115
+  2000       1,028
+  2001       1,418
+  2002       2,421
+  2003       1,659
+  2004       1,912
+  2005       1,108
+  2006       1,445
+  2007       1,523
+  2008       2,029
+  2009       2,317
+  2010       5,289
+  2011       9,877
+  2012      12,196
+  2013      24,191
+  2014      29,634
+  2015      55,790
+  2016      84,149
+  2017     127,643
+  2018     370,931
+  2019     240,108
+  2020     187,686
+  2021     438,374
+  2022     675,580
+  2023     841,998
+  2024   1,122,675
+  2025   1,562,052
+  2026     291,052
+
+VUS -> P/LP cohort (6,712 distinct variants):
+  present in submission_summary:        6,712
+  with >=1 dated submission:            6,707 (99.93% of the cohort)
+
+wrote results/_submission_dates.json
 
 ### assembling report
 wrote results/transitions.md
