@@ -1,0 +1,5 @@
+role	filename	url	bytes	last_modified	md5
+current	variant_summary.txt.gz	https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/variant_summary.txt.gz	441573728	Tue, 28 Jul 2026 08:57:47 GMT	476318456e1438c4d0d76a33f21e7350
+vcf	clinvar.vcf.gz	https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar.vcf.gz	193012905	Tue, 28 Jul 2026 22:07:55 GMT	28d247f7b297d3605a7b10079aa4467e
+archive 2021-06	variant_summary_2021-06.txt.gz	https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/archive/2021/variant_summary_2021-06.txt.gz	78178141	Thu, 03 Jun 2021 04:05:02 GMT	1f509ba1959d9cf882ee511572f4c185
+archive 2022-12	variant_summary_2022-12.txt.gz	https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/archive/2022/variant_summary_2022-12.txt.gz	145316022	Thu, 01 Dec 2022 05:05:01 GMT	5e08de585ae392186ae5c3e2a1748003
