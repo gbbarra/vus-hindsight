@@ -101,6 +101,25 @@ def main():
                  f"**{m['vus_to_plp_missense_2star_plus']:,}** variants across "
                  f"{m['vus_to_plp_missense_2star_plus_genes']:,} genes.\n")
 
+    # Exact inputs. `variant_summary.txt.gz` and `clinvar.vcf.gz` are rolling
+    # filenames, so the release stamp and md5 are what make these counts
+    # re-derivable rather than merely re-runnable.
+    manifest = os.path.join(RESULTS, "_manifest.tsv")
+    if os.path.exists(manifest):
+        with open(manifest) as fh:
+            rows = [ln.rstrip("\n").split("\t") for ln in fh if ln.strip()]
+        if len(rows) > 1:
+            L.append("## Exact inputs\n")
+            L.append("`variant_summary.txt.gz` and `clinvar.vcf.gz` are rolling "
+                     "filenames — the same URL serves a different release each "
+                     "month. To reproduce these exact counts, match the release "
+                     "stamp and md5 below; a newer release will legitimately give "
+                     "different numbers.\n")
+            L.append(table(["role", "file", "bytes", "release (Last-Modified)", "md5"],
+                           [[r[0], f"`{r[1]}`", f"{int(r[3]):,}" if r[3].isdigit() else r[3],
+                             r[4], f"`{r[5]}`"] for r in rows[1:]]))
+            L.append("")
+
     L.append("## Reproduce\n")
     L.append("```bash\nscripts/run_all.sh\n```\n")
     L.append("Per-variant records for the VUS → P/LP arm: "

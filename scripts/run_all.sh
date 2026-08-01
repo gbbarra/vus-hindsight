@@ -17,7 +17,8 @@ python3 -c "import duckdb; print('duckdb', duckdb.__version__)"
 
 # Fresh run: the TSV is appended to per baseline, so clear stale output.
 rm -f results/reclassified_pathogenic.tsv results/reclassified_pathogenic.tsv.gz \
-      results/_counts_*.json results/_vcf_mc_stats.json results/_submission_dates.json
+      results/_counts_*.json results/_vcf_mc_stats.json results/_submission_dates.json \
+      results/_manifest.tsv
 
 echo; echo "### step 1: list FTP directory (authoritative filenames)"
 scripts/01_list_clinvar_ftp.sh "$DATA"
