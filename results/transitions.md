@@ -98,6 +98,17 @@ By current review status:
 
 **Hard stratum** — missense AND review status at least *criteria provided, multiple submitters* (≥2 stars): **1,169** variants across 466 genes.
 
+## Exact inputs
+
+`variant_summary.txt.gz` and `clinvar.vcf.gz` are rolling filenames — the same URL serves a different release each month. To reproduce these exact counts, match the release stamp and md5 below; a newer release will legitimately give different numbers.
+
+| role | file | bytes | release (Last-Modified) | md5 |
+|---|---|---|---|---|
+| current | `variant_summary.txt.gz` | 441,573,728 | Tue, 28 Jul 2026 08:57:47 GMT | `476318456e1438c4d0d76a33f21e7350` |
+| vcf | `clinvar.vcf.gz` | 193,012,905 | Tue, 28 Jul 2026 22:07:55 GMT | `28d247f7b297d3605a7b10079aa4467e` |
+| archive 2021-06 | `variant_summary_2021-06.txt.gz` | 78,178,141 | Thu, 03 Jun 2021 04:05:02 GMT | `1f509ba1959d9cf882ee511572f4c185` |
+| archive 2022-12 | `variant_summary_2022-12.txt.gz` | 145,316,022 | Thu, 01 Dec 2022 05:05:01 GMT | `5e08de585ae392186ae5c3e2a1748003` |
+
 ## Reproduce
 
 ```bash

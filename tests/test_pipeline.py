@@ -92,10 +92,15 @@ def main():
 
     # Report assembly must survive the real shape of the counts JSON, otherwise a
     # bug here would only surface after a multi-GB download.
+    with open(os.path.join(workdir, "results", "_manifest.tsv"), "w") as fh:
+        fh.write("role\tfilename\turl\tbytes\tlast_modified\tmd5\n")
+        fh.write("current\tvariant_summary.txt.gz\thttps://example/vs.gz\t123456\t"
+                 "Tue, 28 Jul 2026 04:38:51 GMT\tdeadbeefcafe\n")
     subprocess.run([sys.executable, os.path.join(ROOT, "scripts", "06_report.py")],
                    check=True, cwd=workdir, env=env)
     md = open(os.path.join(workdir, "results", "transitions.md")).read()
-    for needle in ["VUS → P/LP", "Hard stratum", "not_in_vcf", "MC"]:
+    for needle in ["VUS → P/LP", "Hard stratum", "not_in_vcf", "MC",
+                   "Exact inputs", "deadbeefcafe", "28 Jul 2026"]:
         check(f"transitions.md mentions {needle!r}", needle in md, True)
 
     if failures:

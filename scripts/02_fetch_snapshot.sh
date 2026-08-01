@@ -93,11 +93,17 @@ fi
 echo "Resolved filename from listing: $NAME"
 echo "URL: $URL"
 
-# Report remote size before committing disk to it.
-SIZE=$(curl -sSI --max-time 120 -L "$URL" | awk 'BEGIN{IGNORECASE=1}/^content-length:/{v=$2}END{gsub("\r","",v);print v}')
+# Report remote size before committing disk to it, and capture the release
+# stamp. `variant_summary.txt.gz` and `clinvar.vcf.gz` are ROLLING filenames —
+# the same URL serves different data every release — so Last-Modified plus the
+# md5 is what actually pins a published figure to a reproducible input.
+HEADERS=$(curl -sSI --max-time 120 -L "$URL")
+SIZE=$(echo "$HEADERS" | awk 'BEGIN{IGNORECASE=1}/^content-length:/{v=$2}END{gsub("\r","",v);print v}')
+LASTMOD=$(echo "$HEADERS" | awk 'BEGIN{IGNORECASE=1}/^last-modified:/{sub(/^[^:]*: */,"");v=$0}END{gsub("\r","",v);print v}')
 if [[ -n "${SIZE:-}" ]]; then
   echo "Remote size: $SIZE bytes ($(awk -v b="$SIZE" 'BEGIN{printf "%.2f", b/1073741824}') GiB)"
 fi
+[[ -n "${LASTMOD:-}" ]] && echo "Release stamp (Last-Modified): $LASTMOD"
 echo "Free disk before download:"; df -h "$DATA" | tail -1
 
 curl -sSfL --max-time 3600 --retry 4 --retry-delay 2 --retry-all-errors \
@@ -111,6 +117,7 @@ fi
 
 # NCBI publishes a .md5 beside most files. Verify when one exists, so the
 # provenance of a published figure is checkable rather than assumed.
+MD5=""
 if curl -sSfL --max-time 120 "$URL.md5" -o "$DATA/$NAME.md5" 2>/dev/null; then
   EXPECTED=$(awk '{print $1}' "$DATA/$NAME.md5")
   ACTUAL=$(md5sum "$DATA/$NAME" | awk '{print $1}')
@@ -119,9 +126,21 @@ if curl -sSfL --max-time 120 "$URL.md5" -o "$DATA/$NAME.md5" 2>/dev/null; then
     exit 1
   fi
   echo "md5 verified: $ACTUAL"
+  MD5="$ACTUAL"
 else
   echo "note: no .md5 published for $NAME; relied on gzip integrity check"
+  MD5=$(md5sum "$DATA/$NAME" | awk '{print $1}')
 fi
+
+# Record exactly which bytes produced this run's numbers. Without this a
+# reviewer re-fetching a rolling filename months later cannot tell whether a
+# mismatch means a bug or simply a newer ClinVar release.
+MANIFEST="${MANIFEST_PATH:-results/_manifest.tsv}"
+mkdir -p "$(dirname "$MANIFEST")"
+[[ -s "$MANIFEST" ]] || printf 'role\tfilename\turl\tbytes\tlast_modified\tmd5\n' > "$MANIFEST"
+printf '%s\t%s\t%s\t%s\t%s\t%s\n' \
+  "${MODE}${MONTH:+ $MONTH}" "$NAME" "$URL" \
+  "$(stat -c%s "$DATA/$NAME")" "${LASTMOD:-unknown}" "${MD5:-unknown}" >> "$MANIFEST"
 
 echo "Downloaded OK: $DATA/$NAME ($(stat -c%s "$DATA/$NAME") bytes)"
 echo "$DATA/$NAME"
