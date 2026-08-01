@@ -103,6 +103,41 @@ def main():
                    "Exact inputs", "deadbeefcafe", "28 Jul 2026"]:
         check(f"transitions.md mentions {needle!r}", needle in md, True)
 
+    # Fixed-cohort survival: the cohort must match the transition analysis's
+    # baseline cohort exactly, since both derive it from the same snapshot.
+    cohort_pq = os.path.join(workdir, "cohort.parquet")
+    subprocess.run(
+        [sys.executable, os.path.join(ROOT, "scripts", "07_survival.py"),
+         "--baseline", os.path.join(HERE, "fixtures", "baseline_fixture.txt.gz"),
+         "--baseline-label", "2021-06", "--out-cohort", cohort_pq],
+        check=True, cwd=workdir, env=env)
+    subprocess.run(
+        [sys.executable, os.path.join(ROOT, "scripts", "07_survival.py"),
+         "--cohort", cohort_pq, "--baseline-label", "2021-06",
+         "--endpoint", os.path.join(HERE, "fixtures", "current_fixture.txt.gz"),
+         "--endpoint-label", "2022-12", "--consequence-map", cons_map],
+        check=True, cwd=workdir, env=env)
+    surv = json.load(open(os.path.join(workdir, "results", "_survival.json")))
+    check("survival: one point recorded", len(surv), 1)
+    pt = surv[0]
+    check("survival: cohort matches transition baseline", pt["cohort_size"],
+          EXPECTED["baseline_vus"])
+    check("survival: months elapsed computed from labels", pt["months_elapsed"], 18)
+    check("survival: P/LP agrees with the transition analysis", pt["p_lp"],
+          EXPECTED["vus_to_plp"])
+    check("survival: hard stratum agrees", pt["hard_stratum"],
+          EXPECTED["vus_to_plp_missense_2star_plus"])
+
+    subprocess.run([sys.executable,
+                    os.path.join(ROOT, "scripts", "08_survival_report.py")],
+                   check=True, cwd=workdir, env=env)
+    sm = open(os.path.join(workdir, "results", "survival.md")).read()
+    for needle in ["survival_curve.svg", "Month 0 is definitional", "hard stratum"]:
+        check(f"survival.md mentions {needle!r}", needle in sm, True)
+    svg = open(os.path.join(workdir, "results", "survival_curve.svg")).read()
+    check("survival chart is a valid-looking svg",
+          svg.startswith("<svg") and svg.rstrip().endswith("</svg>"), True)
+
     if failures:
         print("\nFAILURES:")
         for f in failures:
