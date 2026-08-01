@@ -18,7 +18,8 @@ python3 -c "import duckdb; print('duckdb', duckdb.__version__)"
 # Fresh run: the TSV is appended to per baseline, so clear stale output.
 rm -f results/reclassified_pathogenic.tsv results/reclassified_pathogenic.tsv.gz \
       results/_counts_*.json results/_vcf_mc_stats.json results/_submission_dates.json \
-      results/_manifest.tsv
+      results/_manifest.tsv results/_survival*.json results/survival.md \
+      results/*.svg
 
 echo; echo "### step 1: list FTP directory (authoritative filenames)"
 scripts/01_list_clinvar_ftp.sh "$DATA"
@@ -61,6 +62,12 @@ scripts/05_submission_summary_probe.sh "${PROBE_ARGS[@]}" \
 
 echo; echo "### assembling report"
 PYTHONPATH=scripts python3 scripts/06_report.py
+
+# Fixed-cohort survival curve. Runs while the current snapshot and consequence
+# map are still on disk, so it only downloads the extra endpoints.
+if [[ "${SURVIVAL:-1}" == "1" ]]; then
+  echo; scripts/run_survival.sh "$CURRENT" "$DATA/consequence_map.parquet"
+fi
 
 echo; echo "### cleaning up current snapshot"
 rm -f "$CURRENT"

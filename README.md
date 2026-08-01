@@ -229,6 +229,9 @@ results/                               committed outputs
 ## Outputs
 
 - `results/transitions.md` — every count and table
+- `results/survival.md` — the fixed-cohort survival curve, with charts: one VUS
+  cohort followed through several later snapshots, so elapsed time is the only
+  thing varying
 - `results/reclassified_pathogenic.tsv` — per-variant VUS → P/LP records
   (`VariationID`, gene, HGVS, consequence, raw `MC` string, baseline class,
   current class, review status), gzipped if over 50 MB
