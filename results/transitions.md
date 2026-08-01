@@ -1,6 +1,6 @@
 # ClinVar VUS reclassification — measured transitions
 
-Generated 2026-07-31 from ClinVar `variant_summary` snapshots. Every count below is produced by `scripts/04_transitions.py` and reproducible with `scripts/run_all.sh`.
+Generated 2026-08-01 from ClinVar `variant_summary` snapshots. Every count below is produced by `scripts/04_transitions.py` and reproducible with `scripts/run_all.sh`.
 
 ## Snapshots
 

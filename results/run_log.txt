@@ -485,13 +485,13 @@ deleting raw baseline snapshot to reclaim disk: data/variant_summary_2022-12.txt
 ### step 7: submission_summary date-coverage probe
 === HEAD https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/submission_summary.txt.gz ===
 HTTP/1.1 200 OK
-Date: Fri, 31 Jul 2026 20:24:46 GMT
+Date: Sat, 01 Aug 2026 12:33:42 GMT
 Server: Apache
 Last-Modified: Tue, 28 Jul 2026 04:38:51 GMT
 Accept-Ranges: bytes
 Content-Length: 385669884
 Cache-Control: public, max-age=86400
-Expires: Fri, 07 Aug 2026 20:24:46 GMT
+Expires: Sat, 08 Aug 2026 12:33:42 GMT
 Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: GET,POST,PUT,OPTIONS
