@@ -1,0 +1,60 @@
+{
+  "vcf_file": "clinvar.vcf.gz",
+  "vcf_data_lines": 4458175,
+  "variation_ids": 4458175,
+  "with_mc_field": 4438223,
+  "other_bucket_top_terms": [
+    {
+      "term": "SO:0001819|synonymous_variant",
+      "n": 762369
+    },
+    {
+      "term": "SO:0001627|intron_variant",
+      "n": 733446
+    },
+    {
+      "term": "SO:0001619|non-coding_transcript_variant",
+      "n": 134486
+    },
+    {
+      "term": "SO:0001624|3_prime_UTR_variant",
+      "n": 81913
+    },
+    {
+      "term": "SO:0001623|5_prime_UTR_variant",
+      "n": 54482
+    },
+    {
+      "term": "SO:0001822|inframe_deletion",
+      "n": 20010
+    },
+    {
+      "term": "SO:0001821|inframe_insertion",
+      "n": 8460
+    },
+    {
+      "term": "SO:0001820|inframe_indel",
+      "n": 4820
+    },
+    {
+      "term": "SO:0001578|stop_lost",
+      "n": 1368
+    },
+    {
+      "term": "SO:0002153|genic_upstream_transcript_variant",
+      "n": 1109
+    },
+    {
+      "term": "SO:0002073|no_sequence_alteration",
+      "n": 900
+    },
+    {
+      "term": "SO:0002152|genic_downstream_transcript_variant",
+      "n": 449
+    },
+    {
+      "term": "SO:0001582|initiator_codon_variant",
+      "n": 276
+    }
+  ]
+}

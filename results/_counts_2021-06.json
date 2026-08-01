@@ -1,0 +1,115 @@
+{
+  "label": "2021-06",
+  "baseline_file": "variant_summary_2021-06.txt.gz",
+  "current_file": "variant_summary.txt.gz",
+  "baseline": {
+    "rows_total": 1908821,
+    "rows_grch38": 927078,
+    "rows_deduped": 926800,
+    "classification_column": "ClinicalSignificance",
+    "review_column": "ReviewStatus",
+    "consequence_source": "derived from HGVS in Name"
+  },
+  "current": {
+    "rows_total": 9029235,
+    "rows_grch38": 4480843,
+    "rows_deduped": 4478492,
+    "classification_column": "ClinicalSignificance",
+    "review_column": "ReviewStatus",
+    "consequence_source": "derived from HGVS in Name"
+  },
+  "baseline_vus": 382704,
+  "baseline_vus_excluded_no_criteria": 15983,
+  "consequence_map_rows": 4458175,
+  "transitions": [
+    {
+      "current_bucket": "Still VUS",
+      "n": 299002,
+      "pct": 78.1288
+    },
+    {
+      "current_bucket": "Conflicting",
+      "n": 59970,
+      "pct": 15.6701
+    },
+    {
+      "current_bucket": "B/LB",
+      "n": 10646,
+      "pct": 2.7818
+    },
+    {
+      "current_bucket": "Retired/absent",
+      "n": 8285,
+      "pct": 2.1649
+    },
+    {
+      "current_bucket": "P/LP",
+      "n": 4771,
+      "pct": 1.2467
+    },
+    {
+      "current_bucket": "Other",
+      "n": 30,
+      "pct": 0.0078
+    }
+  ],
+  "vus_to_plp": 4771,
+  "vus_to_plp_distinct_genes": 1102,
+  "vus_to_plp_by_consequence": [
+    {
+      "consequence": "missense",
+      "n": 2921
+    },
+    {
+      "consequence": "frameshift",
+      "n": 591
+    },
+    {
+      "consequence": "other",
+      "n": 456
+    },
+    {
+      "consequence": "nonsense",
+      "n": 433
+    },
+    {
+      "consequence": "splice",
+      "n": 334
+    },
+    {
+      "consequence": "not_in_vcf",
+      "n": 36
+    }
+  ],
+  "vus_to_plp_not_in_vcf": 36,
+  "consequence_concordance": {
+    "matched": 4735,
+    "agree": 4382,
+    "pct": 92.5449
+  },
+  "vus_to_plp_by_review": [
+    {
+      "review_status": "criteria provided, single submitter",
+      "stars": 1,
+      "n": 2534
+    },
+    {
+      "review_status": "criteria provided, multiple submitters, no conflicts",
+      "stars": 2,
+      "n": 1790
+    },
+    {
+      "review_status": "reviewed by expert panel",
+      "stars": 3,
+      "n": 435
+    },
+    {
+      "review_status": "no assertion criteria provided",
+      "stars": 0,
+      "n": 12
+    }
+  ],
+  "vus_to_plp_missense_2star_plus": 1612,
+  "vus_to_plp_missense_2star_plus_genes": 510,
+  "tsv_rows_written": 4771
+}

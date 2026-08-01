@@ -1,0 +1,29 @@
+# Raw ClinVar snapshots — never committed (hundreds of MB each, re-fetchable)
+*.txt.gz
+*.txt
+# (excluded wholesale; run_all.sh recreates it with mkdir -p)
+data/
+
+# Generated test fixtures (rebuilt by tests/make_fixture.py on every run)
+tests/fixtures/
+*.vcf.gz
+*.parquet
+
+# DuckDB working databases
+*.duckdb
+*.duckdb.wal
+.duckdb/
+
+# Derived tables are ignored by default, EXCEPT the committed outputs
+# under results/ (see negation below).
+*.tsv
+*.tsv.gz
+!results/*.tsv
+!results/*.tsv.gz
+# The CI run log is committed as run provenance.
+!results/*.txt
+
+# Python
+__pycache__/
+*.pyc
+.venv/

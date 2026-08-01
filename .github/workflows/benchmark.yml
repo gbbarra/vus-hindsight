@@ -1,0 +1,108 @@
+name: ClinVar VUS reclassification benchmark
+
+# Runs the full pipeline on a GitHub-hosted runner, which has unrestricted
+# outbound access to ftp.ncbi.nlm.nih.gov, and commits the results back.
+#
+# Triggers:
+#   * push  — whenever the pipeline code itself changes, so a fix re-runs
+#             automatically. `results/**` is deliberately NOT in the path
+#             filter, so the run's own results commit cannot retrigger it.
+#   * workflow_dispatch — the "Run workflow" button (works from the mobile app
+#             once this file is on the default branch).
+on:
+  push:
+    paths:
+      - '.github/workflows/benchmark.yml'
+      - 'scripts/**'
+  workflow_dispatch:
+    inputs:
+      baselines:
+        description: 'Baseline months, space-separated'
+        required: true
+        default: '2021-06 2022-12'
+      confirm_submission_summary:
+        description: 'Download submission_summary.txt.gz even if over 2 GB'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: benchmark-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Free up disk before downloading
+        run: |
+          echo "--- before ---"; df -h /
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+                      /usr/local/share/boost || true
+          echo "--- after ---"; df -h /
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install DuckDB
+        run: pip install --quiet duckdb && python -c "import duckdb; print('duckdb', duckdb.__version__)"
+
+      - name: Validate pipeline logic against the synthetic fixture
+        run: python3 tests/test_pipeline.py
+
+      - name: Run the benchmark
+        env:
+          BASELINES: ${{ github.event.inputs.baselines || '2021-06 2022-12' }}
+          SUBMISSION_CONFIRM: ${{ github.event.inputs.confirm_submission_summary == 'true' && '1' || '0' }}
+        run: |
+          mkdir -p results
+          set -o pipefail
+          scripts/run_all.sh 2>&1 | tee results/run_log.txt
+
+      - name: Show what was produced
+        if: always()
+        run: |
+          ls -lh results/ || true
+          echo "--- free disk at end ---"; df -h /
+
+      # Uploaded even on failure, so the log is retrievable when the commit
+      # step never runs.
+      - name: Upload results as an artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clinvar-benchmark-results
+          path: results/
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Commit results back to the branch
+        if: success()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/
+          if git diff --cached --quiet; then
+            echo "No changes to results/ — nothing to commit."
+            exit 0
+          fi
+          git commit -m "Add measured ClinVar VUS reclassification results
+
+          Produced by the benchmark workflow on a GitHub-hosted runner
+          (run ${{ github.run_id }}). Every count comes from the pipeline in
+          scripts/; results/run_log.txt is the full run log."
+          for i in 1 2 3 4; do
+            git push origin HEAD:${{ github.ref_name }} && break
+            echo "push failed (attempt $i), refreshing and retrying"
+            git pull --rebase origin ${{ github.ref_name }} || true
+            sleep $((2 ** i))
+          done

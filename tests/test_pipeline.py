@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+"""Assert the analysis logic against the synthetic fixture.
+
+Run:  python3 tests/test_pipeline.py
+This validates code paths only. It says nothing about ClinVar itself.
+"""
+import json
+import os
+import subprocess
+import sys
+import tempfile
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
+
+EXPECTED = {
+    "baseline_vus": 11,
+    "baseline_vus_excluded_no_criteria": 1,
+    "transitions": {"P/LP": 6, "B/LB": 1, "Still VUS": 1,
+                    "Conflicting": 1, "Retired/absent": 1, "Other": 1},
+    "vus_to_plp": 6,
+    "vus_to_plp_distinct_genes": 5,
+    # Consequence now comes from the VCF MC field, so VID 2 counts as frameshift
+    # (its MC term) rather than nonsense (its HGVS), and VID 10 — absent from the
+    # VCF — lands in not_in_vcf rather than missense.
+    "by_consequence": {"missense": 2, "frameshift": 2, "splice": 1, "not_in_vcf": 1},
+    "vus_to_plp_missense_2star_plus": 2,
+    "vus_to_plp_not_in_vcf": 1,
+    "concordance": {"matched": 5, "agree": 4},
+}
+
+
+def main():
+    subprocess.run([sys.executable, os.path.join(HERE, "make_fixture.py")],
+                   check=True, cwd=ROOT)
+    workdir = tempfile.mkdtemp(prefix="vus_test_")
+    os.makedirs(os.path.join(workdir, "results"), exist_ok=True)
+
+    env = dict(os.environ, PYTHONPATH=os.path.join(ROOT, "scripts"))
+    cons_map = os.path.join(workdir, "consequence_map.parquet")
+    subprocess.run(
+        [sys.executable, os.path.join(ROOT, "scripts", "03b_extract_mc.py"),
+         os.path.join(HERE, "fixtures", "clinvar_fixture.vcf.gz"),
+         "--out", cons_map],
+        check=True, cwd=workdir, env=env)
+    subprocess.run(
+        [sys.executable, os.path.join(ROOT, "scripts", "04_transitions.py"),
+         "--baseline", os.path.join(HERE, "fixtures", "baseline_fixture.txt.gz"),
+         "--current", os.path.join(HERE, "fixtures", "current_fixture.txt.gz"),
+         "--label", "FIXTURE", "--consequence-map", cons_map],
+        check=True, cwd=workdir, env=env)
+
+    meta = json.load(open(os.path.join(workdir, "results", "_counts_FIXTURE.json")))
+    failures = []
+
+    def check(name, got, want):
+        if got != want:
+            failures.append(f"{name}: got {got!r}, want {want!r}")
+        else:
+            print(f"  OK  {name} = {got}")
+
+    check("baseline_vus", meta["baseline_vus"], EXPECTED["baseline_vus"])
+    check("baseline_vus_excluded_no_criteria",
+          meta["baseline_vus_excluded_no_criteria"],
+          EXPECTED["baseline_vus_excluded_no_criteria"])
+    check("dedupe collapsed duplicate VariationID",
+          meta["baseline"]["rows_grch38"] - meta["baseline"]["rows_deduped"], 1)
+    check("GRCh37 rows filtered out",
+          meta["baseline"]["rows_total"] - meta["baseline"]["rows_grch38"], 1)
+    check("baseline classification column",
+          meta["baseline"]["classification_column"], "ClinicalSignificance")
+    check("current classification column",
+          meta["current"]["classification_column"], "GermlineClassification")
+
+    got_tr = {t["current_bucket"]: t["n"] for t in meta["transitions"]}
+    check("transition table", got_tr, EXPECTED["transitions"])
+    check("vus_to_plp", meta["vus_to_plp"], EXPECTED["vus_to_plp"])
+    check("distinct genes", meta["vus_to_plp_distinct_genes"],
+          EXPECTED["vus_to_plp_distinct_genes"])
+    got_cons = {c["consequence"]: c["n"] for c in meta["vus_to_plp_by_consequence"]}
+    check("by consequence", got_cons, EXPECTED["by_consequence"])
+    check("missense AND >=2 star", meta["vus_to_plp_missense_2star_plus"],
+          EXPECTED["vus_to_plp_missense_2star_plus"])
+    check("not_in_vcf reported separately", meta["vus_to_plp_not_in_vcf"],
+          EXPECTED["vus_to_plp_not_in_vcf"])
+    conc = meta["consequence_concordance"]
+    check("HGVS cross-check matched", conc["matched"],
+          EXPECTED["concordance"]["matched"])
+    check("HGVS cross-check agreements", conc["agree"],
+          EXPECTED["concordance"]["agree"])
+    check("tsv rows written", meta["tsv_rows_written"], EXPECTED["vus_to_plp"])
+
+    # Report assembly must survive the real shape of the counts JSON, otherwise a
+    # bug here would only surface after a multi-GB download.
+    subprocess.run([sys.executable, os.path.join(ROOT, "scripts", "06_report.py")],
+                   check=True, cwd=workdir, env=env)
+    md = open(os.path.join(workdir, "results", "transitions.md")).read()
+    for needle in ["VUS → P/LP", "Hard stratum", "not_in_vcf", "MC"]:
+        check(f"transitions.md mentions {needle!r}", needle in md, True)
+
+    if failures:
+        print("\nFAILURES:")
+        for f in failures:
+            print("  " + f)
+        return 1
+    print("\nAll fixture assertions passed.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
