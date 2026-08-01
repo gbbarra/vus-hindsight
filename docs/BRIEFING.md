@@ -87,6 +87,53 @@ apply, and ≥2 stars means multi-submitter agreement, which makes the current
 label a sturdier target. At 1,612 variants across 510 genes, it supports
 stratification by gene or panel without emptying the cells.
 
+## The fixed-cohort survival curve
+
+The table above compares two *different* baselines against one endpoint, so the
+gap between 1.25% and 0.82% is confounded: the 2022-12 cohort contains many
+recently submitted, less mature variants, and ClinVar itself grew from 926,800
+to 1,588,306 GRCh38 variants between the two dates. Part of that difference is
+cohort composition, not elapsed time.
+
+[`results/survival.md`](../results/survival.md) removes that confound by
+inverting the design — **one** cohort, the 382,704 VUS of 2021-06, followed
+through three later snapshots. The denominator never changes, so elapsed time is
+the only thing varying.
+
+| months elapsed | still VUS | → P/LP | → B/LB | conflicting | distinct genes | hard stratum (missense, ≥2★) |
+|---|---|---|---|---|---|---|
+| 18 | 361,875 (94.56%) | 1,058 (0.28%) | 1,335 | 17,710 | 444 | 135 |
+| 36 | 323,751 (84.60%) | 2,987 (0.78%) | 8,215 | 46,419 | 786 | 550 |
+| 61 | 299,002 (78.13%) | 4,771 (1.25%) | 10,646 | 59,970 | 1,102 | 1,612 |
+
+Month 0 is definitional rather than measured: the cohort is 100% VUS at its own
+baseline by construction. The 61-month point reproduces the 2021-06 arm of the
+transition analysis exactly — same cohort, same count — which is an internal
+consistency check between two independently invoked code paths.
+
+Three findings worth using:
+
+1. **Resolution is not linear.** P/LP accrues at 59, then 107, then 71 variants
+   per month across the three intervals. A linear extrapolation from two points
+   would have been wrong; any projection should say which interval it is based on.
+2. **The usable evaluation set grows faster than the P/LP arm.** The hard
+   stratum goes 135 → 550 → 1,612, roughly 23/month then 42/month, while total
+   P/LP accrual slowed in the last interval. **Caveat:** the stratum is defined
+   by review status *as of each date*, and review status improves over time as
+   submitters accumulate — so part of that growth is variants that were already
+   P/LP gaining a second star, not newly reclassified variants. The two effects
+   are summed in that figure and should not be presented as one.
+3. **The most common fate is dispute, not resolution.** Over 61 months, 59,970
+   variants (15.7%) moved to conflicting versus 15,417 reaching a definitive
+   call — roughly 4:1. This strengthens the motivation without weakening the
+   benchmark, since the evaluation set is drawn from the ones that did resolve.
+
+Holding the cohort fixed removes the composition confound between baselines. It
+does **not** remove ascertainment bias — see below.
+
+Charts: `results/survival_curve.svg` (fraction still VUS) and
+`results/reclassified_curve.svg` (cumulative resolution).
+
 ## Caveats that MUST appear in the write-up
 
 - **Ascertainment bias.** Reclassification is not a random sample of truth:
@@ -156,6 +203,7 @@ Or via the **Run workflow** button on the repository's Actions tab.
 ## Available files
 
 - `results/transitions.md` — every table
+- `results/survival.md` — the fixed-cohort survival curve and its two charts
 - `results/reclassified_pathogenic.tsv` — 9,875 per-variant records with
   `VariationID`, gene, HGVS, consequence, raw `MC` string, baseline class,
   current class, review status
