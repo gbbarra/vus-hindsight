@@ -5,6 +5,10 @@ significance (VUS) were later reclassified to a definitive call — and sizing t
 pathogenic arm specifically, so it can be used to evaluate variant
 interpretation methods.
 
+> **Writing about this benchmark?** [`docs/BRIEFING.md`](docs/BRIEFING.md) is a
+> self-contained handoff — every measured number, the exact release each came
+> from, and the caveats that belong in any write-up.
+>
 > **Measured results:** [`results/transitions.md`](results/transitions.md),
 > produced by `scripts/run_all.sh` on a GitHub Actions runner and committed
 > straight from that run, with the full run log alongside them in
