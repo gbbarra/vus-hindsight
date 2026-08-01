@@ -485,13 +485,13 @@ deleting raw baseline snapshot to reclaim disk: data/variant_summary_2022-12.txt
 ### step 7: submission_summary date-coverage probe
 === HEAD https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/submission_summary.txt.gz ===
 HTTP/1.1 200 OK
-Date: Sat, 01 Aug 2026 15:39:02 GMT
+Date: Sat, 01 Aug 2026 16:33:09 GMT
 Server: Apache
 Last-Modified: Tue, 28 Jul 2026 04:38:51 GMT
 Accept-Ranges: bytes
 Content-Length: 385669884
 Cache-Control: public, max-age=86400
-Expires: Sat, 08 Aug 2026 15:39:02 GMT
+Expires: Sat, 08 Aug 2026 16:33:09 GMT
 Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: GET,POST,PUT,OPTIONS
@@ -614,6 +614,71 @@ wrote results/_submission_dates.json
 
 ### assembling report
 wrote results/transitions.md
+
+### fixed-cohort survival: baseline 2021-06, endpoints 2022-12 2024-06 + current
+=== HEADER: data/variant_summary_2021-06.txt.gz ===
+34 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF']
+resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
+[cohort baseline 2021-06] rows=1,908,821 GRCh38=927,078 after dedupe on VariationID=926,800 (collapsed 278)
+
+cohort fixed at 2021-06: 382,704 VUS with assertion criteria
+wrote data/cohort.parquet
+/dev/root       145G   43G  102G  30% /
+
+--- endpoint 2022-12 ---
+=== HEADER: data/variant_summary_2022-12.txt.gz ===
+34 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF']
+resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
+[endpoint 2022-12] rows=3,238,153 GRCh38=1,588,842 after dedupe on VariationID=1,588,306 (collapsed 536)
+
+=== 2021-06 cohort at 2022-12 (+18 months) ===
+  Still VUS           361,875  94.56%
+  Conflicting          17,710   4.63%
+  B/LB                  1,335   0.35%
+  P/LP                  1,058   0.28%
+  Retired/absent          722   0.19%
+  Other                     4   0.00%
+  -> P/LP 1,058 (0.28%), definitive 2,393 (0.63%), hard stratum 135, genes 444
+  appended to results/_survival.json (1 points)
+/dev/root       145G   43G  102G  30% /
+
+--- endpoint 2024-06 ---
+=== HEADER: data/variant_summary_2024-06.txt.gz ===
+40 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF', 'SomaticClinicalImpact', 'SomaticClinicalImpactLastEvaluated', 'ReviewStatusClinicalImpact', 'Oncogenicity', 'OncogenicityLastEvaluated', 'ReviewStatusOncogenicity']
+resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
+[endpoint 2024-06] rows=5,883,232 GRCh38=2,915,289 after dedupe on VariationID=2,914,592 (collapsed 697)
+
+=== 2021-06 cohort at 2024-06 (+36 months) ===
+  Still VUS           323,751  84.60%
+  Conflicting          46,419  12.13%
+  B/LB                  8,215   2.15%
+  P/LP                  2,987   0.78%
+  Retired/absent        1,328   0.35%
+  Other                     4   0.00%
+  -> P/LP 2,987 (0.78%), definitive 11,202 (2.93%), hard stratum 550, genes 786
+  appended to results/_survival.json (2 points)
+/dev/root       145G   43G  102G  30% /
+
+--- endpoint current (2026-07) ---
+=== HEADER: data/variant_summary.txt.gz ===
+43 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF', 'SomaticClinicalImpact', 'SomaticClinicalImpactLastEvaluated', 'ReviewStatusClinicalImpact', 'Oncogenicity', 'OncogenicityLastEvaluated', 'ReviewStatusOncogenicity', 'SCVsForAggregateGermlineClassification', 'SCVsForAggregateSomaticClinicalImpact', 'SCVsForAggregateOncogenicityClassification']
+resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
+[endpoint 2026-07] rows=9,029,235 GRCh38=4,480,843 after dedupe on VariationID=4,478,492 (collapsed 2,351)
+
+=== 2021-06 cohort at 2026-07 (+61 months) ===
+  Still VUS           299,002  78.13%
+  Conflicting          59,970  15.67%
+  B/LB                 10,646   2.78%
+  Retired/absent        8,285   2.16%
+  P/LP                  4,771   1.25%
+  Other                    30   0.01%
+  -> P/LP 4,771 (1.25%), definitive 15,417 (4.03%), hard stratum 1,612, genes 1,102
+  appended to results/_survival.json (3 points)
+
+### rendering survival report
+wrote results/survival_curve.svg
+wrote results/reclassified_curve.svg
+wrote results/survival.md
 
 ### cleaning up current snapshot
 reclassified_pathogenic.tsv: 1874012 bytes

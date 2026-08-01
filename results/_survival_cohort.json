@@ -1,0 +1,13 @@
+{
+  "baseline_label": "2021-06",
+  "baseline_file": "variant_summary_2021-06.txt.gz",
+  "cohort_size": 382704,
+  "snapshot": {
+    "rows_total": 1908821,
+    "rows_grch38": 927078,
+    "rows_deduped": 926800,
+    "classification_column": "ClinicalSignificance",
+    "review_column": "ReviewStatus",
+    "consequence_source": "derived from HGVS in Name"
+  }
+}

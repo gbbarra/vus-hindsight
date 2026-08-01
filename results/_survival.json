@@ -1,0 +1,71 @@
+[
+  {
+    "endpoint_label": "2022-12",
+    "endpoint_file": "variant_summary_2022-12.txt.gz",
+    "months_elapsed": 18,
+    "cohort_size": 382704,
+    "distribution": {
+      "Still VUS": 361875,
+      "Conflicting": 17710,
+      "B/LB": 1335,
+      "P/LP": 1058,
+      "Retired/absent": 722,
+      "Other": 4
+    },
+    "p_lp": 1058,
+    "b_lb": 1335,
+    "still_vus": 361875,
+    "definitive": 2393,
+    "hard_stratum": 135,
+    "p_lp_genes": 444,
+    "pct_p_lp": 0.2765,
+    "pct_definitive": 0.6253,
+    "pct_still_vus": 94.5574
+  },
+  {
+    "endpoint_label": "2024-06",
+    "endpoint_file": "variant_summary_2024-06.txt.gz",
+    "months_elapsed": 36,
+    "cohort_size": 382704,
+    "distribution": {
+      "Still VUS": 323751,
+      "Conflicting": 46419,
+      "B/LB": 8215,
+      "P/LP": 2987,
+      "Retired/absent": 1328,
+      "Other": 4
+    },
+    "p_lp": 2987,
+    "b_lb": 8215,
+    "still_vus": 323751,
+    "definitive": 11202,
+    "hard_stratum": 550,
+    "p_lp_genes": 786,
+    "pct_p_lp": 0.7805,
+    "pct_definitive": 2.9271,
+    "pct_still_vus": 84.5957
+  },
+  {
+    "endpoint_label": "2026-07",
+    "endpoint_file": "variant_summary.txt.gz",
+    "months_elapsed": 61,
+    "cohort_size": 382704,
+    "distribution": {
+      "Still VUS": 299002,
+      "Conflicting": 59970,
+      "B/LB": 10646,
+      "Retired/absent": 8285,
+      "P/LP": 4771,
+      "Other": 30
+    },
+    "p_lp": 4771,
+    "b_lb": 10646,
+    "still_vus": 299002,
+    "definitive": 15417,
+    "hard_stratum": 1612,
+    "p_lp_genes": 1102,
+    "pct_p_lp": 1.2467,
+    "pct_definitive": 4.0284,
+    "pct_still_vus": 78.1288
+  }
+]
