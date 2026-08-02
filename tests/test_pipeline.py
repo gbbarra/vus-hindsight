@@ -89,6 +89,18 @@ def main():
     check("HGVS cross-check agreements", conc["agree"],
           EXPECTED["concordance"]["agree"])
     check("tsv rows written", meta["tsv_rows_written"], EXPECTED["vus_to_plp"])
+    # The benign arm is the negative class; without it nothing can measure
+    # discrimination. The fixture has exactly one VUS -> B/LB variant.
+    check("benign arm exported", meta["tsv_benign_rows_written"],
+          EXPECTED["transitions"]["B/LB"])
+    benign = open(os.path.join(workdir, "results",
+                               "reclassified_benign.tsv")).read().splitlines()
+    check("benign tsv has header + rows", len(benign),
+          1 + EXPECTED["transitions"]["B/LB"])
+    check("both arms share a schema",
+          benign[0],
+          open(os.path.join(workdir, "results",
+                            "reclassified_pathogenic.tsv")).readline().rstrip("\n"))
 
     # Report assembly must survive the real shape of the counts JSON, otherwise a
     # bug here would only surface after a multi-GB download.

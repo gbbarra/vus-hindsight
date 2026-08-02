@@ -122,8 +122,11 @@ def main():
 
     L.append("## Reproduce\n")
     L.append("```bash\nscripts/run_all.sh\n```\n")
-    L.append("Per-variant records for the VUS → P/LP arm: "
-             "`results/reclassified_pathogenic.tsv`.\n")
+    L.append("Per-variant records: `results/reclassified_pathogenic.tsv` "
+             "(VUS → P/LP) and `results/reclassified_benign.tsv` (VUS → B/LB), "
+             "identical schema. The benign arm supplies the negatives — "
+             "discrimination cannot be measured from the pathogenic arm alone — "
+             "so concatenating the two gives a labelled evaluation set.\n")
 
     out = os.path.join(RESULTS, "transitions.md")
     with open(out, "w") as fh:

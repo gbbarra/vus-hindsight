@@ -17,6 +17,7 @@ python3 -c "import duckdb; print('duckdb', duckdb.__version__)"
 
 # Fresh run: the TSV is appended to per baseline, so clear stale output.
 rm -f results/reclassified_pathogenic.tsv results/reclassified_pathogenic.tsv.gz \
+      results/reclassified_benign.tsv results/reclassified_benign.tsv.gz \
       results/_counts_*.json results/_vcf_mc_stats.json results/_submission_dates.json \
       results/_manifest.tsv results/_survival*.json results/survival.md \
       results/*.svg
@@ -24,9 +25,19 @@ rm -f results/reclassified_pathogenic.tsv results/reclassified_pathogenic.tsv.gz
 echo; echo "### step 1: list FTP directory (authoritative filenames)"
 scripts/01_list_clinvar_ftp.sh "$DATA"
 
-echo; echo "### step 2: fetch current snapshot"
-CURRENT=$(scripts/02_fetch_snapshot.sh current | tail -1)
-echo "current snapshot: $CURRENT"
+echo; echo "### step 2: fetch the endpoint snapshot"
+# CURRENT_MONTH pins the endpoint to an archived release instead of the rolling
+# variant_summary.txt.gz. That is what makes a past result reproducible: the
+# rolling file serves a different release every month, so without pinning you
+# cannot regenerate an earlier set of counts.
+if [[ -n "${CURRENT_MONTH:-}" ]]; then
+  echo "endpoint pinned to archived release $CURRENT_MONTH"
+  CURRENT=$(scripts/02_fetch_snapshot.sh archive "$CURRENT_MONTH" | tail -1)
+  export CURRENT_LABEL="$CURRENT_MONTH"
+else
+  CURRENT=$(scripts/02_fetch_snapshot.sh current | tail -1)
+fi
+echo "endpoint snapshot: $CURRENT"
 
 echo; echo "### step 3: header of current snapshot"
 PYTHONPATH=scripts python3 scripts/03_headers.py "$CURRENT"
@@ -74,14 +85,15 @@ rm -f "$CURRENT"
 rm -rf "$DATA/duckdb_tmp"
 
 # gzip the per-variant table if it exceeds 50 MB
-if [[ -f results/reclassified_pathogenic.tsv ]]; then
-  SZ=$(stat -c%s results/reclassified_pathogenic.tsv)
-  echo "reclassified_pathogenic.tsv: $SZ bytes"
+for F in results/reclassified_pathogenic.tsv results/reclassified_benign.tsv; do
+  [[ -f "$F" ]] || continue
+  SZ=$(stat -c%s "$F")
+  echo "$(basename "$F"): $SZ bytes"
   if (( SZ > 50 * 1024 * 1024 )); then
-    gzip -f results/reclassified_pathogenic.tsv
-    echo "exceeded 50 MB -> gzipped to results/reclassified_pathogenic.tsv.gz"
+    gzip -f "$F"
+    echo "exceeded 50 MB -> gzipped to $F.gz"
   fi
-fi
+done
 
 echo; echo "### free disk at end"; df -h . | tail -1
 echo "DONE. See results/transitions.md"

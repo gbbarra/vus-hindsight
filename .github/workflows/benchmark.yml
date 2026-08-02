@@ -3,23 +3,31 @@ name: ClinVar VUS reclassification benchmark
 # Runs the full pipeline on a GitHub-hosted runner, which has unrestricted
 # outbound access to ftp.ncbi.nlm.nih.gov, and commits the results back.
 #
-# Triggers:
-#   * push  — whenever the pipeline code itself changes, so a fix re-runs
-#             automatically. `results/**` is deliberately NOT in the path
-#             filter, so the run's own results commit cannot retrigger it.
-#   * workflow_dispatch — the "Run workflow" button (works from the mobile app
-#             once this file is on the default branch).
+# MANUAL ONLY, deliberately.
+#
+# This used to run on every push touching scripts/, which was right while the
+# results were being established. It is wrong now that they are published and
+# cited: ClinVar ships a new variant_summary monthly, so an unrelated code
+# change would silently re-fetch a newer release and rewrite the committed
+# counts underneath anyone relying on them. Regenerating the numbers has to be
+# a decision, not a side effect of editing a script.
+#
+# Press "Run workflow" on the Actions tab when new numbers are actually wanted,
+# and tag a release afterwards so the previous ones stay citable.
 on:
-  push:
-    paths:
-      - '.github/workflows/benchmark.yml'
-      - 'scripts/**'
   workflow_dispatch:
     inputs:
       baselines:
         description: 'Baseline months, space-separated'
         required: true
         default: '2021-06 2022-12'
+      current_month:
+        description: >-
+          Pin the endpoint to an archived release (YYYY-MM) instead of the
+          rolling variant_summary.txt.gz. Use this to reproduce an earlier
+          set of counts exactly. Leave blank for the newest release.
+        required: false
+        default: ''
       confirm_submission_summary:
         description: 'Download submission_summary.txt.gz even if over 2 GB'
         type: boolean
@@ -62,6 +70,7 @@ jobs:
       - name: Run the benchmark
         env:
           BASELINES: ${{ github.event.inputs.baselines || '2021-06 2022-12' }}
+          CURRENT_MONTH: ${{ github.event.inputs.current_month }}
           SUBMISSION_CONFIRM: ${{ github.event.inputs.confirm_submission_summary == 'true' && '1' || '0' }}
         run: |
           mkdir -p results

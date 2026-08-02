@@ -189,29 +189,41 @@ def main():
           f"across {hard_genes:,} genes")
 
     # --- Per-variant output ---------------------------------------------------
-    out_tsv = os.path.join(RESULTS, "reclassified_pathogenic.tsv")
-    write_header = not os.path.exists(out_tsv)
-    cur = con.execute("""
-        SELECT variation_id, gene, hgvs, consequence, mc_raw,
-               baseline_class, current_class, current_review
-        FROM followed WHERE current_bucket = 'P/LP'
-        ORDER BY variation_id
-    """)
-    n_written = 0
-    with open(out_tsv, "a", newline="") as fh:
-        w = csv.writer(fh, delimiter="\t", lineterminator="\n")
-        if write_header:
-            w.writerow(["baseline", "VariationID", "gene", "HGVS", "consequence",
-                        "mc_raw", "baseline_class", "current_class", "review_status"])
-        while True:
-            batch = cur.fetchmany(50_000)
-            if not batch:
-                break
-            for row in batch:
-                w.writerow([args.label] + list(row))
-                n_written += 1
-    print(f"\n  wrote {n_written:,} rows -> {out_tsv}")
+    # Both arms are exported. The pathogenic arm alone cannot measure whether a
+    # method discriminates — that needs negatives, and the VUS -> B/LB variants
+    # are exactly the negatives this design yields. Two files with an identical
+    # schema, so concatenating them gives a labelled evaluation set.
+    def export(bucket, filename):
+        path = os.path.join(RESULTS, filename)
+        write_header = not os.path.exists(path)
+        cur = con.execute(f"""
+            SELECT variation_id, gene, hgvs, consequence, mc_raw,
+                   baseline_class, current_class, current_review
+            FROM followed WHERE current_bucket = '{bucket}'
+            ORDER BY variation_id
+        """)
+        n = 0
+        with open(path, "a", newline="") as fh:
+            w = csv.writer(fh, delimiter="\t", lineterminator="\n")
+            if write_header:
+                w.writerow(["baseline", "VariationID", "gene", "HGVS",
+                            "consequence", "mc_raw", "baseline_class",
+                            "current_class", "review_status"])
+            while True:
+                batch = cur.fetchmany(50_000)
+                if not batch:
+                    break
+                for row in batch:
+                    w.writerow([args.label] + list(row))
+                    n += 1
+        print(f"  wrote {n:,} rows -> {path}")
+        return n
+
+    print()
+    n_written = export("P/LP", "reclassified_pathogenic.tsv")
+    n_benign = export("B/LB", "reclassified_benign.tsv")
     meta["tsv_rows_written"] = n_written
+    meta["tsv_benign_rows_written"] = n_benign
 
     with open(os.path.join(RESULTS, f"_counts_{args.label}.json"), "w") as fh:
         json.dump(meta, fh, indent=2)

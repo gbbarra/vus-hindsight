@@ -235,6 +235,10 @@ results/                               committed outputs
 - `results/reclassified_pathogenic.tsv` — per-variant VUS → P/LP records
   (`VariationID`, gene, HGVS, consequence, raw `MC` string, baseline class,
   current class, review status), gzipped if over 50 MB
+- `results/reclassified_benign.tsv` — the VUS → B/LB arm, identical schema.
+  These are the negatives: a method's discrimination cannot be measured from the
+  pathogenic arm alone, so concatenating the two files gives a labelled
+  evaluation set
 - `results/_counts_<baseline>.json` — machine-readable counts
 - `results/_vcf_mc_stats.json` — VCF coverage and the SO terms binned as `other`
 
@@ -247,6 +251,39 @@ results/                               committed outputs
 | 2 | criteria provided, multiple submitters, no conflicts |
 | 3 | reviewed by expert panel |
 | 4 | practice guideline |
+
+## Citing
+
+Cite the **archived release**, not this repository URL. A repository link is not
+a stable reference: re-running the pipeline against a newer ClinVar release
+legitimately changes the counts, so a bare link can point at numbers that differ
+from the ones you read.
+
+Release `v1.0.0` is computed against the ClinVar release of 28 July 2026, with
+the md5 of every input recorded in
+[`results/transitions.md`](results/transitions.md).
+
+[`CITATION.cff`](CITATION.cff) carries the metadata. Once the release is
+archived on Zenodo, add the minted DOI to that file and to this section.
+
+## Running it again
+
+The workflow is **manual only** — Actions → *ClinVar VUS reclassification
+benchmark* → **Run workflow**. It used to run automatically on any push touching
+`scripts/`, which was right while the results were being established and is
+wrong now that they are published: ClinVar ships a new `variant_summary`
+monthly, so an unrelated code change would silently re-fetch a newer release and
+rewrite the committed counts underneath anyone relying on them.
+
+When you do regenerate, tag a release first so the previous numbers stay
+citable.
+
+**Reproducing an earlier result.** The *Current month* input pins the endpoint
+to an archived release (`YYYY-MM`) instead of the rolling
+`variant_summary.txt.gz`. Running with `2026-07` reproduces the `v1.0.0` counts
+exactly, because the archived file never changes — whereas the rolling filename
+serves a different release every month. Locally the same thing is
+`CURRENT_MONTH=2026-07 scripts/run_all.sh`.
 
 ## License
 
