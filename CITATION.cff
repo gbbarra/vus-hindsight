@@ -1,0 +1,37 @@
+cff-version: 1.2.0
+title: >-
+  vus-hindsight: a retrospective ClinVar VUS reclassification
+  benchmark
+message: >-
+  If you use this benchmark or its measured counts, please cite
+  the archived release rather than the repository URL — a
+  repository link is not a stable reference, because re-running
+  the pipeline against a newer ClinVar release legitimately
+  changes the numbers.
+type: dataset
+authors:
+  - family-names: Barra
+    given-names: Gustavo Barcelos
+    # Add your ORCID here once available:
+    # orcid: 'https://orcid.org/0000-0000-0000-0000'
+repository-code: 'https://github.com/gbbarra/vus-hindsight'
+license: MIT
+version: 1.0.0
+date-released: '2026-08-01'
+# Filled in once Zenodo mints a DOI for this release — see README, "Citing".
+# doi: 10.5281/zenodo.XXXXXXX
+abstract: >-
+  Measures how many ClinVar variants of uncertain significance
+  (VUS) were later reclassified to a definitive call, and sizes
+  the pathogenic arm as material for evaluating variant
+  interpretation methods. Version 1.0.0 is computed against the
+  ClinVar release of 28 July 2026; the md5 of every input file is
+  recorded in results/transitions.md so the counts are
+  re-derivable rather than merely re-runnable.
+keywords:
+  - ClinVar
+  - variant of uncertain significance
+  - variant reclassification
+  - variant interpretation
+  - benchmark
+  - clinical genetics

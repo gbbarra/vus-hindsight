@@ -41,6 +41,9 @@ done
 # The current snapshot is still on disk from the main pipeline. Its label comes
 # from the release stamp recorded in the manifest, so the x-axis reflects the
 # real release date rather than the day the job happened to run.
+if [[ -n "${CURRENT_LABEL:-}" ]]; then
+  CUR_LABEL="$CURRENT_LABEL"
+else
 CUR_LABEL=$(awk -F'\t' '$1=="current"{print $5}' results/_manifest.tsv \
             | tail -1 \
             | python3 -c "
@@ -51,6 +54,7 @@ try:
 except Exception:
     print('')
 ")
+fi
 if [[ -z "$CUR_LABEL" ]]; then
   echo "FATAL: could not derive the current snapshot's release month from" >&2
   echo "results/_manifest.tsv — refusing to guess a date for the x-axis." >&2
