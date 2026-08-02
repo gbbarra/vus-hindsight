@@ -1,7 +1,7 @@
 {
   "label": "2022-12",
   "baseline_file": "variant_summary_2022-12.txt.gz",
-  "current_file": "variant_summary.txt.gz",
+  "current_file": "variant_summary_2026-07.txt.gz",
   "baseline": {
     "rows_total": 3238153,
     "rows_grch38": 1588842,
@@ -11,9 +11,9 @@
     "consequence_source": "derived from HGVS in Name"
   },
   "current": {
-    "rows_total": 9029235,
-    "rows_grch38": 4480843,
-    "rows_deduped": 4478492,
+    "rows_total": 8991566,
+    "rows_grch38": 4462035,
+    "rows_deduped": 4459687,
     "classification_column": "ClinicalSignificance",
     "review_column": "ReviewStatus",
     "consequence_source": "derived from HGVS in Name"
@@ -24,18 +24,18 @@
   "transitions": [
     {
       "current_bucket": "Still VUS",
-      "n": 531679,
-      "pct": 85.6294
+      "n": 532723,
+      "pct": 85.7976
     },
     {
       "current_bucket": "Conflicting",
-      "n": 58916,
-      "pct": 9.4887
+      "n": 57962,
+      "pct": 9.3351
     },
     {
       "current_bucket": "B/LB",
-      "n": 17336,
-      "pct": 2.792
+      "n": 17292,
+      "pct": 2.785
     },
     {
       "current_bucket": "Retired/absent",
@@ -44,8 +44,8 @@
     },
     {
       "current_bucket": "P/LP",
-      "n": 5104,
-      "pct": 0.822
+      "n": 5058,
+      "pct": 0.8146
     },
     {
       "current_bucket": "Other",
@@ -53,28 +53,28 @@
       "pct": 0.005
     }
   ],
-  "vus_to_plp": 5104,
-  "vus_to_plp_distinct_genes": 1240,
+  "vus_to_plp": 5058,
+  "vus_to_plp_distinct_genes": 1231,
   "vus_to_plp_by_consequence": [
     {
       "consequence": "missense",
-      "n": 2734
+      "n": 2698
     },
     {
       "consequence": "frameshift",
-      "n": 824
+      "n": 815
     },
     {
       "consequence": "nonsense",
-      "n": 572
+      "n": 569
     },
     {
       "consequence": "other",
-      "n": 495
+      "n": 492
     },
     {
       "consequence": "splice",
-      "n": 461
+      "n": 466
     },
     {
       "consequence": "not_in_vcf",
@@ -83,25 +83,25 @@
   ],
   "vus_to_plp_not_in_vcf": 18,
   "consequence_concordance": {
-    "matched": 5086,
-    "agree": 4679,
-    "pct": 91.9976
+    "matched": 5040,
+    "agree": 4638,
+    "pct": 92.0238
   },
   "vus_to_plp_by_review": [
     {
       "review_status": "criteria provided, single submitter",
       "stars": 1,
-      "n": 3377
+      "n": 3365
     },
     {
       "review_status": "criteria provided, multiple submitters, no conflicts",
       "stars": 2,
-      "n": 1354
+      "n": 1325
     },
     {
       "review_status": "reviewed by expert panel",
       "stars": 3,
-      "n": 362
+      "n": 357
     },
     {
       "review_status": "no assertion criteria provided",
@@ -109,7 +109,8 @@
       "n": 11
     }
   ],
-  "vus_to_plp_missense_2star_plus": 1169,
-  "vus_to_plp_missense_2star_plus_genes": 466,
-  "tsv_rows_written": 5104
+  "vus_to_plp_missense_2star_plus": 1142,
+  "vus_to_plp_missense_2star_plus_genes": 458,
+  "tsv_rows_written": 5058,
+  "tsv_benign_rows_written": 17292
 }

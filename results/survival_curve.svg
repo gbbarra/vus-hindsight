@@ -24,11 +24,11 @@
 <text x="340.0" y="388" font-size="12" text-anchor="middle" fill="#334155">months since the baseline snapshot</text>
 <text x="16" y="193.0" font-size="12" fill="#334155" transform="rotate(-90 16 193.0)" text-anchor="middle">% of cohort still classified VUS</text>
 <line x1="70" y1="344" x2="610" y2="344" stroke="#334155" stroke-width="1.5"/>
-<path d="M70.0,42.0 L229.3,58.4 L388.7,88.5 L610.0,108.1" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M70.0,42.0 L229.3,58.4 L388.7,88.5 L610.0,107.5" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linejoin="round"/>
 <circle cx="70.0" cy="42.0" r="4" fill="#ffffff" stroke="#64748b" stroke-width="2.5"/>
 <circle cx="229.3" cy="58.4" r="4" fill="#ffffff" stroke="#64748b" stroke-width="2.5"/>
 <circle cx="388.7" cy="88.5" r="4" fill="#ffffff" stroke="#64748b" stroke-width="2.5"/>
-<circle cx="610.0" cy="108.1" r="4" fill="#ffffff" stroke="#64748b" stroke-width="2.5"/>
+<circle cx="610.0" cy="107.5" r="4" fill="#ffffff" stroke="#64748b" stroke-width="2.5"/>
 <line x1="626" y1="50" x2="650" y2="50" stroke="#64748b" stroke-width="2.5"/>
 <text x="656" y="54" font-size="11.5" fill="#334155">still VUS</text>
 </svg>

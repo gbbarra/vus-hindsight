@@ -257,9 +257,9 @@
   ],
   "caveat": "DateLastEvaluated is the submitter's evaluation date, not the ClinVar publication date; filtering on it bounds what was knowable rather than replaying what was public.",
   "reclassified_cohort": {
-    "distinct_variants": 6712,
-    "present": 6712,
-    "with_dated_submission": 6707,
-    "pct_with_dated_submission": 99.9255
+    "distinct_variants": 6653,
+    "present": 6653,
+    "with_dated_submission": 6648,
+    "pct_with_dated_submission": 99.9248
   }
 }

@@ -24,18 +24,18 @@
 <text x="340.0" y="388" font-size="12" text-anchor="middle" fill="#334155">months since the baseline snapshot</text>
 <text x="16" y="193.0" font-size="12" fill="#334155" transform="rotate(-90 16 193.0)" text-anchor="middle">% of cohort resolved</text>
 <line x1="70" y1="344" x2="610" y2="344" stroke="#334155" stroke-width="1.5"/>
-<path d="M70.0,344.0 L229.3,306.5 L388.7,168.4 L610.0,102.4" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M70.0,344.0 L229.3,306.4 L388.7,167.9 L610.0,102.4" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linejoin="round"/>
 <circle cx="70.0" cy="344.0" r="4" fill="#ffffff" stroke="#0284c7" stroke-width="2.5"/>
-<circle cx="229.3" cy="306.5" r="4" fill="#ffffff" stroke="#0284c7" stroke-width="2.5"/>
-<circle cx="388.7" cy="168.4" r="4" fill="#ffffff" stroke="#0284c7" stroke-width="2.5"/>
+<circle cx="229.3" cy="306.4" r="4" fill="#ffffff" stroke="#0284c7" stroke-width="2.5"/>
+<circle cx="388.7" cy="167.9" r="4" fill="#ffffff" stroke="#0284c7" stroke-width="2.5"/>
 <circle cx="610.0" cy="102.4" r="4" fill="#ffffff" stroke="#0284c7" stroke-width="2.5"/>
 <line x1="626" y1="50" x2="650" y2="50" stroke="#0284c7" stroke-width="2.5"/>
 <text x="656" y="54" font-size="11.5" fill="#334155">resolved to P/LP or B/LB</text>
-<path d="M70.0,344.0 L229.3,327.4 L388.7,297.2 L610.0,269.2" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M70.0,344.0 L229.3,327.4 L388.7,297.0 L610.0,269.6" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linejoin="round"/>
 <circle cx="70.0" cy="344.0" r="4" fill="#ffffff" stroke="#dc2626" stroke-width="2.5"/>
 <circle cx="229.3" cy="327.4" r="4" fill="#ffffff" stroke="#dc2626" stroke-width="2.5"/>
-<circle cx="388.7" cy="297.2" r="4" fill="#ffffff" stroke="#dc2626" stroke-width="2.5"/>
-<circle cx="610.0" cy="269.2" r="4" fill="#ffffff" stroke="#dc2626" stroke-width="2.5"/>
+<circle cx="388.7" cy="297.0" r="4" fill="#ffffff" stroke="#dc2626" stroke-width="2.5"/>
+<circle cx="610.0" cy="269.6" r="4" fill="#ffffff" stroke="#dc2626" stroke-width="2.5"/>
 <line x1="626" y1="72" x2="650" y2="72" stroke="#dc2626" stroke-width="2.5"/>
 <text x="656" y="76" font-size="11.5" fill="#334155">resolved to P/LP</text>
 </svg>

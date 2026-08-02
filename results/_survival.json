@@ -47,25 +47,25 @@
   },
   {
     "endpoint_label": "2026-07",
-    "endpoint_file": "variant_summary.txt.gz",
+    "endpoint_file": "variant_summary_2026-07.txt.gz",
     "months_elapsed": 61,
     "cohort_size": 382704,
     "distribution": {
-      "Still VUS": 299002,
-      "Conflicting": 59970,
-      "B/LB": 10646,
+      "Still VUS": 299725,
+      "Conflicting": 59298,
+      "B/LB": 10631,
       "Retired/absent": 8285,
-      "P/LP": 4771,
+      "P/LP": 4735,
       "Other": 30
     },
-    "p_lp": 4771,
-    "b_lb": 10646,
-    "still_vus": 299002,
-    "definitive": 15417,
-    "hard_stratum": 1612,
-    "p_lp_genes": 1102,
-    "pct_p_lp": 1.2467,
-    "pct_definitive": 4.0284,
-    "pct_still_vus": 78.1288
+    "p_lp": 4735,
+    "b_lb": 10631,
+    "still_vus": 299725,
+    "definitive": 15366,
+    "hard_stratum": 1577,
+    "p_lp_genes": 1100,
+    "pct_p_lp": 1.2372,
+    "pct_definitive": 4.0151,
+    "pct_still_vus": 78.3177
   }
 ]

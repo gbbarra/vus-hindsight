@@ -210,11 +210,12 @@ clinvar_20260728.vcf.gz
 clinvar_20260728_papu.vcf.gz
 clinvar_papu.vcf.gz
 
-### step 2: fetch current snapshot
-current snapshot: data/variant_summary.txt.gz
+### step 2: fetch the endpoint snapshot
+endpoint pinned to archived release 2026-07
+endpoint snapshot: data/variant_summary_2026-07.txt.gz
 
 ### step 3: header of current snapshot
-=== data/variant_summary.txt.gz ===
+=== data/variant_summary_2026-07.txt.gz ===
 43 columns
     1  AlleleID
     2  Type
@@ -354,40 +355,41 @@ baseline snapshot: data/variant_summary_2021-06.txt.gz
 34 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF']
 resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
 [baseline 2021-06] rows=1,908,821 GRCh38=927,078 after dedupe on VariationID=926,800 (collapsed 278)
-=== HEADER: data/variant_summary.txt.gz ===
+=== HEADER: data/variant_summary_2026-07.txt.gz ===
 43 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF', 'SomaticClinicalImpact', 'SomaticClinicalImpactLastEvaluated', 'ReviewStatusClinicalImpact', 'Oncogenicity', 'OncogenicityLastEvaluated', 'ReviewStatusOncogenicity', 'SCVsForAggregateGermlineClassification', 'SCVsForAggregateSomaticClinicalImpact', 'SCVsForAggregateOncogenicityClassification']
 resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
-[current] rows=9,029,235 GRCh38=4,480,843 after dedupe on VariationID=4,478,492 (collapsed 2,351)
+[current] rows=8,991,566 GRCh38=4,462,035 after dedupe on VariationID=4,459,687 (collapsed 2,348)
 [2021-06] baseline VUS (criteria provided): 382,704 (excluded 15,983 with no assertion criteria)
 consequence map: 4,458,175 VariationIDs from consequence_map.parquet
 
 === [2021-06] transition table ===
-  Still VUS           299,002  78.13%
-  Conflicting          59,970  15.67%
-  B/LB                 10,646   2.78%
+  Still VUS           299,725  78.32%
+  Conflicting          59,298  15.49%
+  B/LB                 10,631   2.78%
   Retired/absent        8,285   2.16%
-  P/LP                  4,771   1.25%
+  P/LP                  4,735   1.24%
   Other                    30   0.01%
 
-=== [2021-06] VUS -> P/LP: 4,771 variants, 1,102 distinct genes ===
+=== [2021-06] VUS -> P/LP: 4,735 variants, 1,100 distinct genes ===
   by molecular consequence (source: ClinVar VCF MC field):
-    missense         2,921
+    missense         2,883
     frameshift         591
-    other              456
-    nonsense           433
-    splice             334
+    other              452
+    nonsense           437
+    splice             336
     not_in_vcf          36
-    (36 of 4,771 have no VCF record — 0.75% — reported separately, not folded into 'other')
-  cross-check vs HGVS derivation: 4,382/4,735 agree (92.54%) — diagnostic only
+    (36 of 4,735 have no VCF record — 0.76% — reported separately, not folded into 'other')
+  cross-check vs HGVS derivation: 4,350/4,699 agree (92.57%) — diagnostic only
   by current review status:
-    [1*] criteria provided, single submitter                         2,534
-    [2*] criteria provided, multiple submitters, no conflicts        1,790
-    [3*] reviewed by expert panel                                      435
+    [1*] criteria provided, single submitter                         2,542
+    [2*] criteria provided, multiple submitters, no conflicts        1,758
+    [3*] reviewed by expert panel                                      423
     [0*] no assertion criteria provided                                 12
 
-  HARD STRATUM (missense AND >=2-star): 1,612 variants across 510 genes
+  HARD STRATUM (missense AND >=2-star): 1,577 variants across 506 genes
 
-  wrote 4,771 rows -> results/reclassified_pathogenic.tsv
+  wrote 4,735 rows -> results/reclassified_pathogenic.tsv
+  wrote 10,631 rows -> results/reclassified_benign.tsv
   wrote results/_counts_2021-06.json
 deleting raw baseline snapshot to reclaim disk: data/variant_summary_2021-06.txt.gz
 /dev/root       145G   43G  103G  30% /
@@ -444,40 +446,41 @@ baseline snapshot: data/variant_summary_2022-12.txt.gz
 34 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF']
 resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
 [baseline 2022-12] rows=3,238,153 GRCh38=1,588,842 after dedupe on VariationID=1,588,306 (collapsed 536)
-=== HEADER: data/variant_summary.txt.gz ===
+=== HEADER: data/variant_summary_2026-07.txt.gz ===
 43 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF', 'SomaticClinicalImpact', 'SomaticClinicalImpactLastEvaluated', 'ReviewStatusClinicalImpact', 'Oncogenicity', 'OncogenicityLastEvaluated', 'ReviewStatusOncogenicity', 'SCVsForAggregateGermlineClassification', 'SCVsForAggregateSomaticClinicalImpact', 'SCVsForAggregateOncogenicityClassification']
 resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
-[current] rows=9,029,235 GRCh38=4,480,843 after dedupe on VariationID=4,478,492 (collapsed 2,351)
+[current] rows=8,991,566 GRCh38=4,462,035 after dedupe on VariationID=4,459,687 (collapsed 2,348)
 [2022-12] baseline VUS (criteria provided): 620,907 (excluded 16,277 with no assertion criteria)
 consequence map: 4,458,175 VariationIDs from consequence_map.parquet
 
 === [2022-12] transition table ===
-  Still VUS           531,679  85.63%
-  Conflicting          58,916   9.49%
-  B/LB                 17,336   2.79%
+  Still VUS           532,723  85.80%
+  Conflicting          57,962   9.34%
+  B/LB                 17,292   2.78%
   Retired/absent        7,841   1.26%
-  P/LP                  5,104   0.82%
+  P/LP                  5,058   0.81%
   Other                    31   0.00%
 
-=== [2022-12] VUS -> P/LP: 5,104 variants, 1,240 distinct genes ===
+=== [2022-12] VUS -> P/LP: 5,058 variants, 1,231 distinct genes ===
   by molecular consequence (source: ClinVar VCF MC field):
-    missense         2,734
-    frameshift         824
-    nonsense           572
-    other              495
-    splice             461
+    missense         2,698
+    frameshift         815
+    nonsense           569
+    other              492
+    splice             466
     not_in_vcf          18
-    (18 of 5,104 have no VCF record — 0.35% — reported separately, not folded into 'other')
-  cross-check vs HGVS derivation: 4,679/5,086 agree (92.00%) — diagnostic only
+    (18 of 5,058 have no VCF record — 0.36% — reported separately, not folded into 'other')
+  cross-check vs HGVS derivation: 4,638/5,040 agree (92.02%) — diagnostic only
   by current review status:
-    [1*] criteria provided, single submitter                         3,377
-    [2*] criteria provided, multiple submitters, no conflicts        1,354
-    [3*] reviewed by expert panel                                      362
+    [1*] criteria provided, single submitter                         3,365
+    [2*] criteria provided, multiple submitters, no conflicts        1,325
+    [3*] reviewed by expert panel                                      357
     [0*] no assertion criteria provided                                 11
 
-  HARD STRATUM (missense AND >=2-star): 1,169 variants across 466 genes
+  HARD STRATUM (missense AND >=2-star): 1,142 variants across 458 genes
 
-  wrote 5,104 rows -> results/reclassified_pathogenic.tsv
+  wrote 5,058 rows -> results/reclassified_pathogenic.tsv
+  wrote 17,292 rows -> results/reclassified_benign.tsv
   wrote results/_counts_2022-12.json
 deleting raw baseline snapshot to reclaim disk: data/variant_summary_2022-12.txt.gz
 /dev/root       145G   43G  103G  30% /
@@ -485,13 +488,13 @@ deleting raw baseline snapshot to reclaim disk: data/variant_summary_2022-12.txt
 ### step 7: submission_summary date-coverage probe
 === HEAD https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/submission_summary.txt.gz ===
 HTTP/1.1 200 OK
-Date: Sat, 01 Aug 2026 16:48:09 GMT
+Date: Sun, 02 Aug 2026 01:55:54 GMT
 Server: Apache
 Last-Modified: Tue, 28 Jul 2026 04:38:51 GMT
 Accept-Ranges: bytes
 Content-Length: 385669884
 Cache-Control: public, max-age=86400
-Expires: Sat, 08 Aug 2026 16:48:09 GMT
+Expires: Sun, 09 Aug 2026 01:55:54 GMT
 Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: GET,POST,PUT,OPTIONS
@@ -606,9 +609,9 @@ DateLastEvaluated by year:
   2025   1,562,052
   2026     291,052
 
-VUS -> P/LP cohort (6,712 distinct variants):
-  present in submission_summary:        6,712
-  with >=1 dated submission:            6,707 (99.93% of the cohort)
+VUS -> P/LP cohort (6,653 distinct variants):
+  present in submission_summary:        6,653
+  with >=1 dated submission:            6,648 (99.92% of the cohort)
 
 wrote results/_submission_dates.json
 
@@ -660,19 +663,19 @@ resolved: classification='ClinicalSignificance' review_status='ReviewStatus' con
 /dev/root       145G   43G  102G  30% /
 
 --- endpoint current (2026-07) ---
-=== HEADER: data/variant_summary.txt.gz ===
+=== HEADER: data/variant_summary_2026-07.txt.gz ===
 43 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF', 'SomaticClinicalImpact', 'SomaticClinicalImpactLastEvaluated', 'ReviewStatusClinicalImpact', 'Oncogenicity', 'OncogenicityLastEvaluated', 'ReviewStatusOncogenicity', 'SCVsForAggregateGermlineClassification', 'SCVsForAggregateSomaticClinicalImpact', 'SCVsForAggregateOncogenicityClassification']
 resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
-[endpoint 2026-07] rows=9,029,235 GRCh38=4,480,843 after dedupe on VariationID=4,478,492 (collapsed 2,351)
+[endpoint 2026-07] rows=8,991,566 GRCh38=4,462,035 after dedupe on VariationID=4,459,687 (collapsed 2,348)
 
 === 2021-06 cohort at 2026-07 (+61 months) ===
-  Still VUS           299,002  78.13%
-  Conflicting          59,970  15.67%
-  B/LB                 10,646   2.78%
+  Still VUS           299,725  78.32%
+  Conflicting          59,298  15.49%
+  B/LB                 10,631   2.78%
   Retired/absent        8,285   2.16%
-  P/LP                  4,771   1.25%
+  P/LP                  4,735   1.24%
   Other                    30   0.01%
-  -> P/LP 4,771 (1.25%), definitive 15,417 (4.03%), hard stratum 1,612, genes 1,102
+  -> P/LP 4,735 (1.24%), definitive 15,366 (4.02%), hard stratum 1,577, genes 1,100
   appended to results/_survival.json (3 points)
 
 ### rendering survival report
@@ -681,7 +684,8 @@ wrote results/reclassified_curve.svg
 wrote results/survival.md
 
 ### cleaning up current snapshot
-reclassified_pathogenic.tsv: 1874012 bytes
+reclassified_pathogenic.tsv: 1858073 bytes
+reclassified_benign.tsv: 4985598 bytes
 
 ### free disk at end
 /dev/root       145G   43G  103G  30% /

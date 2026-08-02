@@ -14,7 +14,7 @@ One cohort, **382,704 variants**, classified *Uncertain significance* with asser
 |---|---|---|---|---|---|---|
 | 2022-12 | 18 | 361,875 (94.56%) | 1,058 (0.28%) | 1,335 | 17,710 | 722 |
 | 2024-06 | 36 | 323,751 (84.60%) | 2,987 (0.78%) | 8,215 | 46,419 | 1,328 |
-| 2026-07 | 61 | 299,002 (78.13%) | 4,771 (1.25%) | 10,646 | 59,970 | 8,285 |
+| 2026-07 | 61 | 299,725 (78.32%) | 4,735 (1.24%) | 10,631 | 59,298 | 8,285 |
 
 Month 0 is definitional rather than measured: the cohort is 100% VUS at its own baseline by construction. It anchors the curves but is not a data point.
 
@@ -26,7 +26,7 @@ How much usable benchmark material the cohort has yielded at each date — the h
 |---|---|---|---|
 | 18 | 1,058 | 444 | 135 |
 | 36 | 2,987 | 786 | 550 |
-| 61 | 4,771 | 1,102 | 1,612 |
+| 61 | 4,735 | 1,100 | 1,577 |
 
 Each figure is the cohort's state *at that date* rather than a cumulative hazard. Over these points the P/LP count happens to increase monotonically, but nothing forces it to: a variant can be reclassified and later disputed.
 
