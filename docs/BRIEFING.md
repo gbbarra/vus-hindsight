@@ -17,7 +17,7 @@ significance* (VUS) at that date, and follow those same variants — by
 `VariationID` — into the current release to see what became of them.
 
 Two follow-up windows: a mid-2021 baseline and an end-2022 baseline, both
-compared against the 2026-07-28 release.
+compared against the archived monthly release of 2 July 2026.
 
 ## Headline numbers
 
@@ -29,40 +29,42 @@ Restricted to GRCh38, deduplicated on `VariationID`, excluding review status
 | variants in snapshot (GRCh38, deduped) | 926,800 | 1,588,306 |
 | VUS cohort with assertion criteria | 382,704 | 620,907 |
 | VUS excluded (no criteria) | 15,983 | 16,277 |
-| still VUS today | 299,002 (78.13%) | 531,679 (85.63%) |
-| conflicting today | 59,970 (15.67%) | 58,916 (9.49%) |
-| B/LB today | 10,646 (2.78%) | 17,336 (2.79%) |
+| still VUS today | 299,725 (78.32%) | 532,723 (85.80%) |
+| conflicting today | 59,298 (15.49%) | 57,962 (9.34%) |
+| B/LB today | 10,631 (2.78%) | 17,292 (2.79%) |
 | retired/absent | 8,285 (2.16%) | 7,841 (1.26%) |
-| **P/LP today** | **4,771 (1.25%)** | **5,104 (0.82%)** |
+| **P/LP today** | **4,735 (1.24%)** | **5,058 (0.81%)** |
 | other | 30 (0.01%) | 31 (0.01%) |
 
-Current release: 4,478,492 deduplicated GRCh38 variants.
+Endpoint release (`variant_summary_2026-07.txt.gz`, 2 July 2026): 4,459,687
+deduplicated GRCh38 variants.
 
 ### The VUS → Pathogenic/Likely pathogenic arm
 
 | | 2021-06 | 2022-12 |
 |---|---|---|
-| total | 4,771 | 5,104 |
-| distinct genes | 1,102 | 1,240 |
-| missense | 2,921 | 2,734 |
-| frameshift | 591 | 824 |
-| nonsense | 433 | 572 |
-| splice | 334 | 461 |
-| other | 456 | 495 |
+| total | 4,735 | 5,058 |
+| distinct genes | 1,100 | 1,231 |
+| missense | 2,883 | 2,698 |
+| frameshift | 591 | 815 |
+| nonsense | 437 | 569 |
+| splice | 336 | 466 |
+| other | 452 | 492 |
 | no VCF record | 36 | 18 |
 
-Across both baselines: 9,875 records but **6,712 distinct variants** — 3,163
-were VUS at both dates.
+Across both baselines: 9,793 records but **6,653 distinct variants** — 3,140
+were VUS at both dates. The negative class adds 27,923 records / 19,911 distinct
+variants (`results/reclassified_benign.tsv`).
 
 ### The stratum of primary interest
 
 Missense **and** review status of at least *criteria provided, multiple
 submitters* (≥2 stars):
 
-- baseline 2021-06: **1,612 variants across 510 genes**
-- baseline 2022-12: **1,169 variants across 466 genes**
+- baseline 2021-06: **1,577 variants across 506 genes**
+- baseline 2022-12: **1,142 variants across 458 genes**
 
-That is ~34% and ~23% of each P/LP arm respectively.
+That is ~33% and ~23% of each P/LP arm respectively.
 
 ## How the project uses these data
 
@@ -84,13 +86,13 @@ interpretation methods, for three reasons:
 The **missense ≥2-star** stratum is the primary evaluation target: missense is
 where computational prediction is weakest and where truncating shortcuts do not
 apply, and ≥2 stars means multi-submitter agreement, which makes the current
-label a sturdier target. At 1,612 variants across 510 genes, it supports
+label a sturdier target. At 1,577 variants across 506 genes, it supports
 stratification by gene or panel without emptying the cells.
 
 ## The fixed-cohort survival curve
 
 The table above compares two *different* baselines against one endpoint, so the
-gap between 1.25% and 0.82% is confounded: the 2022-12 cohort contains many
+gap between 1.24% and 0.81% is confounded: the 2022-12 cohort contains many
 recently submitted, less mature variants, and ClinVar itself grew from 926,800
 to 1,588,306 GRCh38 variants between the two dates. Part of that difference is
 cohort composition, not elapsed time.
@@ -104,7 +106,7 @@ the only thing varying.
 |---|---|---|---|---|---|---|
 | 18 | 361,875 (94.56%) | 1,058 (0.28%) | 1,335 | 17,710 | 444 | 135 |
 | 36 | 323,751 (84.60%) | 2,987 (0.78%) | 8,215 | 46,419 | 786 | 550 |
-| 61 | 299,002 (78.13%) | 4,771 (1.25%) | 10,646 | 59,970 | 1,102 | 1,612 |
+| 61 | 299,725 (78.32%) | 4,735 (1.24%) | 10,631 | 59,298 | 1,100 | 1,577 |
 
 Month 0 is definitional rather than measured: the cohort is 100% VUS at its own
 baseline by construction. The 61-month point reproduces the 2021-06 arm of the
@@ -113,18 +115,18 @@ consistency check between two independently invoked code paths.
 
 Three findings worth using:
 
-1. **Resolution is not linear.** P/LP accrues at 59, then 107, then 71 variants
+1. **Resolution is not linear.** P/LP accrues at 59, then 107, then 70 variants
    per month across the three intervals. A linear extrapolation from two points
    would have been wrong; any projection should say which interval it is based on.
 2. **The usable evaluation set grows faster than the P/LP arm.** The hard
-   stratum goes 135 → 550 → 1,612, roughly 23/month then 42/month, while total
+   stratum goes 135 → 550 → 1,577, roughly 23/month then 41/month, while total
    P/LP accrual slowed in the last interval. **Caveat:** the stratum is defined
    by review status *as of each date*, and review status improves over time as
    submitters accumulate — so part of that growth is variants that were already
    P/LP gaining a second star, not newly reclassified variants. The two effects
    are summed in that figure and should not be presented as one.
-3. **The most common fate is dispute, not resolution.** Over 61 months, 59,970
-   variants (15.7%) moved to conflicting versus 15,417 reaching a definitive
+3. **The most common fate is dispute, not resolution.** Over 61 months, 59,298
+   variants (15.5%) moved to conflicting versus 15,366 reaching a definitive
    call — roughly 4:1. This strengthens the motivation without weakening the
    benchmark, since the evaluation set is drawn from the ones that did resolve.
 
@@ -149,7 +151,7 @@ Charts: `results/survival_curve.svg` (fraction still VUS) and
   several terms (one per transcript), a fixed precedence applies: truncating >
   missense > non-coding. Variants absent from the VCF are reported as their own
   `not_in_vcf` row, never folded into "other". An independent HGVS-based
-  derivation agrees 92.54% and 92.00% — a diagnostic cross-check only; the
+  derivation agrees 92.57% and 92.02% — a diagnostic cross-check only; the
   published breakdown uses `MC` alone.
 - **Frozen-date reconstruction is feasible but approximate.**
   `submission_summary.txt.gz` carries one row per SCV with `DateLastEvaluated`:
@@ -159,19 +161,26 @@ Charts: `results/survival_curve.svg` (fraction still VUS) and
   published it. A record evaluated in 2019 may have reached ClinVar years later.
   Filtering on it therefore **bounds what was knowable rather than replaying
   what was public**. Describe any frozen-date cohort as approximate.
-- **Gradient between windows.** The longer window resolves more (1.25% vs
-  0.82%) and accumulates more conflict (15.67% vs 9.49%) — the expected
+- **Gradient between windows.** The longer window resolves more (1.24% vs
+  0.81%) and accumulates more conflict (15.49% vs 9.34%) — the expected
   direction, which gives the two baselines a mutual sanity check.
 
 ## Exact provenance (for the methods section)
 
-`variant_summary.txt.gz` and `clinvar.vcf.gz` are **rolling filenames**: the
-same URL serves a different release every month. The numbers above come from
-these specific bytes:
+The endpoint is deliberately an **archived monthly**, not the rolling
+`variant_summary.txt.gz`. NCBI overwrites the rolling file in place and archives
+only one snapshot per month, so a result computed against it cannot be
+regenerated once superseded — the bytes are gone. An earlier run of this
+benchmark used the rolling file (release of 28 July 2026) and produced slightly
+higher counts (4,771 vs 4,735 VUS → P/LP; 1,612 vs 1,577 in the hard stratum);
+those figures survive only in the repository's git history and are **not** the
+ones to quote.
+
+The numbers above come from these specific bytes:
 
 | file | release (Last-Modified) | md5 |
 |---|---|---|
-| `variant_summary.txt.gz` | Tue, 28 Jul 2026 08:57:47 GMT | `476318456e1438c4d0d76a33f21e7350` |
+| `variant_summary_2026-07.txt.gz` | Thu, 02 Jul 2026 04:05:02 GMT | `f03eea5e87f0ef5f696bbc958359fa78` |
 | `clinvar.vcf.gz` (GRCh38) | Tue, 28 Jul 2026 22:07:55 GMT | `28d247f7b297d3605a7b10079aa4467e` |
 | `variant_summary_2021-06.txt.gz` | Thu, 03 Jun 2021 04:05:02 GMT | `1f509ba1959d9cf882ee511572f4c185` |
 | `variant_summary_2022-12.txt.gz` | Thu, 01 Dec 2022 05:05:01 GMT | `5e08de585ae392186ae5c3e2a1748003` |
@@ -204,7 +213,7 @@ Or via the **Run workflow** button on the repository's Actions tab.
 
 - `results/transitions.md` — every table
 - `results/survival.md` — the fixed-cohort survival curve and its two charts
-- `results/reclassified_pathogenic.tsv` — 9,875 per-variant records with
+- `results/reclassified_pathogenic.tsv` — 9,793 per-variant records with
   `VariationID`, gene, HGVS, consequence, raw `MC` string, baseline class,
   current class, review status
 - `results/run_log.txt` — the complete run log

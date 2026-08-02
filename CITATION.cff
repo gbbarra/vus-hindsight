@@ -25,9 +25,13 @@ abstract: >-
   (VUS) were later reclassified to a definitive call, and sizes
   the pathogenic arm as material for evaluating variant
   interpretation methods. Version 1.0.0 is computed against the
-  ClinVar release of 28 July 2026; the md5 of every input file is
-  recorded in results/transitions.md so the counts are
-  re-derivable rather than merely re-runnable.
+  archived ClinVar monthly variant_summary_2026-07.txt.gz of
+  2 July 2026; the md5 of every input file is recorded in
+  results/transitions.md so the counts are re-derivable rather
+  than merely re-runnable. The endpoint is deliberately an
+  archived monthly rather than the rolling variant_summary.txt.gz,
+  which NCBI overwrites in place and which therefore cannot be
+  reproduced once superseded.
 keywords:
   - ClinVar
   - variant of uncertain significance

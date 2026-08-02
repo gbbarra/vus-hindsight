@@ -259,9 +259,11 @@ a stable reference: re-running the pipeline against a newer ClinVar release
 legitimately changes the counts, so a bare link can point at numbers that differ
 from the ones you read.
 
-Release `v1.0.0` is computed against the ClinVar release of 28 July 2026, with
-the md5 of every input recorded in
-[`results/transitions.md`](results/transitions.md).
+Release `v1.0.0` is computed against the archived monthly
+`variant_summary_2026-07.txt.gz` (2 July 2026), with the md5 of every input
+recorded in [`results/transitions.md`](results/transitions.md). Because the
+endpoint is an archived file rather than the rolling one, these counts can be
+regenerated exactly — see below for why that distinction is not cosmetic.
 
 [`CITATION.cff`](CITATION.cff) carries the metadata. Once the release is
 archived on Zenodo, add the minted DOI to that file and to this section.
@@ -278,12 +280,25 @@ rewrite the committed counts underneath anyone relying on them.
 When you do regenerate, tag a release first so the previous numbers stay
 citable.
 
-**Reproducing an earlier result.** The *Current month* input pins the endpoint
-to an archived release (`YYYY-MM`) instead of the rolling
-`variant_summary.txt.gz`. Running with `2026-07` reproduces the `v1.0.0` counts
-exactly, because the archived file never changes — whereas the rolling filename
-serves a different release every month. Locally the same thing is
-`CURRENT_MONTH=2026-07 scripts/run_all.sh`.
+**Always pin the endpoint if the numbers will be quoted.** The *Current month*
+input points the endpoint at an archived monthly (`YYYY-MM`) instead of the
+rolling `variant_summary.txt.gz`. Locally: `CURRENT_MONTH=2026-07
+scripts/run_all.sh`.
+
+This is not a convenience. NCBI **overwrites** `variant_summary.txt.gz` in
+place and archives only one snapshot per month, so a result computed against the
+rolling file is *not reproducible from NCBI at all* once it is superseded — the
+bytes are simply gone. Only the monthly archives persist.
+
+The distinction is easy to underestimate. The first runs of this benchmark used
+the rolling file, which on that day was the release of 28 July 2026; the
+archived monthly for the same month is dated 2 July 2026. Twenty-six days apart,
+and the counts differ accordingly — 4,771 vs 4,735 VUS → P/LP for the 2021-06
+baseline, 1,612 vs 1,577 in the missense ≥2★ stratum. Those earlier figures
+survive only in this repository's git history; they cannot be regenerated.
+
+Everything published from `v1.0.0` onward uses an archived endpoint for exactly
+this reason.
 
 ## License
 
