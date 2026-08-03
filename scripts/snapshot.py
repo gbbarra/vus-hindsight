@@ -62,7 +62,12 @@ def load_snapshot(con, alias, path, label):
             {bucket_sql(res['classification'])}      AS bucket,
             {stars_sql(res['review_status'])}         AS stars,
             {consequence_sql(res['name'], res['type'], res['consequence'])}
-                                                     AS hgvs_consequence
+                                                     AS hgvs_consequence,
+            {res['chromosome'] or 'NULL'}            AS chromosome,
+            {res['position_vcf'] or 'NULL'}          AS position_vcf,
+            {res['ref_vcf'] or 'NULL'}               AS ref_vcf,
+            {res['alt_vcf'] or 'NULL'}               AS alt_vcf,
+            {res['last_evaluated'] or 'NULL'}        AS last_evaluated
         FROM {alias}_raw
         WHERE Assembly = 'GRCh38' AND TRY_CAST(VariationID AS BIGINT) IS NOT NULL
         QUALIFY row_number() OVER (PARTITION BY VariationID ORDER BY {res['name']}) = 1

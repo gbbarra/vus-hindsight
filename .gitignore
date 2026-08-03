@@ -1,8 +1,9 @@
 # Raw ClinVar snapshots — never committed (hundreds of MB each, re-fetchable)
 *.txt.gz
 *.txt
-# (excluded wholesale; run_all.sh recreates it with mkdir -p)
-data/
+# Working data is disposable, EXCEPT the committed exports.
+data/*
+!data/exports/
 
 # Generated test fixtures (rebuilt by tests/make_fixture.py on every run)
 tests/fixtures/

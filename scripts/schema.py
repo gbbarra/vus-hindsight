@@ -56,6 +56,16 @@ def resolve_columns(columns):
 
     # Optional; None means "derive from HGVS".
     resolved["consequence"] = _pick(cols, CONSEQUENCE_CANDIDATES)
+
+    # Optional coordinate and date columns, needed only by the join export.
+    # Absent in the synthetic fixtures, so callers must tolerate None.
+    for key, candidates in (
+            ("chromosome", ("Chromosome",)),
+            ("position_vcf", ("PositionVCF",)),
+            ("ref_vcf", ("ReferenceAlleleVCF",)),
+            ("alt_vcf", ("AlternateAlleleVCF",)),
+            ("last_evaluated", ("LastEvaluated",))):
+        resolved[key] = _pick(cols, candidates)
     return resolved
 
 
