@@ -1,0 +1,86 @@
+### export for external join
+duckdb 1.5.5
+/dev/root       145G   42G  103G  29% /
+
+### molecular consequence from the dated VCF
+VCF data lines: 4,458,175; with a numeric ID (VariationID): 4,458,175
+VariationIDs in map: 4,458,175; carrying an MC field: 4,438,223 (99.55%)
+
+consequence distribution across the whole VCF:
+  missense      2,529,454
+  other         1,562,425
+  frameshift      153,037
+  splice          109,049
+  nonsense        104,210
+
+top SO terms falling into 'other' (audit for anything miscategorised):
+  SO:0001819|synonymous_variant                              762,369
+  SO:0001627|intron_variant                                  733,446
+  SO:0001619|non-coding_transcript_variant                   134,486
+  SO:0001624|3_prime_UTR_variant                              81,913
+  SO:0001623|5_prime_UTR_variant                              54,482
+  SO:0001822|inframe_deletion                                 20,010
+  SO:0001821|inframe_insertion                                 8,460
+  SO:0001820|inframe_indel                                     4,820
+  SO:0001578|stop_lost                                         1,368
+  SO:0002153|genic_upstream_transcript_variant                 1,109
+  SO:0002073|no_sequence_alteration                              900
+  SO:0002152|genic_downstream_transcript_variant                 449
+  SO:0001582|initiator_codon_variant                             276
+
+wrote data/consequence_map.parquet
+wrote results/_vcf_mc_stats.json
+/dev/root       145G   42G  103G  29% /
+
+### baseline 2021-06
+
+### endpoint 2022-12 (+18 months)
+
+### endpoint 2024-06 (+36 months)
+
+### endpoint 2026-07 (+61 months)
+
+### building the export
+=== HEADER: data/variant_summary_2021-06.txt.gz ===
+34 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF']
+resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
+[baseline 2021-06] rows=1,908,821 GRCh38=927,078 after dedupe on VariationID=926,800 (collapsed 278)
+
+cohort at 2021-06: 382,704
+=== HEADER: data/variant_summary_2022-12.txt.gz ===
+34 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF']
+resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
+[endpoint 2022-12 (+18m)] rows=3,238,153 GRCh38=1,588,842 after dedupe on VariationID=1,588,306 (collapsed 536)
+  cumulative first-P/LP by +18m: 1,058
+=== HEADER: data/variant_summary_2024-06.txt.gz ===
+40 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF', 'SomaticClinicalImpact', 'SomaticClinicalImpactLastEvaluated', 'ReviewStatusClinicalImpact', 'Oncogenicity', 'OncogenicityLastEvaluated', 'ReviewStatusOncogenicity']
+resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
+[endpoint 2024-06 (+36m)] rows=5,883,232 GRCh38=2,915,289 after dedupe on VariationID=2,914,592 (collapsed 697)
+  cumulative first-P/LP by +36m: 3,088
+=== HEADER: data/variant_summary_2026-07.txt.gz ===
+43 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF', 'SomaticClinicalImpact', 'SomaticClinicalImpactLastEvaluated', 'ReviewStatusClinicalImpact', 'Oncogenicity', 'OncogenicityLastEvaluated', 'ReviewStatusOncogenicity', 'SCVsForAggregateGermlineClassification', 'SCVsForAggregateSomaticClinicalImpact', 'SCVsForAggregateOncogenicityClassification']
+resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
+[endpoint 2026-07 (+61m)] rows=8,991,566 GRCh38=4,462,035 after dedupe on VariationID=4,459,687 (collapsed 2,348)
+  cumulative first-P/LP by +61m: 5,144
+
+vus_to_plp rows (joinable)       : 4,735
+still_vus rows, all consequences  : 299,725
+still_vus rows, missense only     : 226,811
+
+still_vus missense exceeds 200,000; sampling 25,000 stratified by gold_stars (seed 20260802):
+  0*: 455 -> 50
+  1*: 106,079 -> 11,692
+  2*: 119,127 -> 13,131
+  3*: 1,150 -> 127
+
+wrote data/exports/vus_hindsight_for_am_join.csv: 29,735 rows (4,735 vus_to_plp + 25,000 still_vus)
+horizons: {'18': 880, '36': 1799, '61': 2056}
+strata  : {'still_vus/other': 11742, 'still_vus/primary': 13258, 'vus_to_plp/other': 3158, 'vus_to_plp/primary': 1577}
+wrote data/exports/README.md
+
+### produced
+total 5.5M
+-rw-r--r-- 1 runner runner 3.1K Aug  3 11:42 README.md
+-rw-r--r-- 1 runner runner 5.5M Aug  3 11:42 vus_hindsight_for_am_join.csv
+data/exports/vus_hindsight_for_am_join.csv: 5719177 bytes
+/dev/root       145G   42G  103G  29% /

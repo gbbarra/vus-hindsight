@@ -1,0 +1,21 @@
+{
+  "out": "data/exports/vus_hindsight_for_am_join.csv",
+  "csv_md5": "ff2b77cc65eca8a4a62714df19dea9e3",
+  "rows": 29735,
+  "vus_to_plp": 4735,
+  "still_vus": 25000,
+  "still_vus_missense_available": 226811,
+  "sampled": true,
+  "seed": 20260802,
+  "horizons": {
+    "18": 880,
+    "36": 1799,
+    "61": 2056
+  },
+  "strata": {
+    "still_vus/other": 11742,
+    "still_vus/primary": 13258,
+    "vus_to_plp/other": 3158,
+    "vus_to_plp/primary": 1577
+  }
+}
