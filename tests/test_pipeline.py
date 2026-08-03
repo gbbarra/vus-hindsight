@@ -189,13 +189,16 @@ def main():
     with open(reg_path, "w") as fh:
         fh.write("""
 predictors:
-  - {name: BeforeBaseline, training_cutoff: '2019-01', verified: true}
-  - {name: AtBaseline,     training_cutoff: '2021-06', verified: true}
-  - {name: MidWindow,      training_cutoff: '2023-06', verified: true}
-  - {name: LateWindow,     training_cutoff: '2025-06', verified: true}
-  - {name: PastEndpoint,   training_cutoff: '2026-07', verified: true}
-  - {name: Unsourced,      training_cutoff: '2019-01', verified: false}
-  - {name: NoCutoff,       training_cutoff: null,      verified: true}
+  - {name: BeforeBaseline, training_cutoff: '2019-01', verified: true, label_exposure: training_labels}
+  - {name: AtBaseline,     training_cutoff: '2021-06', verified: true, label_exposure: training_labels}
+  - {name: MidWindow,      training_cutoff: '2023-06', verified: true, label_exposure: training_labels}
+  - {name: LateWindow,     training_cutoff: '2025-06', verified: true, label_exposure: training_labels}
+  - {name: PastEndpoint,   training_cutoff: '2026-07', verified: true, label_exposure: training_labels}
+  - {name: Unsourced,      training_cutoff: '2019-01', verified: false, label_exposure: training_labels}
+  - {name: NoCutoff,       training_cutoff: null,      verified: true, label_exposure: training_labels}
+  - {name: LabelFreeRecent, training_cutoff: null,     verified: false, label_exposure: none}
+  - {name: Measured,       training_cutoff: null,      verified: false, label_exposure: evaluation_only,
+     measured_overlap: {vus_to_plp: '531 / 2883', control_still_vus: '1 / 25000'}}
 """)
     subprocess.run(
         [sys.executable, os.path.join(ROOT, "scripts", "11_contamination_audit.py"),
@@ -204,21 +207,30 @@ predictors:
     aud = {r["predictor"]: r for r in json.load(
         open(os.path.join(workdir, "results", "_contamination_audit.json")))["predictors"]}
     check("audit: cutoff before baseline is CLEAN",
-          aud["BeforeBaseline"]["tier"], "CLEAN")
-    check("audit: cutoff at baseline is CLEAN", aud["AtBaseline"]["tier"], "CLEAN")
-    check("audit: cutoff inside window is PARTIAL", aud["MidWindow"]["tier"], "PARTIAL")
+          aud["BeforeBaseline"]["date_tier"], "CLEAN")
+    check("audit: cutoff at baseline is CLEAN", aud["AtBaseline"]["date_tier"], "CLEAN")
+    check("audit: cutoff inside window is PARTIAL", aud["MidWindow"]["date_tier"], "PARTIAL")
     check("audit: cutoff past endpoint is CONTAMINATED",
-          aud["PastEndpoint"]["tier"], "CONTAMINATED")
+          aud["PastEndpoint"]["date_tier"], "CONTAMINATED")
     # An unsourced cutoff must never be credited as clean.
-    check("audit: unsourced cutoff is UNVERIFIED", aud["Unsourced"]["tier"],
+    check("audit: unsourced cutoff is UNVERIFIED", aud["Unsourced"]["date_tier"],
           "UNVERIFIED")
-    check("audit: missing cutoff is UNVERIFIED", aud["NoCutoff"]["tier"], "UNVERIFIED")
+    check("audit: missing cutoff is UNVERIFIED", aud["NoCutoff"]["date_tier"], "UNVERIFIED")
     # Leakage is bracketed by measured points, never interpolated.
     check("audit: mid-window leakage bracket",
           (aud["MidWindow"]["leak_low"], aud["MidWindow"]["leak_high"]), (1058, 2987))
     check("audit: late-window leakage bracket",
           (aud["LateWindow"]["leak_low"], aud["LateWindow"]["leak_high"]), (2987, 4735))
     check("audit: clean tools leak nothing", aud["AtBaseline"]["leak_high"], 0)
+    # A model with no clinical labels cannot memorise reclassifications, so an
+    # unknown date must not condemn it — that is the second axis doing its job.
+    check("audit: label-free survives an unknown date",
+          aud["LabelFreeRecent"]["verdict"], "LABEL-FREE")
+    # A measurement outranks any date reasoning.
+    check("audit: measured overlap outranks dates",
+          aud["Measured"]["verdict"], "MEASURED LEAK")
+    check("audit: direct label exposure is flagged as such",
+          aud["MidWindow"]["verdict"], "DIRECT / PARTIAL")
 
     # Join export: exact column list and order, the variant_id format, the arm
     # split, and that a horizon is attached to every reclassified row.

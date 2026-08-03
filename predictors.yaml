@@ -1,204 +1,303 @@
 # Registry of variant pathogenicity predictors, for the contamination audit.
 #
-# WHY THIS FILE EXISTS
+# TWO AXES, NOT ONE
 #
-# The labels in this benchmark are ClinVar reclassifications: a variant that was
-# a VUS in 2021 and is Pathogenic today. Most predictors are trained on
-# disease-variant databases, ClinVar among them. A predictor whose training data
-# postdates the baseline may therefore have SEEN the answer, and any accuracy it
-# shows on this benchmark is partly memorisation rather than prediction.
+# A predictor is a risk to this benchmark if it could have been told the answer.
+# That depends on two independent things:
 #
-# HOW TO FILL THIS IN
+#   training_cutoff  — WHEN its data was fixed. Only matters if clinical labels
+#                      were involved at all.
+#   label_exposure   — WHETHER curated pathogenic/benign calls entered the
+#                      model, and in what role.
 #
-# `training_cutoff` is the latest date of data that could have entered the
-# model — usually the release date of the training database, not the paper's
-# publication date. They can differ by years.
+# A sequence-only model has no clinical labels to memorise, so its release date
+# is close to irrelevant; a model fit on ClinVar P/LP labels is exposed in
+# proportion to how recent its snapshot was. Auditing only dates would rank
+# those two the same way, which is wrong.
 #
-# Leave it null when you do not know. 11_contamination_audit.py treats a null or
-# unsourced cutoff as its own tier and NEVER counts it as safe: an unverified
-# tool is not a clean tool, it is an unmeasured one.
+# label_exposure values:
+#   none             no curated clinical labels anywhere in the fit
+#   threshold_only   scores are label-free; a binary cutoff was calibrated on labels
+#   evaluation_only  labels used for model selection, hyperparameters or reporting
+#   training_labels  labels were the fitting target — direct exposure
+#   unknown          not established
 #
-# `source` must point at where the cutoff is stated — a paper section, a release
-# note, a README. "I think it was around 2015" is not a source, and the audit
-# refuses to honour a cutoff whose `verified` flag is false.
+# `verified: true` requires a source that STATES the date. A version anchor
+# ("HGMD 2015.2") is not a date; where a convention would imply one, it goes in
+# derived_cutoff_note and never in training_cutoff.
 #
-# Nothing here has been filled from memory. Every cutoff below is null because
-# it has to be read out of the literature, not recalled.
+# Compiled 2026-08-03 from primary sources. Where a field is null it is because
+# no source read stated it — not because nobody looked.
 
 predictors:
 
-  # ---- Benchmarked against VarPPUD (Yin et al., PLoS Comput Biol 2025) ------
-  # These nine are the comparison set in that paper. Most are old, so most are
-  # likely clean with respect to a 2021 baseline — but "likely" is what this
-  # audit exists to replace with a sourced date.
+  # ---- Label-free or nearly so --------------------------------------------
+
+  - name: EVE
+    training_cutoff: '2020-04'
+    verified: true
+    supervised_on_clinical_labels: false
+    label_exposure: none
+    uses_clinvar: false
+    clinvar_role: Validation and GMM threshold definition only; not in training.
+    training_data: [UniRef100 MSAs via Jackhmmer]
+    source: >-
+      github.com/OATML-Markslab/EVE README — "downloaded on April 20th 2020"
+    notes: >-
+      Bayesian VAE on natural sequence distribution alone. The cleanest entry
+      here: an explicit date, to the day, and no clinical labels.
+
+  - name: ESM-1b
+    training_cutoff: '2018-03'
+    verified: true
+    supervised_on_clinical_labels: false
+    label_exposure: none
+    uses_clinvar: false
+    clinvar_role: >-
+      Benchmark only in Brandes et al. 2023; scored zero-shot as a
+      log-likelihood ratio, no fine-tuning.
+    training_data: [UniRef50/S 2018_03, ~250M sequences, masked language modelling]
+    source: >-
+      github.com/facebookresearch/esm README, "Pre-trained Models" table;
+      Rives et al., PNAS 2021, doi:10.1073/pnas.2016239118
+    notes: Protein language model. No human variant data, no clinical labels.
+
+  - name: MutationAssessor
+    version: r3
+    training_cutoff: null
+    verified: false
+    supervised_on_clinical_labels: false
+    label_exposure: none
+    uses_clinvar: false
+    clinvar_role: Post-hoc comparison only.
+    training_data: [UniProtKB family/subfamily MSAs, combinatorial entropy optimisation]
+    source: >-
+      Reva et al., NAR 2011, 39(17):e118; Su et al., bioRxiv
+      doi:10.1101/2025.08.10.669566
+    notes: >-
+      r2 and r3 were never published, so their sequence-database versions are
+      unrecoverable. Being unsupervised, that barely matters for contamination.
 
   - name: SIFT
-    version: null
-    category: conservation
     training_cutoff: null
-    training_data: []
-    uses_clinvar: unknown
-    source: null
     verified: false
+    supervised_on_clinical_labels: false
+    label_exposure: none
+    uses_clinvar: false
+    training_data: [homolog alignment from the supplied sequence database]
+    source: Vaser et al., Nat Protoc 2016, doi:10.1038/nprot.2015.123
     notes: >-
-      Scores missense only. Conservation-based rather than supervised on a
-      disease-variant set, which changes the contamination question: check what
-      it was calibrated on rather than assuming none.
+      Has no training step at all — the score is a normalised column
+      probability. The date that matters is the sequence database used at
+      scoring time, so record where the scores came from (dbNSFP vX, VEP
+      release Y) rather than treating SIFT itself as dated.
+
+  - name: PROVEAN
+    training_cutoff: '2011-08'
+    verified: true
+    supervised_on_clinical_labels: false
+    label_exposure: threshold_only
+    uses_clinvar: false
+    training_data: [NCBI nr homologs via BLASTP, CD-HIT clustered]
+    source: Choi et al., PLoS ONE 2012, doi:10.1371/journal.pone.0046688
+    notes: >-
+      Continuous score is label-free. The binary -2.5 cutoff was chosen by
+      maximising separation on ~58K labelled UniProt variants, so use the
+      continuous score if you want no label exposure at all. Standalone (nr
+      2011-08) and web server (nr 2012-09) differ — record which you used.
+
+  # ---- Supervised, cutoff established --------------------------------------
 
   - name: PolyPhen-2
     version: HumDiv
-    category: supervised
-    training_cutoff: null
-    training_data: []
-    uses_clinvar: unknown
-    source: null
-    verified: false
-    notes: HumDiv and HumVar are separately trained; audit them separately.
+    training_cutoff: '2011-04'
+    verified: true
+    supervised_on_clinical_labels: true
+    label_exposure: training_labels
+    uses_clinvar: false
+    training_data: [UniProtKB damaging alleles, close mammalian homolog differences]
+    source: >-
+      genetics.bwh.harvard.edu/wiki/!pph2/news, 2011-05-08 entry (v2.1.0 r367);
+      Adzhubei et al., Nat Methods 2010
+    notes: >-
+      Labels frozen at 2011-04. Later releases were bugfixes and realignment
+      recalibration; v2.2.2 states no classifier change. No new labels since.
 
   - name: PolyPhen-2
     version: HumVar
-    category: supervised
-    training_cutoff: null
-    training_data: []
-    uses_clinvar: unknown
-    source: null
-    verified: false
-    notes: null
-
-  - name: MutationTaster
-    version: null
-    category: supervised
-    training_cutoff: null
-    training_data: []
-    uses_clinvar: unknown
-    source: null
-    verified: false
-    notes: >-
-      Versions differ substantially; record which one was actually run, since
-      the newer release retrained on later data.
-
-  - name: MutationAssessor
-    version: null
-    category: conservation
-    training_cutoff: null
-    training_data: []
-    uses_clinvar: unknown
-    source: null
-    verified: false
-    notes: null
-
-  - name: PROVEAN
-    version: null
-    category: conservation
-    training_cutoff: null
-    training_data: []
-    uses_clinvar: unknown
-    source: null
-    verified: false
-    notes: Also scores in-frame indels.
+    training_cutoff: '2011-04'
+    verified: true
+    supervised_on_clinical_labels: true
+    label_exposure: training_labels
+    uses_clinvar: false
+    training_data: [UniProtKB disease-causing mutations, common nsSNPs MAF>1%]
+    source: genetics.bwh.harvard.edu/wiki/!pph2/overview + news 2011-05-08
+    notes: Same classifier as HumDiv, different label set.
 
   - name: FATHMM
-    version: null
-    category: supervised
-    training_cutoff: null
-    training_data: []
-    uses_clinvar: unknown
-    source: null
-    verified: false
+    training_cutoff: '2013-04'
+    verified: true
+    supervised_on_clinical_labels: true
+    label_exposure: training_labels
+    uses_clinvar: false
+    training_data: [HGMD Pro 12.4 DMs, SwissProt/TrEMBL 2013_04 neutrals]
+    source: Shihab et al., Hum Genomics 2014, doi:10.1186/1479-7364-8-11
     notes: >-
-      Weighted by disease-associated variant databases; check which database
-      and which release.
+      The HMMs are label-free but the Wd/Wn pathogenicity weights come from
+      HGMD/UniProt label counts, which is what dbNSFP distributes. Counts as
+      supervised. The weights version dbNSFP ships is not publicly pinned;
+      2013-04 is the best-documented anchor.
+
+  # ---- Supervised, cutoff NOT established ----------------------------------
+
+  - name: REVEL
+    training_cutoff: null
+    verified: false
+    derived_cutoff_note: >-
+      HGMD Professional 2015.2 would imply 2015-06 by quarterly convention.
+      DERIVED, not declared — and the effective cutoff is older anyway.
+    supervised_on_clinical_labels: true
+    label_exposure: training_labels
+    uses_clinvar: false
+    clinvar_role: Test set 2 only; not in training.
+    training_data: [HGMD Pro 2015.2 missense DMs added after 2012-08-01, ESP/ARIC/1000G neutrals]
+    source: Ioannidis et al., AJHG 2016, doi:10.1016/j.ajhg.2016.08.016
+    notes: >-
+      The effective cutoff is the OLDEST link in the chain, not 2015.2: the 13
+      component tools carry their own much earlier cutoffs (PolyPhen-2 2011,
+      VEST 2012, FATHMM 2013). The 2012-08 floor on HGMD was imposed precisely
+      to reduce overlap with those.
 
   - name: VEST
     version: '4'
-    category: supervised
     training_cutoff: null
-    training_data: []
-    uses_clinvar: unknown
-    source: null
     verified: false
-    notes: Missense only.
+    derived_cutoff_note: >-
+      HGMD v2012.2 + ESP6500 accessed 07/2012 would imply 2012-07, but that
+      documents the VEST3/VEST-indel missense forest, not VEST4.
+    supervised_on_clinical_labels: true
+    label_exposure: training_labels
+    uses_clinvar: false
+    training_data: [HGMD v2012.2 missense, ESP6500 AF>1%]
+    source: Douville et al., Hum Mutat 2016, doi:10.1002/humu.22911
+    notes: >-
+      No published VEST4-specific training description exists — the "4" appears
+      in dbNSFP without a retraining paper. Treat as unknown and cite the
+      anchor as a lower bound, not a cutoff.
+
+  - name: MutationTaster2
+    training_cutoff: null
+    verified: false
+    supervised_on_clinical_labels: true
+    label_exposure: training_labels
+    uses_clinvar: false
+    training_data: [HGMD Professional intragenic DMs, 1000 Genomes common polymorphisms]
+    source: Schwarz et al., Nat Methods 2014, doi:10.1038/nmeth.2890
+    notes: >-
+      HGMD release not fixed in the paper. This is the version dbNSFP's
+      "MutationTaster" score comes from, not the 2021 one.
+
+  - name: MutationTaster2021
+    training_cutoff: null
+    verified: false
+    supervised_on_clinical_labels: true
+    label_exposure: training_labels
+    uses_clinvar: true
+    clinvar_role: TRAINING LABELS — ClinVar P/LP used as the positive class.
+    training_data: [gnomAD homozygote-carrier benigns, HGMD Pro DM + ClinVar P/LP deleterious]
+    source: Steinhaus et al., NAR 2021, doi:10.1093/nar/gkab266
+    notes: >-
+      THE SHARPEST RISK ON THIS LIST. Published April 2021 against a June 2021
+      baseline, with ClinVar P/LP as the training target — so its cutoff may
+      fall INSIDE the benchmark window rather than before it. The exact ClinVar
+      release is in Supplementary Tables S5/S6. Resolve that before publishing
+      anything that evaluates this tool.
+
+  - name: BayesDel
+    training_cutoff: null
+    verified: false
+    derived_cutoff_note: >-
+      Distributed score build date 2017-08-24 is a property of the precomputed
+      database, NOT a statement of the ClinVar release used in training. Loose
+      ceiling only.
+    supervised_on_clinical_labels: true
+    label_exposure: training_labels
+    uses_clinvar: true
+    clinvar_role: TRAINING LABELS — 39,395 pathogenic / 39,978 neutral.
+    training_data: [ClinVar + UniProtKB labels, ensemble features]
+    source: Feng, Hum Mutat 2017, doi:10.1002/humu.23158
+    notes: Direct ClinVar label exposure with an unestablished date.
+
+  - name: PrimateAI
+    training_cutoff: null
+    verified: false
+    supervised_on_clinical_labels: false
+    label_exposure: evaluation_only
+    uses_clinvar: false
+    clinvar_role: >-
+      Evaluation only, deliberately restricted to variants added Jan–Nov 2017
+      so as not to coincide with any classifier's training.
+    training_data: [common human variants MAF>0.1%, ~300K primate variants, unobserved set]
+    source: Sundaram et al., Nat Genet 2018, doi:10.1038/s41588-018-0167-z
+    notes: Semi-supervised on population frequency, not curated clinical calls.
 
   - name: CADD
     version: null
-    category: ensemble
     training_cutoff: null
-    training_data: []
-    uses_clinvar: unknown
-    source: null
     verified: false
+    supervised_on_clinical_labels: false
+    label_exposure: evaluation_only
+    uses_clinvar: false
+    clinvar_role: Performance figures only; never a training label, in any version.
+    training_data: [proxy-neutral human-derived variants, proxy-deleterious simulated variants]
+    source: >-
+      Rentzsch et al., CADD v1.7, NAR 2024, doi:10.1093/nar/gkad989;
+      ReleaseNotes_CADD_v1.7.pdf
     notes: >-
-      Versioned and periodically retrained, so the version string matters more
-      here than for the others. Pin the exact release used.
+      Not supervised on clinical labels, but not label-free down the chain
+      either: PolyPhen-2 and SIFT are features from early versions, and v1.7
+      adds ESM-1v. Annotation anchor moves by version (Ensembl 95 in v1.6,
+      110 in v1.7). Record the exact version scored.
 
-  # ---- Modern predictors, absent from the VarPPUD comparison ---------------
-  # These are where contamination actually bites: recent, and several trained
-  # on ClinVar directly. A benchmark that only evaluates the legacy tools above
-  # avoids the problem by avoiding the tools anyone currently cares about.
-
-  - name: REVEL
-    version: null
-    category: ensemble
-    training_cutoff: null
-    training_data: []
-    uses_clinvar: unknown
-    source: null
-    verified: false
-    notes: null
+  # ---- Measured, not inferred ---------------------------------------------
 
   - name: AlphaMissense
-    version: null
-    category: deep-learning
     training_cutoff: null
-    training_data: []
-    uses_clinvar: unknown
-    source: null
     verified: false
+    supervised_on_clinical_labels: false
+    label_exposure: evaluation_only
+    uses_clinvar: true
+    clinvar_role: >-
+      NOT a training label. 1,263 pathogenic + 1,263 benign used as the
+      evaluation set for model selection and hyperparameter optimisation, and
+      the 0.34/0.564 thresholds behind am_class were calibrated for 90%
+      precision on a ClinVar snapshot.
+    training_data: [population-frequency weak labels, primate variants, unobserved sampling, AlphaFold pretraining]
+    source: Cheng et al., Science 2023, doi:10.1126/science.adg7492
+    measured_overlap:
+      method: >-
+        Intersection of the vus-hindsight missense cohort against the 82,872
+        variants of the paper's Supplementary Data S5 — the nominal ClinVar
+        benchmark list.
+      vus_to_plp: '531 / 2883 = 18.42%'
+      control_still_vus: '1 / 25000 = 0.004%'
+      odds_ratio: '5644 (Fisher, p < 1e-300)'
+      match_labels: '531/531 appear in S5 with label=1 (pathogenic); zero as benign'
+      by_horizon:
+        h18: '527 / 589 = 89.5%'
+        h36: '3 / 1112 = 0.27%'
+        h61: '1 / 1182 = 0.08%'
+      dates_the_snapshot: >-
+        The cliff between 18 and 36 months places DeepMind's ClinVar snapshot
+        around end-2022: it holds almost every reclassification up to ~Dec 2022
+        and essentially none after.
+      leak_scope: >-
+        Evaluation and calibration exposure, not weights. Weights were fit on
+        population frequency. But the 531 sat in the set where AlphaMissense's
+        performance was reported, and am_class descends directly from
+        thresholds calibrated on that same snapshot.
     notes: >-
-      Post-2021 release, so on the face of it contaminated for a 2021 baseline.
-      Confirm what it was calibrated against before asserting that.
-
-  - name: EVE
-    version: null
-    category: deep-learning
-    training_cutoff: null
-    training_data: []
-    uses_clinvar: unknown
-    source: null
-    verified: false
-    notes: >-
-      Trained on sequence alignments rather than clinical labels, which may make
-      it clean regardless of release date. Worth checking carefully — it would
-      be a valuable uncontaminated comparator if so.
-
-  - name: ESM-1b
-    version: null
-    category: deep-learning
-    training_cutoff: null
-    training_data: []
-    uses_clinvar: unknown
-    source: null
-    verified: false
-    notes: >-
-      Protein language model; same reasoning as EVE. Unsupervised on clinical
-      labels is the property that matters, not the release year.
-
-  - name: PrimateAI
-    version: null
-    category: deep-learning
-    training_cutoff: null
-    training_data: []
-    uses_clinvar: unknown
-    source: null
-    verified: false
-    notes: null
-
-  - name: BayesDel
-    version: null
-    category: ensemble
-    training_cutoff: null
-    training_data: []
-    uses_clinvar: unknown
-    source: null
-    verified: false
-    notes: null
+      The only entry here whose exposure was MEASURED rather than inferred from
+      a stated date. That measurement outranks any date reasoning: it shows
+      both the magnitude and, via the horizon cliff, dates the snapshot that
+      the publication never stated.
