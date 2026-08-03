@@ -1,0 +1,131 @@
+{
+  "label": "2024-06",
+  "actual_file": "variant_summary_2024-06.txt.gz",
+  "variants_actual": 2914592,
+  "variants_reconstructed": 2651646,
+  "covered": 2402767,
+  "pct_covered": 82.4392,
+  "agreement": {
+    "n": 2402767,
+    "bucket": 2337536,
+    "pct_bucket": 97.2852,
+    "stars": 2193817,
+    "pct_stars": 91.3038,
+    "both": 2149075,
+    "pct_both": 89.4417
+  },
+  "confusion": [
+    {
+      "actual": "Still VUS",
+      "reconstructed": "Still VUS",
+      "n": 1140043
+    },
+    {
+      "actual": "B/LB",
+      "reconstructed": "B/LB",
+      "n": 876941
+    },
+    {
+      "actual": "P/LP",
+      "reconstructed": "P/LP",
+      "n": 246082
+    },
+    {
+      "actual": "Conflicting",
+      "reconstructed": "Conflicting",
+      "n": 70701
+    },
+    {
+      "actual": "Conflicting",
+      "reconstructed": "Still VUS",
+      "n": 34544
+    },
+    {
+      "actual": "Conflicting",
+      "reconstructed": "B/LB",
+      "n": 10371
+    },
+    {
+      "actual": "Conflicting",
+      "reconstructed": "P/LP",
+      "n": 4880
+    },
+    {
+      "actual": "Still VUS",
+      "reconstructed": "B/LB",
+      "n": 4259
+    },
+    {
+      "actual": "Other",
+      "reconstructed": "Other",
+      "n": 3769
+    },
+    {
+      "actual": "Still VUS",
+      "reconstructed": "Conflicting",
+      "n": 3453
+    },
+    {
+      "actual": "B/LB",
+      "reconstructed": "Conflicting",
+      "n": 2528
+    },
+    {
+      "actual": "B/LB",
+      "reconstructed": "Still VUS",
+      "n": 1987
+    },
+    {
+      "actual": "Still VUS",
+      "reconstructed": "P/LP",
+      "n": 1026
+    },
+    {
+      "actual": "P/LP",
+      "reconstructed": "Conflicting",
+      "n": 968
+    },
+    {
+      "actual": "P/LP",
+      "reconstructed": "Still VUS",
+      "n": 511
+    }
+  ],
+  "star_drift": [
+    {
+      "delta": -3,
+      "n": 2
+    },
+    {
+      "delta": -2,
+      "n": 22
+    },
+    {
+      "delta": -1,
+      "n": 161458
+    },
+    {
+      "delta": 0,
+      "n": 2193817
+    },
+    {
+      "delta": 1,
+      "n": 47073
+    },
+    {
+      "delta": 2,
+      "n": 338
+    },
+    {
+      "delta": 3,
+      "n": 57
+    }
+  ],
+  "cohort": {
+    "real": 1350978,
+    "covered": 1139252,
+    "recovered_as_vus": 1130600,
+    "recovered_with_criteria": 1126238,
+    "pct_recovered_with_criteria": 83.3646
+  }
+}
