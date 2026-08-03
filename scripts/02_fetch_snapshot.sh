@@ -26,11 +26,29 @@ if [[ "$MODE" == "current" ]]; then
   grep -q 'variant_summary\.txt\.gz' "$DATA/listing_tab_delimited.txt" \
     || { echo "FATAL: variant_summary.txt.gz not in live listing" >&2; exit 1; }
 elif [[ "$MODE" == "vcf" ]]; then
-  NAME=$(grep -o 'clinvar[^"[:space:]]*\.vcf\.gz' "$DATA/listing_vcf_grch38.txt" \
-         | sort -u | grep -x 'clinvar\.vcf\.gz' | head -1 || true)
+  # Prefer the DATED clinvar_YYYYMMDD.vcf.gz over the rolling clinvar.vcf.gz.
+  # NCBI overwrites the rolling name in place, so a run pinned to it cannot be
+  # reproduced once superseded — the same defect the endpoint snapshot had.
+  # The dated copy sits beside it and keeps its bytes. VCF_DATE pins an exact
+  # one; otherwise the newest dated file in the listing is used.
+  ALL_VCF=$(grep -oE 'clinvar_[0-9]{8}\.vcf\.gz' "$DATA/listing_vcf_grch38.txt" \
+            | sort -u || true)
+  if [[ -n "${VCF_DATE:-}" ]]; then
+    NAME=$(printf '%s\n' "$ALL_VCF" | grep -x "clinvar_${VCF_DATE}\.vcf\.gz" | head -1 || true)
+    if [[ -z "$NAME" ]]; then
+      echo "FATAL: no clinvar_${VCF_DATE}.vcf.gz in the vcf_GRCh38 listing." >&2
+      echo "Dated VCFs available at this path:" >&2
+      printf '%s\n' "$ALL_VCF" >&2
+      echo "Older releases are filed under vcf_GRCh38/archive_2.0/<YEAR>/." >&2
+      exit 1
+    fi
+  else
+    NAME=$(printf '%s\n' "$ALL_VCF" | sort | tail -1)
+  fi
   if [[ -z "$NAME" ]]; then
-    echo "FATAL: clinvar.vcf.gz not found in the vcf_GRCh38 listing." >&2
-    echo "Available VCF files:" >&2
+    echo "FATAL: no dated clinvar_YYYYMMDD.vcf.gz found in the vcf_GRCh38" >&2
+    echo "listing. Refusing to fall back to the rolling clinvar.vcf.gz, which" >&2
+    echo "cannot be reproduced once NCBI overwrites it. Inspect the listing:" >&2
     grep -o 'clinvar[^"[:space:]]*\.vcf\.gz' "$DATA/listing_vcf_grch38.txt" | sort -u >&2
     exit 1
   fi
