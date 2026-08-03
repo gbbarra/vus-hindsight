@@ -1,0 +1,68 @@
+{
+  "s5_rows": 82872,
+  "s5_md5": "27913b9c4aab674a6c60aa1778eba428",
+  "export_md5": "ff2b77cc65eca8a4a62714df19dea9e3",
+  "by_arm": {
+    "still_vus": {
+      "n": 25000,
+      "hit": 1,
+      "pct": 0.004
+    },
+    "vus_to_plp": {
+      "n": 2883,
+      "hit": 531,
+      "pct": 18.4183
+    }
+  },
+  "odds_ratio": 5643.906887755102,
+  "p_value": 0.0,
+  "labels": {
+    "1.0": 531
+  },
+  "by_horizon": [
+    {
+      "horizon": "18",
+      "n": 589,
+      "hit": 527,
+      "pct": 89.4737
+    },
+    {
+      "horizon": "36",
+      "n": 1112,
+      "hit": 3,
+      "pct": 0.2698
+    },
+    {
+      "horizon": "61",
+      "n": 1182,
+      "hit": 1,
+      "pct": 0.0846
+    }
+  ],
+  "by_stratum": [
+    {
+      "arm": "still_vus",
+      "stratum": "other",
+      "n": 11742,
+      "hit": 0
+    },
+    {
+      "arm": "still_vus",
+      "stratum": "primary",
+      "n": 13258,
+      "hit": 1
+    },
+    {
+      "arm": "vus_to_plp",
+      "stratum": "other",
+      "n": 1306,
+      "hit": 272
+    },
+    {
+      "arm": "vus_to_plp",
+      "stratum": "primary",
+      "n": 1577,
+      "hit": 259
+    }
+  ]
+}
