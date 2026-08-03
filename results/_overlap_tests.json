@@ -1,0 +1,139 @@
+[
+  {
+    "name": "AlphaMissense S5 (ClinVar benchmark)",
+    "file": "science.adg7492_data_s5.csv",
+    "md5": "27913b9c4aab674a6c60aa1778eba428",
+    "list_rows": 82872,
+    "ids_hg38": 82872,
+    "ids_hg19": 0,
+    "by_arm": {
+      "still_vus": {
+        "n": 25000,
+        "hit": 1,
+        "pct": 0.004
+      },
+      "vus_to_plp": {
+        "n": 2883,
+        "hit": 531,
+        "pct": 18.4183
+      }
+    },
+    "verdict": "EXPOSED",
+    "odds_ratio": 5643.906887755102,
+    "p_value": 0.0,
+    "labels": {
+      "1.0": 531
+    },
+    "by_horizon": [
+      {
+        "horizon": "18",
+        "n": 589,
+        "hit": 527,
+        "pct": 89.4737
+      },
+      {
+        "horizon": "36",
+        "n": 1112,
+        "hit": 3,
+        "pct": 0.2698
+      },
+      {
+        "horizon": "61",
+        "n": 1182,
+        "hit": 1,
+        "pct": 0.0846
+      }
+    ]
+  },
+  {
+    "name": "AlphaMissense S6",
+    "file": "science.adg7492_data_s6.csv",
+    "md5": "a934a63f2c5ecd46a8859d769ac88c16",
+    "list_rows": 2601,
+    "ids_hg38": 2601,
+    "ids_hg19": 0,
+    "by_arm": {
+      "still_vus": {
+        "n": 25000,
+        "hit": 26,
+        "pct": 0.104
+      },
+      "vus_to_plp": {
+        "n": 2883,
+        "hit": 15,
+        "pct": 0.5203
+      }
+    },
+    "verdict": "MINIMAL",
+    "odds_ratio": 5.023736723527518,
+    "p_value": 7.352909940639255e-06,
+    "labels": {
+      "1": 14,
+      "0": 1
+    },
+    "by_horizon": [
+      {
+        "horizon": "18",
+        "n": 589,
+        "hit": 3,
+        "pct": 0.5093
+      },
+      {
+        "horizon": "36",
+        "n": 1112,
+        "hit": 3,
+        "pct": 0.2698
+      },
+      {
+        "horizon": "61",
+        "n": 1182,
+        "hit": 9,
+        "pct": 0.7614
+      }
+    ]
+  },
+  {
+    "name": "AlphaMissense S7",
+    "file": "science.adg7492_data_s7.csv",
+    "md5": "f03bd3fc628a875f4211248c7fa6f786",
+    "list_rows": 410,
+    "ids_hg38": 0,
+    "ids_hg19": 410,
+    "by_arm": {
+      "still_vus": {
+        "n": 25000,
+        "hit": 0,
+        "pct": 0.0
+      },
+      "vus_to_plp": {
+        "n": 2883,
+        "hit": 0,
+        "pct": 0.0
+      }
+    },
+    "verdict": "UNUSABLE (coordinate build mismatch)",
+    "odds_ratio": NaN,
+    "p_value": 1.0,
+    "labels": {},
+    "by_horizon": [
+      {
+        "horizon": "18",
+        "n": 589,
+        "hit": 0,
+        "pct": 0.0
+      },
+      {
+        "horizon": "36",
+        "n": 1112,
+        "hit": 0,
+        "pct": 0.0
+      },
+      {
+        "horizon": "61",
+        "n": 1182,
+        "hit": 0,
+        "pct": 0.0
+      }
+    ]
+  }
+]
