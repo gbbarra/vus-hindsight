@@ -28,6 +28,12 @@ on:
           set of counts exactly. Leave blank for the newest release.
         required: false
         default: ''
+      vcf_date:
+        description: >-
+          Pin the consequence VCF to an exact dated release (YYYYMMDD).
+          Leave blank for the newest dated VCF in the listing.
+        required: false
+        default: ''
       confirm_submission_summary:
         description: 'Download submission_summary.txt.gz even if over 2 GB'
         type: boolean
@@ -71,6 +77,7 @@ jobs:
         env:
           BASELINES: ${{ github.event.inputs.baselines || '2021-06 2022-12' }}
           CURRENT_MONTH: ${{ github.event.inputs.current_month }}
+          VCF_DATE: ${{ github.event.inputs.vcf_date }}
           SUBMISSION_CONFIRM: ${{ github.event.inputs.confirm_submission_summary == 'true' && '1' || '0' }}
         run: |
           mkdir -p results

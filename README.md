@@ -308,6 +308,12 @@ and the counts differ accordingly — 4,771 vs 4,735 VUS → P/LP for the 2021-0
 baseline, 1,612 vs 1,577 in the missense ≥2★ stratum. Those earlier figures
 survive only in this repository's git history; they cannot be regenerated.
 
+The consequence VCF has the same property and the same fix. `vcf_GRCh38/`
+carries both a rolling `clinvar.vcf.gz` and a dated `clinvar_YYYYMMDD.vcf.gz`
+with identical content; the pipeline takes the **dated** one and refuses to fall
+back to the rolling name, and `VCF_DATE=YYYYMMDD` pins an exact release. Older
+dated VCFs move to `vcf_GRCh38/archive_2.0/<YEAR>/`.
+
 Everything published from `V1.0.0` onward uses an archived endpoint for exactly
 this reason.
 
