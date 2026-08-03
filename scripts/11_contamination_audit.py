@@ -94,103 +94,158 @@ def main():
         label = p["name"] + (f" ({p['version']})" if p.get("version") else "")
         cutoff = p.get("training_cutoff")
         verified = bool(p.get("verified"))
+        exposure = p.get("label_exposure", "unknown")
+        measured = p.get("measured_overlap")
 
+        # Date axis. Only meaningful once we know labels were involved at all.
         if not cutoff or not verified:
-            tier = "UNVERIFIED"
-            months = None
-            lo = hi = None
+            date_tier = "UNVERIFIED"
+            months = lo = hi = None
             why = ("no sourced training cutoff" if not cutoff
                    else "cutoff present but not verified against a source")
         else:
-            c = date.fromisoformat(str(cutoff)) if len(str(cutoff)) > 7 \
-                else parse_month(str(cutoff))
+            c = parse_month(str(cutoff))
             months = months_between(baseline, c)
             if months <= 0:
-                tier = "CLEAN"
+                date_tier = "CLEAN"
             elif endpoint_months is not None and months >= endpoint_months:
-                tier = "CONTAMINATED"
+                date_tier = "CONTAMINATED"
             else:
-                tier = "PARTIAL"
+                date_tier = "PARTIAL"
             lo, hi, why = leakage_range(months, points)
 
-        rows.append({"predictor": label, "tier": tier, "cutoff": cutoff,
-                     "verified": verified, "months_past_baseline": months,
+        # Verdict combines both axes. A measurement outranks any inference; a
+        # model with no clinical labels cannot memorise reclassifications
+        # whatever its release date, so dating it is beside the point.
+        if measured:
+            verdict = "MEASURED LEAK"
+        elif exposure == "none":
+            verdict = "LABEL-FREE"
+        elif exposure == "threshold_only":
+            verdict = "LABEL-FREE (score)"
+        elif exposure == "evaluation_only":
+            verdict = f"INDIRECT / {date_tier}"
+        elif exposure == "training_labels":
+            verdict = f"DIRECT / {date_tier}"
+        else:
+            verdict = f"UNKNOWN / {date_tier}"
+
+        rows.append({"predictor": label, "date_tier": date_tier,
+                     "exposure": exposure, "verdict": verdict,
+                     "cutoff": cutoff, "verified": verified,
+                     "months_past_baseline": months,
                      "leak_low": lo, "leak_high": hi, "leak_note": why,
                      "uses_clinvar": p.get("uses_clinvar", "unknown"),
-                     "category": p.get("category"),
-                     "source": p.get("source")})
+                     "measured": measured, "source": p.get("source")})
 
-    order = {"CLEAN": 0, "PARTIAL": 1, "CONTAMINATED": 2, "UNVERIFIED": 3}
-    rows.sort(key=lambda r: (order[r["tier"]], r["predictor"]))
+    # Riskiest first: measured leaks, then direct label exposure, then the rest.
+    def risk(r):
+        if r["measured"]:
+            return 0
+        if r["exposure"] == "training_labels":
+            return 1 if r["date_tier"] != "CLEAN" else 3
+        if r["exposure"] in ("evaluation_only", "unknown"):
+            return 2
+        return 4
+    rows.sort(key=lambda r: (risk(r), r["predictor"]))
 
-    counts = {}
-    for r in rows:
-        counts[r["tier"]] = counts.get(r["tier"], 0) + 1
+    usable = [r for r in rows if r["verdict"].startswith("LABEL-FREE")
+              or r["verdict"].endswith("/ CLEAN")]
 
     print(f"baseline: {args.baseline}")
     if total_plp is not None:
         print(f"labels in the window: {total_plp:,} VUS -> P/LP over "
-              f"{endpoint_months} months")
-    print()
-    for tier in ("CLEAN", "PARTIAL", "CONTAMINATED", "UNVERIFIED"):
-        n = counts.get(tier, 0)
-        print(f"  {tier:13s} {n:>3d}")
-    print()
+              f"{endpoint_months} months\n")
     for r in rows:
-        leak = ""
-        if r["leak_low"] is not None and total_plp:
-            if r["leak_low"] == r["leak_high"]:
-                leak = f"  up to {r['leak_low']:,} labels " \
-                       f"({100.0 * r['leak_low'] / total_plp:.0f}%)"
-            else:
-                leak = (f"  {r['leak_low']:,}-{r['leak_high']:,} labels "
-                        f"({100.0 * r['leak_low'] / total_plp:.0f}-"
-                        f"{100.0 * r['leak_high'] / total_plp:.0f}%)")
-        print(f"  [{r['tier']:12s}] {r['predictor']:24s}{leak}")
+        extra = ""
+        if r["measured"]:
+            extra = "  <-- overlap measured, see report"
+        elif r["leak_low"] is not None and total_plp and r["leak_high"]:
+            extra = f"  up to {r['leak_high']:,} labels exposed"
+        print(f"  [{r['verdict']:22s}] {r['predictor']:24s}{extra}")
+    print(f"\nusable without a contamination caveat: {len(usable)}/{len(rows)}")
+    for r in usable:
+        print(f"  + {r['predictor']}")
 
     # --- report --------------------------------------------------------------
     L = [f"# Contamination audit — baseline {args.baseline}\n"]
     L.append("Whether a predictor could already have been told this benchmark's "
-             "answer. The labels are ClinVar reclassifications between the "
-             "baseline and the endpoint; a model trained on data from inside "
-             "that window may be recalling them rather than predicting them.\n")
+             "answer. Two things decide that, and they are independent:\n")
+    L.append("- **When** its training data was fixed (`training_cutoff`).\n"
+             "- **Whether** curated clinical labels entered the model at all "
+             "(`label_exposure`), and in what role.\n")
+    L.append("A sequence-only model has no clinical labels to memorise, so its "
+             "release date barely matters. A model fit on ClinVar P/LP labels is "
+             "exposed in proportion to how recent its snapshot was. Ranking on "
+             "dates alone would score those two the same, which is wrong.\n")
     if total_plp is not None:
         L.append(f"Window: **{total_plp:,}** VUS → P/LP reclassifications over "
-                 f"{endpoint_months} months, from "
-                 f"[`survival.md`](survival.md).\n")
-    L.append("| tier | meaning |\n|---|---|\n"
-             "| CLEAN | training cutoff at or before the baseline |\n"
-             "| PARTIAL | cutoff inside the window; some labels were visible |\n"
-             "| CONTAMINATED | cutoff at or beyond the endpoint |\n"
-             "| UNVERIFIED | no sourced cutoff — **not** the same as clean |\n")
-    L.append("")
-    L.append("| predictor | tier | cutoff | labels potentially seen | uses ClinVar |")
+                 f"{endpoint_months} months.\n")
+
+    L.append("## Verdicts\n")
+    L.append("| predictor | verdict | label exposure | cutoff | labels exposed |")
     L.append("|---|---|---|---|---|")
     for r in rows:
-        if r["leak_low"] is None or not total_plp:
+        if r["measured"]:
+            leak = "**measured — see below**"
+        elif r["leak_low"] is None or not total_plp:
             leak = "—"
         elif r["leak_low"] == r["leak_high"]:
-            leak = f"{r['leak_low']:,} ({100.0 * r['leak_low'] / total_plp:.0f}%)"
+            leak = f"{r['leak_low']:,}"
         else:
-            leak = (f"{r['leak_low']:,}–{r['leak_high']:,} "
-                    f"({100.0 * r['leak_low'] / total_plp:.0f}–"
-                    f"{100.0 * r['leak_high'] / total_plp:.0f}%)")
-        L.append(f"| {r['predictor']} | {r['tier']} | {r['cutoff'] or '—'} "
-                 f"| {leak} | {r['uses_clinvar']} |")
+            leak = f"{r['leak_low']:,}–{r['leak_high']:,}"
+        L.append(f"| {r['predictor']} | {r['verdict']} | {r['exposure']} "
+                 f"| {r['cutoff'] or '—'} | {leak} |")
     L.append("")
-    n_unver = counts.get("UNVERIFIED", 0)
+
+    L.append(f"**{len(usable)} of {len(rows)}** carry no contamination caveat "
+             "for this baseline:\n")
+    for r in usable:
+        L.append(f"- {r['predictor']} — {r['verdict']}")
+    L.append("")
+
+    for r in rows:
+        if not r["measured"]:
+            continue
+        m = r["measured"]
+        L.append(f"## Measured exposure — {r['predictor']}\n")
+        L.append("The only entry whose exposure was measured rather than "
+                 "inferred from a stated date.\n")
+        L.append(f"- Method: {m.get('method','')}\n")
+        L.append(f"- Reclassified arm: **{m.get('vus_to_plp','')}**")
+        L.append(f"- Control arm: {m.get('control_still_vus','')}")
+        L.append(f"- Odds ratio: {m.get('odds_ratio','')}")
+        L.append(f"- {m.get('match_labels','')}\n")
+        bh = m.get("by_horizon") or {}
+        if bh:
+            L.append("| horizon | overlap |\n|---|---|")
+            for k in sorted(bh):
+                L.append(f"| {k} | {bh[k]} |")
+            L.append("")
+        if m.get("dates_the_snapshot"):
+            L.append(f"{m['dates_the_snapshot']}\n")
+        if m.get("leak_scope"):
+            L.append(f"**Scope.** {m['leak_scope']}\n")
+
+    n_unver = sum(1 for r in rows if r["date_tier"] == "UNVERIFIED"
+                  and r["exposure"] in ("training_labels", "evaluation_only", "unknown"))
     if n_unver:
-        L.append(f"**{n_unver} of {len(rows)} predictors have no sourced training "
-                 "cutoff.** Until those are filled in from the literature, this "
-                 "audit cannot say the benchmark is uncontaminated for them — "
-                 "and an unverified tool must not be reported as a clean "
-                 "baseline. Fill `training_cutoff`, `source` and `verified` in "
-                 "`predictors.yaml`.\n")
-    L.append("Leakage is quoted as a range between the survival curve's measured "
-             "time points rather than interpolated, so the bound comes from "
-             "measurement rather than from a fitted line. It is an upper bound "
-             "on exposure: a predictor may have used ClinVar without using "
-             "every reclassification in it.\n")
+        L.append("## Still unresolved\n")
+        L.append(f"{n_unver} predictors have clinical-label exposure and no "
+                 "sourced cutoff. An unverified tool is not a clean tool, it is "
+                 "an unmeasured one, so none of these may be reported as a clean "
+                 "baseline until `training_cutoff`, `source` and `verified` are "
+                 "filled in `predictors.yaml`.\n")
+        for r in rows:
+            if r["date_tier"] == "UNVERIFIED" and r["exposure"] in (
+                    "training_labels", "evaluation_only", "unknown"):
+                L.append(f"- {r['predictor']} ({r['exposure']})")
+        L.append("")
+
+    L.append("Leakage figures are bracketed between the survival curve's "
+             "measured time points rather than interpolated, and are upper "
+             "bounds: using ClinVar does not mean using every reclassification "
+             "in it.\n")
 
     os.makedirs(RESULTS, exist_ok=True)
     out_md = os.path.join(RESULTS, "contamination_audit.md")
@@ -199,7 +254,8 @@ def main():
     with open(os.path.join(RESULTS, "_contamination_audit.json"), "w") as fh:
         json.dump({"baseline": args.baseline, "labels_in_window": total_plp,
                    "endpoint_months": endpoint_months,
-                   "counts": counts, "predictors": rows}, fh, indent=2)
+                   "usable": [r["predictor"] for r in usable],
+                   "predictors": rows}, fh, indent=2)
     print(f"\nwrote {out_md}")
     return 0
 
