@@ -281,6 +281,117 @@ predictors:
                                 and int(r["gold_stars"]) >= 2) else "other"
                   for r in by_arm["vus_to_plp"]]))
 
+    # dbNSFP conversion. The three fixtures below are the three ways a dbNSFP
+    # file can present coordinates, and only one of them is the assembly this
+    # benchmark keys on. Picking wrong yields an empty join, which reads as "no
+    # coverage" rather than as an error, so the detection and both refusals are
+    # asserted rather than assumed.
+    import gzip as _gzip
+
+    def write_dbnsfp(path, cols, rowfn):
+        with _gzip.open(path, "wt", newline="") as fh:
+            w = _csv.writer(fh, delimiter="\t")
+            w.writerow(cols)
+            for r in exp_rows:
+                w.writerow(rowfn(r))
+
+    v5 = os.path.join(workdir, "dbnsfp_v5.tsv.gz")
+    write_dbnsfp(
+        v5,
+        ["#chr", "pos(1-based)", "ref", "alt", "hg19_chr", "hg19_pos(1-based)",
+         "SIFT_score", "SIFT_converted_rankscore",
+         "Polyphen2_HDIV_score", "Polyphen2_HDIV_rankscore",
+         "MutationAssessor_score", "MutationAssessor_rankscore"],
+        lambda r: [r["chrom"], r["pos_hg38"], r["ref"], r["alt"],
+                   r["chrom"], str(int(r["pos_hg38"]) - 1000),
+                   "0.40;0.02;.", "0.71", "0.90", "0.65", ".", "0.33"])
+    # dbNSFP 3.x: the main columns are GRCh37 and GRCh38 hides in the aliases.
+    v3 = os.path.join(workdir, "dbnsfp_v3.tsv.gz")
+    write_dbnsfp(
+        v3,
+        ["#chr", "pos(1-based)", "ref", "alt", "hg38_chr", "hg38_pos(1-based)",
+         "SIFT_score", "SIFT_converted_rankscore"],
+        lambda r: [r["chrom"], str(int(r["pos_hg38"]) - 1000), r["ref"], r["alt"],
+                   r["chrom"], r["pos_hg38"], "0.40;0.02;.", "0.71"])
+    # No alias column at all: the assembly is genuinely unknowable from the file.
+    amb = os.path.join(workdir, "dbnsfp_ambiguous.tsv.gz")
+    write_dbnsfp(
+        amb, ["#chr", "pos(1-based)", "ref", "alt", "SIFT_score"],
+        lambda r: [r["chrom"], r["pos_hg38"], r["ref"], r["alt"], "0.40"])
+
+    def run_dbnsfp(src, outdir, extra=()):
+        return subprocess.run(
+            [sys.executable, os.path.join(ROOT, "scripts", "16_dbnsfp_to_scores.py"),
+             "--dbnsfp", src, "--export", export_csv,
+             "--out-dir", os.path.join(workdir, outdir), *extra],
+            cwd=workdir, env=env, capture_output=True, text=True)
+
+    r5 = run_dbnsfp(v5, "scores")
+    check("dbnsfp: 4.x/5.x layout converts", r5.returncode, 0)
+    conv = json.load(open(os.path.join(workdir, "results",
+                                       "_dbnsfp_conversion.json")))
+    check("dbnsfp: GRCh38 read from the main columns in the 4.x/5.x layout",
+          (conv["chr_col"], conv["pos_col"]), ("#chr", "pos(1-based)"))
+    check("dbnsfp: every cohort row joined", conv["joined"], len(exp_rows))
+    check("dbnsfp: absent predictors are recorded, not substituted",
+          "FATHMM" in conv["missing"] and "PROVEAN" in conv["missing"], True)
+    emitted = {p["predictor"]: p for p in conv["predictors"]}
+    check("dbnsfp: rankscore mode declares every direction as high",
+          {p["direction"] for p in conv["predictors"]}, {"high"})
+    check("dbnsfp: rankscore column chosen over the raw one",
+          emitted["SIFT"]["column"], "SIFT_converted_rankscore")
+    # A '.' rankscore is a real value here, so MutationAssessor still emits;
+    # what must not happen is a missing raw score turning into a number.
+    with open(os.path.join(workdir, "scores", "sift.csv")) as fh:
+        sift_rows = list(_csv.DictReader(fh))
+    check("dbnsfp: score file is keyed on variant_id_hg38",
+          sorted(sift_rows[0].keys()), ["score", "variant_id_hg38"])
+    check("dbnsfp: score file IDs match the export",
+          {r["variant_id_hg38"] for r in sift_rows},
+          {r["variant_id_hg38"] for r in exp_rows})
+
+    r_raw = run_dbnsfp(v5, "raw", ["--raw", "--only", "SIFT,MutationAssessor"])
+    check("dbnsfp: raw mode converts", r_raw.returncode, 0)
+    raw = json.load(open(os.path.join(workdir, "results",
+                                      "_dbnsfp_conversion.json")))
+    raw_by = {p["predictor"]: p for p in raw["predictors"]}
+    check("dbnsfp: raw SIFT keeps its published low-is-damaging direction",
+          raw_by["SIFT"]["direction"], "low")
+    # 0.40;0.02;. across transcripts, and SIFT is damaging downwards, so the
+    # collapsed value is the minimum and the '.' is dropped rather than parsed.
+    check("dbnsfp: per-transcript raw values collapse to the damaging one",
+          (raw_by["SIFT"]["min"], raw_by["SIFT"]["max"]), (0.02, 0.02))
+    check("dbnsfp: a missing raw score yields no row at all",
+          "MutationAssessor" in raw_by, False)
+
+    r3 = run_dbnsfp(v3, "scores_v3")
+    check("dbnsfp: 3.x layout converts", r3.returncode, 0)
+    conv3 = json.load(open(os.path.join(workdir, "results",
+                                        "_dbnsfp_conversion.json")))
+    check("dbnsfp: GRCh38 read from the aliases in the 3.x layout",
+          (conv3["chr_col"], conv3["pos_col"]),
+          ("hg38_chr", "hg38_pos(1-based)"))
+    check("dbnsfp: 3.x layout joins the same cohort", conv3["joined"],
+          len(exp_rows))
+
+    r_amb = run_dbnsfp(amb, "scores_amb")
+    check("dbnsfp: an undeterminable assembly is refused", r_amb.returncode, 1)
+    check("dbnsfp: the refusal says it will not guess",
+          "Refusing to guess" in r_amb.stderr, True)
+
+    # Forcing the GRCh37 columns is the failure this guard exists for: the run
+    # completes, joins nothing, and would otherwise write empty files that look
+    # like a predictor with no coverage.
+    r_wrong = run_dbnsfp(v3, "scores_wrong",
+                         ["--hg38-chr-col", "#chr",
+                          "--hg38-pos-col", "pos(1-based)"])
+    check("dbnsfp: an empty join stops instead of writing empty files",
+          r_wrong.returncode, 1)
+    check("dbnsfp: the empty join is reported as a key mismatch",
+          "key mismatch" in r_wrong.stderr, True)
+    check("dbnsfp: no score files were written for the empty join",
+          os.path.exists(os.path.join(workdir, "scores_wrong", "sift.csv")), False)
+
     if failures:
         print("\nFAILURES:")
         for f in failures:

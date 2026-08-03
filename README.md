@@ -9,6 +9,10 @@ interpretation methods.
 > self-contained handoff — every measured number, the exact release each came
 > from, and the caveats that belong in any write-up.
 >
+> **Evaluating a predictor on it?** [`docs/SCORES.md`](docs/SCORES.md) covers
+> where the scores come from, how to get them onto this benchmark's variant key,
+> and what to check before trusting the result.
+>
 > **Measured results:** [`results/transitions.md`](results/transitions.md),
 > produced by `scripts/run_all.sh` on a GitHub Actions runner and committed
 > straight from that run, with the full run log alongside them in
@@ -221,6 +225,13 @@ scripts/schema.py                      column resolution, buckets, stars, MC map
 scripts/04_transitions.py              the analysis (DuckDB streaming)
 scripts/05_submission_summary_probe.sh size-check + date-column probe
 scripts/06_report.py                   assemble results/transitions.md
+scripts/07_survival.py                 fixed-cohort survival across endpoints
+scripts/09_reconstruct.py              rebuild a frozen date from submissions
+scripts/11_contamination_audit.py      per-predictor exposure verdicts
+scripts/12_export_for_join.py          flat cohort CSV keyed on GRCh38
+scripts/14_overlap_test.py             published evaluation lists vs the cohort
+scripts/15_evaluate.py                 AUROC/AUPRC per horizon, audit enforced
+scripts/16_dbnsfp_to_scores.py         dbNSFP -> per-predictor score files
 scripts/run_all.sh                     end-to-end, one baseline at a time
 tests/                                 synthetic fixture + assertions
 results/                               committed outputs
