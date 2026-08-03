@@ -1,0 +1,97 @@
+### frozen-date reconstruction, validated at 2021-06
+duckdb 1.5.5
+/dev/root       145G   42G  103G  29% /
+
+### fetching the real snapshot for 2021-06
+cutoff date taken from the snapshot's own release stamp: 2021-06-03
+
+### fetching submission_summary
+remote size: 385669884 bytes (0.36 GiB)
+submission_summary: 385669884 bytes
+
+### reconstructing as of 2021-06-03
+submission rows            : 6,409,838
+  contributing to aggregate: 6,017,736 (93.88%)
+  with a parseable date    : 6,102,834 (95.21%)
+  eligible as of 2021-06-03: 1,116,681
+distinct VariationIDs      : 4,306,909
+
+reconstructed variants as of 2021-06-03: 877,195
+
+reconstructed review-status distribution:
+  [1*] criteria provided, single submitter                       675,003
+  [2*] criteria provided, multiple submitters, no conflicts       86,786
+  [0*] no assertion criteria provided                             77,187
+  [1*] criteria provided, conflicting classifications             27,111
+  [3*] reviewed by expert panel                                   11,074
+  [4*] practice guideline                                             34
+
+reconstructed classification distribution (top 12):
+  Uncertain significance                                    295,502
+  Likely benign                                             197,158
+  Benign                                                    154,253
+  no assertion criteria provided                             77,187
+  Pathogenic                                                 71,292
+  Likely pathogenic                                          34,470
+  Conflicting classifications of pathogenicity               27,111
+  Benign/Likely benign                                       15,030
+  Pathogenic/Likely pathogenic                                4,971
+  drug response                                                 124
+  Other                                                          91
+  other                                                           5
+
+wrote data/reconstructed_2021-06.parquet
+
+### validating against the real 2021-06 snapshot
+=== HEADER: data/variant_summary_2021-06.txt.gz ===
+34 columns: ['AlleleID', 'Type', 'Name', 'GeneID', 'GeneSymbol', 'HGNC_ID', 'ClinicalSignificance', 'ClinSigSimple', 'LastEvaluated', 'RS# (dbSNP)', 'nsv/esv (dbVar)', 'RCVaccession', 'PhenotypeIDS', 'PhenotypeList', 'Origin', 'OriginSimple', 'Assembly', 'ChromosomeAccession', 'Chromosome', 'Start', 'Stop', 'ReferenceAllele', 'AlternateAllele', 'Cytogenetic', 'ReviewStatus', 'NumberSubmitters', 'Guidelines', 'TestedInGTR', 'OtherIDs', 'SubmitterCategories', 'VariationID', 'PositionVCF', 'ReferenceAlleleVCF', 'AlternateAlleleVCF']
+resolved: classification='ClinicalSignificance' review_status='ReviewStatus' consequence=None
+[actual 2021-06] rows=1,908,821 GRCh38=927,078 after dedupe on VariationID=926,800 (collapsed 278)
+
+=== reconstruction vs actual, 2021-06 ===
+variants in real snapshot (GRCh38, deduped): 926,800
+variants reconstructed (all assemblies)    : 877,195
+real variants with a reconstruction        : 597,970 (64.52%)
+
+agreement among covered variants (597,970):
+  bucket           : 531,723 (88.92%)
+  review stars     : 516,997 (86.46%)
+  both             : 464,549 (77.69%)
+
+bucket confusion (actual -> reconstructed), top 15:
+  Still VUS        -> Still VUS          215,574
+  B/LB             -> B/LB               204,025
+  P/LP             -> P/LP                86,638
+  Conflicting      -> Conflicting         21,841
+  P/LP             -> Other               19,922   <-- mismatch
+  Conflicting      -> Still VUS           11,769   <-- mismatch
+  Still VUS        -> Other                8,978   <-- mismatch
+  Conflicting      -> B/LB                 6,242   <-- mismatch
+  B/LB             -> Other                6,095   <-- mismatch
+  Other            -> Other                3,645
+  Still VUS        -> Conflicting          3,277   <-- mismatch
+  Still VUS        -> B/LB                 2,543   <-- mismatch
+  Conflicting      -> P/LP                 2,487   <-- mismatch
+  B/LB             -> Conflicting          1,156   <-- mismatch
+  B/LB             -> Still VUS            1,121   <-- mismatch
+
+star drift (reconstructed minus actual), covered variants:
+  -3          7  ( 0.00%)
+  -2         38  ( 0.01%)
+  -1     53,783  ( 8.99%)
+  +0    516,997  (86.46%)
+  +1     26,830  ( 4.49%)
+  +2        269  ( 0.04%)
+  +3         46  ( 0.01%)
+
+=== the cohort that matters ===
+real VUS cohort (>=1 star)          : 382,704
+  with any reconstruction           : 223,277 (58.34%)
+  reconstructed as VUS              : 215,202 (56.23%)
+  reconstructed as VUS with >=1 star: 215,202 (56.23%)
+
+wrote results/_reconstruction_validation_2021-06.json
+
+### free disk at end
+/dev/root       145G   42G  103G  29% /
+DONE. See results/_reconstruction_validation_2021-06.json
