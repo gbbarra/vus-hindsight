@@ -16,10 +16,18 @@ authors:
     # orcid: 'https://orcid.org/0000-0000-0000-0000'
 repository-code: 'https://github.com/gbbarra/vus-hindsight'
 license: MIT
-version: 1.0.0
-date-released: '2026-08-01'
-# Filled in once Zenodo mints a DOI for this release — see README, "Citing".
-# doi: 10.5281/zenodo.XXXXXXX
+version: V1.0.0
+date-released: '2026-08-03'
+doi: 10.5281/zenodo.21766106
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.21766106
+    description: >-
+      Zenodo archive of this repository. Note that Zenodo mints both a
+      concept DOI resolving to the newest version and a version DOI
+      fixed to one release; when quoting specific counts, prefer the
+      version DOI for V1.0.0 so the citation cannot drift onto a later
+      release with different numbers.
 abstract: >-
   Measures how many ClinVar variants of uncertain significance
   (VUS) were later reclassified to a definitive call, and sizes

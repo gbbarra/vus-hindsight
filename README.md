@@ -254,19 +254,30 @@ results/                               committed outputs
 
 ## Citing
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21766106.svg)](https://doi.org/10.5281/zenodo.21766106)
+
 Cite the **archived release**, not this repository URL. A repository link is not
 a stable reference: re-running the pipeline against a newer ClinVar release
 legitimately changes the counts, so a bare link can point at numbers that differ
 from the ones you read.
 
-Release `v1.0.0` is computed against the archived monthly
+> Barra, G. B. *vus-hindsight: a retrospective ClinVar VUS reclassification
+> benchmark* (V1.0.0) [Data set]. Zenodo.
+> <https://doi.org/10.5281/zenodo.21766106>
+
+Release `V1.0.0` is computed against the archived monthly
 `variant_summary_2026-07.txt.gz` (2 July 2026), with the md5 of every input
 recorded in [`results/transitions.md`](results/transitions.md). Because the
 endpoint is an archived file rather than the rolling one, these counts can be
 regenerated exactly — see below for why that distinction is not cosmetic.
 
-[`CITATION.cff`](CITATION.cff) carries the metadata. Once the release is
-archived on Zenodo, add the minted DOI to that file and to this section.
+Zenodo mints two DOIs: a *concept* DOI that always resolves to the newest
+version, and a *version* DOI fixed to one release. The one above is what the
+repository badge reports. When quoting specific counts, prefer the version DOI
+for `V1.0.0` — shown on that release's Zenodo page — so the citation cannot
+drift onto a later release with different numbers.
+
+[`CITATION.cff`](CITATION.cff) carries the machine-readable metadata.
 
 ## Running it again
 
@@ -297,7 +308,7 @@ and the counts differ accordingly — 4,771 vs 4,735 VUS → P/LP for the 2021-0
 baseline, 1,612 vs 1,577 in the missense ≥2★ stratum. Those earlier figures
 survive only in this repository's git history; they cannot be regenerated.
 
-Everything published from `v1.0.0` onward uses an archived endpoint for exactly
+Everything published from `V1.0.0` onward uses an archived endpoint for exactly
 this reason.
 
 ## License
