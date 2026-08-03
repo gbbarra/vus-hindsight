@@ -1,0 +1,533 @@
+variant_id_hg38,variation_id,gene_symbol,horizon_months,stratum,arm,classification_2021,classification_current,s5_label,am_score
+chr19_38496278_C_G_hg38,133163,RYR1,still_vus,primary,still_vus,Uncertain significance,Uncertain significance,1.0,0.9839289757006544
+chr2_165388707_G_T_hg38,1000049,SCN2A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9940149326752082
+chr11_61951853_C_A_hg38,1000927,BEST1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.5649671589148905
+chr1_94080558_T_G_hg38,1001082,ABCA4,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.7734702035204308
+chr15_63060914_G_A_hg38,1002513,TPM1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.7991296127627997
+chr5_128335499_C_A_hg38,1003175,FBN2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9762798247256484
+chr5_128335499_C_G_hg38,1003634,FBN2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.986501643467607
+chr10_77039580_T_C_hg38,1004014,KCNMA1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.7772797166404677
+chr11_2164345_G_A_hg38,1004173,TH,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.5164662391896734
+chr15_38322338_C_A_hg38,1004532,SPRED1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9934975880247892
+chr2_240775875_T_G_hg38,1004912,KIF1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.976417101277458
+chr17_42317185_G_A_hg38,1005984,STAT3,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9518184565912055
+chr19_41860827_T_C_hg38,1006194,RPS19,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9927835553325647
+chrX_18587992_G_A_hg38,1006298,CDKL5,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9999497734942084
+chr12_57763648_C_T_hg38,1007304,CYP27B1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.41569144481301235
+chr12_47984553_C_T_hg38,1008593,COL2A1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9972085057767002
+chr9_127653715_G_A_hg38,1009331,STXBP1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9794444697163581
+chr7_120732995_C_T_hg38,1009567,KCND2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.999480303173139
+chr19_18785796_G_C_hg38,1010194,COMP,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.958216525122763
+chr2_32136879_G_A_hg38,1010882,SPAST,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9996157798177944
+chr19_13259628_A_C_hg38,1011068,CACNA1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.992763055398137
+chr18_62147021_T_C_hg38,1012442,PIGN,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.5959244049503781
+chr12_49185735_C_T_hg38,1012609,TUBA1A,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8243280653483859
+chr12_49186449_C_T_hg38,1012610,TUBA1A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.8926331058398682
+chr17_7903384_T_C_hg38,1012890,CHD3,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9506443729825746
+chr7_50376728_G_C_hg38,1013000,IKZF1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9994863621069552
+chrX_153693266_T_C_hg38,1013085,SLC6A8,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9997731594438848
+chr1_197427504_T_C_hg38,1013547,CRB1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8384597622635325
+chr11_108272816_A_G_hg38,1013733,ATM,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.5219410060418531
+chr15_48463211_A_T_hg38,1014036,FBN1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.7599977349554884
+chr2_165992417_A_G_hg38,1014045,SCN1A,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.966607015816874
+chr2_165331485_A_G_hg38,1014704,SCN2A,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8805741403292482
+chr1_216324324_C_A_hg38,1015542,USH2A,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.4183677656426513
+chrX_70035585_G_T_hg38,1016013,EDA,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9847927067701947
+chr12_25227310_T_G_hg38,1016209,KRAS,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.855890171196213
+chr1_215674827_G_A_hg38,1016577,USH2A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.5668842951296913
+chr19_33301525_C_G_hg38,1016681,CEBPA,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9998465640504357
+chr1_197429587_T_C_hg38,1017521,CRB1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9410537335721032
+chr19_42250478_A_G_hg38,1018043,ERF,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.999937439210827
+chr15_48613088_T_C_hg38,1018383,FBN1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9830651703403388
+chr20_63495906_C_T_hg38,1018904,EEF1A2,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9954369876142324
+chr1_94042790_A_G_hg38,1019412,ABCA4,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9378321976735826
+chr1_94019694_G_T_hg38,1019575,ABCA4,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.979103621216914
+chr1_209789708_G_A_hg38,1019576,IRF6,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9917280987735422
+chr12_49024853_A_G_hg38,1020791,KMT2D,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9961008218099336
+chr1_237784046_G_A_hg38,1021015,RYR2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.8123045128581932
+chrX_100408153_G_A_hg38,1021031,PCDH19,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8103019664705909
+chr8_60841871_A_G_hg38,1021391,CHD7,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9986617738203091
+chr16_88836232_C_T_hg38,1021451,GALNS,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.3171307191925758
+chr4_1001513_G_C_hg38,1021968,IDUA,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9175769596286812
+chr20_63413493_C_T_hg38,1022468,KCNQ2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9981023259856494
+chr1_45509009_T_C_hg38,1023220,MMACHC,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9742025301384221
+chrX_100406916_G_A_hg38,1023566,PCDH19,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9821601061188454
+chr1_215639187_G_A_hg38,1024750,USH2A,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.22496104837679584
+chr1_94063114_G_C_hg38,1024921,ABCA4,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8463976377715389
+chr2_166012126_C_T_hg38,1024964,SCN1A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9986585411824197
+chr7_128856919_C_A_hg38,1025130,FLNC,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8905945545328645
+chr12_102912802_G_A_hg38,102600,PAH,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.14743881075057058
+chr7_120788896_C_T_hg38,1026378,TSPAN12,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9924620753377802
+chr19_46756396_C_G_hg38,1026650,FKRP,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.7028123828900522
+chr2_144389950_T_C_hg38,1026904,ZEB2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9996714770041566
+chr12_102855281_C_G_hg38,102737,PAH,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9907345629114634
+chr12_102855225_T_C_hg38,102762,PAH,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.25481294423833184
+chr12_102851700_G_A_hg38,102887,PAH,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9288402005353367
+chr12_120978826_G_A_hg38,1033090,HNF1A,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.900499946811826
+chr2_108897041_C_G_hg38,1034708,EDAR,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.950042300625197
+chr2_98396945_C_T_hg38,1034766,CNGA3,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.7220170208249417
+chr4_15599684_T_C_hg38,1035129,CC2D2A,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.5260576811198387
+chr1_237772033_C_T_hg38,1035886,RYR2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9328794169775632
+chrX_18642050_A_T_hg38,1036724,RS1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9060493602048147
+chr11_102954254_C_G_hg38,1037126,MMP13,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9559859162888309
+chr9_95467144_C_G_hg38,1037360,PTCH1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9979704100067704
+chr13_48381337_A_G_hg38,1037460,RB1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.3136228307582092
+chrX_101401725_A_C_hg38,1038401,GLA,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.5021720024410361
+chrX_18581899_C_G_hg38,1038592,CDKL5,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9933502494557369
+chr5_177293843_T_A_hg38,1038714,NSD1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9999446762951308
+chr3_181712647_G_C_hg38,1038715,SOX2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9999446014935517
+chr3_129532265_G_A_hg38,1038982,RHO,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9898032865744965
+chr6_10830570_C_T_hg38,1039131,MAK,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.8769820266631072
+chr12_47985093_C_T_hg38,1039265,COL2A1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9909546602122067
+chr17_42329559_G_A_hg38,1039785,STAT3,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9411529422743187
+chr1_94014679_A_T_hg38,1040597,ABCA4,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.7975613848577398
+chr7_66092023_G_C_hg38,1040658,ASL,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.6722815748182447
+chr1_215650632_T_C_hg38,1041259,USH2A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.4593285828673382
+chr14_62950504_C_T_hg38,1042182,KCNH5,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9976475963726875
+chr5_132370085_C_A_hg38,1042938,SLC22A5,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.6752412283753737
+chr18_11752470_G_T_hg38,1043845,GNAL,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.20217240180012896
+chr8_118110589_A_G_hg38,1044040,EXT1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9944262796045277
+chr12_109591271_T_C_hg38,1044056,MVK,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9232658544794563
+chr20_63433902_G_A_hg38,1044294,KCNQ2,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.39751690505703047
+chr1_197435549_G_C_hg38,1045903,CRB1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.8983574794535601
+chrX_100407358_C_T_hg38,1045922,PCDH19,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9934795008895203
+chr16_2086812_G_T_hg38,1045993,TSC2,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.979609093363309
+chr2_21006687_T_G_hg38,1046270,APOB,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.46588489431846414
+chrX_18579944_C_G_hg38,1046503,CDKL5,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9991766603739877
+chr1_21568110_A_G_hg38,1047062,ALPL,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.4105292409603825
+chr1_53200754_G_T_hg38,1051185,CPT2,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9328807345993103
+chr16_57917405_G_A_hg38,1051630,CNGB1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.8966414379717225
+chr1_197434790_T_C_hg38,1051633,CRB1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.6109303988157364
+chr14_50591588_G_T_hg38,1051919,ATL1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9063818308697086
+chr7_117559573_C_T_hg38,1052121,CFTR,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.7828345681381981
+chr9_6565428_C_T_hg38,1052188,GLDC,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9947248172218067
+chr11_68436975_G_A_hg38,1052278,LRP5,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.4700087342779103
+chr20_49374311_A_G_hg38,1052355,KCNB1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9997683078560207
+chrX_18575425_G_A_hg38,1052408,CDKL5,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9963759992963894
+chr1_94041387_A_G_hg38,1052465,ABCA4,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8387301041992336
+chr10_88948876_A_G_hg38,1054067,ACTA2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9981851856754265
+chr1_94111517_A_G_hg38,1054759,ABCA4,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9848458234302048
+chr2_98396707_G_A_hg38,1056891,CNGA3,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9653281704958178
+chr2_166046948_A_G_hg38,1056951,SCN1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8321055876915237
+chr2_166047628_A_G_hg38,1057080,SCN1A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9975528469430712
+chr12_51699590_G_T_hg38,1057399,SCN8A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.6368707122930256
+chr2_165991951_A_G_hg38,1057583,SCN1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9981281916314703
+chr15_92978354_C_G_hg38,1057862,CHD2,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9996747833181298
+chr5_161334829_G_A_hg38,1057864,GABRB2,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9994873451735744
+chr1_75745828_G_T_hg38,1058323,ACADM,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.2181699292496899
+chr2_240786476_T_A_hg38,1058331,KIF1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9974852400461122
+chrX_100407301_G_T_hg38,1059075,PCDH19,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.4538739642218595
+chr9_134642261_T_G_hg38,1059268,COL5A1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.26501432185149065
+chrX_64917831_C_G_hg38,1059458,ZC4H2,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.999958464402702
+chr15_48463132_A_T_hg38,1060002,FBN1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9702093451538556
+chr3_129532259_C_G_hg38,1060030,RHO,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9486664151851635
+chrX_22226476_G_A_hg38,1060711,PHEX,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9946138601709168
+chr1_241502502_C_G_hg38,1060809,FH,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9924443803411648
+chr2_166047648_G_T_hg38,1061224,SCN1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9904713842789481
+chr12_114399623_A_T_hg38,1062314,TBX5,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9999944759704146
+chr17_80111022_C_T_hg38,1062425,GAA,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8522423393484668
+chr17_50186347_C_A_hg38,1063789,COL1A1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9968610623468276
+chr7_21687116_C_A_hg38,1063863,DNAH11,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8789231775294906
+chr1_94015742_T_C_hg38,1064072,ABCA4,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.7224525135123098
+chrX_22077518_T_C_hg38,1064139,PHEX,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9885729290463277
+chr5_170106049_A_G_hg38,1064953,FOXI1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.12460891079524074
+chr17_7673781_C_G_hg38,12368,TP53,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.999685337537325
+chr11_36576227_C_T_hg38,13159,RAG1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9934489651232699
+chr19_38433867_T_G_hg38,133129,RYR1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9139630284980387
+chr19_38494426_G_C_hg38,133156,RYR1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.6720853988981706
+chr19_38496294_G_T_hg38,133165,RYR1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9483227082714556
+chr19_38499984_G_A_hg38,133194,RYR1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9362672360441199
+chr19_38500003_C_T_hg38,133197,RYR1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9564029371973077
+chr14_104780214_C_T_hg38,13983,AKT1,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9977297907726651
+chr14_23423984_C_T_hg38,14093,MYH7,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.5561850800752189
+chr11_5226692_T_G_hg38,15136,HBB,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.5098063393652117
+chr15_67165052_G_A_hg38,155836,SMAD3,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9763385747479786
+chr10_49649569_A_G_hg38,17509,CHAT,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8680547530335079
+chr14_23429047_T_C_hg38,181341,MYH7,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.48059810695466487
+chr1_155904496_A_T_hg38,183406,RIT1,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9988398664958634
+chr11_108272591_T_C_hg38,186558,ATM,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9762184299669804
+chr1_11801299_C_T_hg38,187872,MTHFR,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.4906905914247345
+chr5_170019037_C_T_hg38,199260,DOCK2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9946640568688753
+chr15_48437768_C_G_hg38,200080,FBN1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.2077806646893218
+chr11_2572030_A_C_hg38,200896,KCNQ1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9832048926237035
+chr19_11120480_G_A_hg38,200923,LDLR,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.1589634832473114
+chr1_237783984_C_T_hg38,201325,RYR2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9432455033244068
+chr3_183039072_C_T_hg38,203796,MCCC1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.31991826299868986
+chr2_240869287_G_A_hg38,204087,AGXT,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.6147258235835705
+chr10_97598790_G_A_hg38,204280,HOGA1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9654203595169458
+chr2_166041374_T_G_hg38,206780,SCN1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8727766306921293
+chr2_165996017_G_C_hg38,206841,SCN1A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9951553912554009
+chr14_50921030_C_T_hg38,21339,PYGL,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9973995002657398
+chr15_67181369_C_G_hg38,213764,SMAD3,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9877250652083819
+chr2_218661410_C_T_hg38,214166,BCS1L,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.2455617094925448
+chr1_241508653_T_C_hg38,214375,FH,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9986767138580392
+chr4_6291241_G_A_hg38,215376,WFS1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9479727090983692
+chr4_6291367_G_A_hg38,215378,WFS1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.09298567802087476
+chr9_95449902_C_A_hg38,219498,PTCH1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9695469348080921
+chr15_48448884_T_C_hg38,220855,FBN1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9907199844538727
+chr3_10142124_G_C_hg38,223174,VHL,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9915792015166283
+chr1_146019530_A_G_hg38,2370,HJV,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9941785970098426
+chr1_241508640_G_A_hg38,237117,FH,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.994430896643562
+chr3_122257322_G_A_hg38,237770,CASR,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9988083676604506
+chr1_218436119_C_A_hg38,239515,TGFB2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9964148625999883
+chrX_107640914_A_G_hg38,245728,PRPS1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.5418344573071938
+chr19_11116125_G_T_hg38,251938,LDLR,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.1495644519069769
+chr15_67164916_G_T_hg38,268091,SMAD3,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9998995826702485
+chr11_2445448_C_T_hg38,3141,KCNQ1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.997287239006111
+chr20_63444700_T_C_hg38,369757,KCNQ2,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9649970141945328
+chr14_77555328_G_A_hg38,374512,SPTLC2,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8472716883369714
+chr17_7675217_T_C_hg38,376625,TP53,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.5080478018346907
+chrX_71110906_A_G_hg38,377975,IL2RG,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9593916974731312
+chr12_51913177_G_C_hg38,381525,ACVRL1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.15594092512707017
+chr12_120737049_G_T_hg38,3827,ACADS,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.39963754154122777
+chr12_101786014_T_A_hg38,38431,GNPTAB,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.08790924081678744
+chr17_8077102_G_A_hg38,386689,ALOX12B,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.3964670670338839
+chr19_41988028_C_T_hg38,387720,ATP1A3,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8325167401070294
+chrX_15331818_A_G_hg38,390052,PIGA,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.6282205189865057
+chr5_1278780_G_A_hg38,39109,TERT,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.8422716606055056
+chr17_42613976_C_T_hg38,392052,TUBG1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9866285448513838
+chrX_20163007_C_T_hg38,392203,RPS6KA3,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9962610209550743
+chr3_11025852_A_C_hg38,392917,SLC6A1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9783268815034638
+chr12_120993609_T_A_hg38,393434,HNF1A,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9999942159390492
+chr8_74364270_G_A_hg38,40049,GDAP1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9877110851377775
+chr17_80107837_T_G_hg38,4025,GAA,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8856621498433446
+chr11_64806272_C_G_hg38,403806,MEN1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9993866548112225
+chr1_193125168_T_C_hg38,403886,CDC73,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9996233640950201
+chr15_73329724_C_A_hg38,404118,HCN4,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9997028325816256
+chr10_87933052_T_G_hg38,404143,PTEN,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9979584735261923
+chr1_237756342_C_T_hg38,404208,RYR2,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8918388126814226
+chr1_241506084_C_T_hg38,405925,FH,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9952868889714624
+chr16_2079346_A_C_hg38,406049,TSC2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9970132317750716
+chr11_108335080_G_C_hg38,407682,ATM,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9628576451849452
+chr1_11992662_A_G_hg38,408326,MFN2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.3930668788718259
+chr9_99142674_A_G_hg38,408569,TGFBR1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9981596669321554
+chr1_2228825_C_T_hg38,409969,SKI,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.974099241523066
+chr10_62813403_T_C_hg38,409979,EGR2,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9950578928488761
+chr9_132925588_T_A_hg38,411244,TSC1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.836469907513796
+chr12_51915456_A_T_hg38,411313,ACVRL1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9974503443695023
+chr3_10149811_T_G_hg38,411955,VHL,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8870497475501461
+chr17_7674962_G_A_hg38,418517,TP53,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.7086427804809962
+chr4_6291341_A_G_hg38,420050,WFS1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.2831207981805426
+chrX_41561641_G_T_hg38,420307,CASK,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9957108921946053
+chr12_31091762_G_C_hg38,421308,DDX11,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9763876643854079
+chr8_60823960_C_T_hg38,423051,CHD7,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9966326657210782
+chr2_188994243_G_A_hg38,424523,COL3A1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8383293710238128
+chr11_13728665_G_T_hg38,426339,FAR1,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9211656003926897
+chr5_126583997_G_C_hg38,426361,ALDH7A1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9729730352108915
+chr17_2681759_C_T_hg38,429277,PAFAH1B1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9987624721493423
+chr14_23422256_C_T_hg38,42950,MYH7,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.7267217362547638
+chr14_23419993_C_T_hg38,42965,MYH7,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.4465311900532511
+chr6_3225338_G_T_hg38,432230,TUBB2B,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.999660532671738
+chr15_25370703_A_C_hg38,432241,UBE3A,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9982425423439396
+chr7_148814080_G_A_hg38,432410,EZH2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9956142755273855
+chr16_16159555_C_T_hg38,433320,ABCC6,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.2005766022315874
+chr12_120988898_G_T_hg38,447488,HNF1A,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9977308938399284
+chr12_120988940_C_T_hg38,447489,HNF1A,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9996919555906945
+chr12_120993613_G_A_hg38,447496,HNF1A,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.999691726765323
+chr14_23429861_T_G_hg38,449068,MYH7,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9501834233514193
+chr8_15748465_G_C_hg38,449114,TUSC3,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.20586206747220995
+chr20_63445247_A_G_hg38,450447,KCNQ2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9994489304389186
+chr17_1658549_C_T_hg38,451688,PRPF8,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.736174437575581
+chr9_35683241_T_A_hg38,452088,TPM2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9347006091196137
+chr17_1662038_G_T_hg38,452627,PRPF8,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9983466938288029
+chr14_23424118_C_G_hg38,454361,MYH7,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9984105179232127
+chr5_13844962_G_A_hg38,454781,DNAH5,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9016416219803751
+chr9_92047238_C_A_hg38,456600,SPTLC1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8108090628386678
+chr7_94417824_G_A_hg38,456812,COL1A2,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9947420645402227
+chr11_64805117_A_G_hg38,457284,MEN1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.999951655989806
+chr16_74774625_G_T_hg38,458305,FA2H,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.8798225228953223
+chr17_7674232_C_G_hg38,458560,TP53,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9878829828426087
+chrX_69957109_G_A_hg38,458657,EDA,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.214376207718657
+chr9_130494867_G_T_hg38,458676,ASS1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9935897862996292
+chr2_31529382_G_A_hg38,459641,SRD5A2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.5102356738599642
+chr2_31529310_T_C_hg38,459643,SRD5A2,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.4928393003373621
+chr19_12893545_G_A_hg38,459951,GCDH,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.4514013523240782
+chr4_158699098_G_A_hg38,459962,ETFDH,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9840950131790307
+chr2_166039490_G_C_hg38,461252,SCN1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9971739086374407
+chr2_166002729_C_A_hg38,461268,SCN1A,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.5893563933324645
+chr2_165994235_C_T_hg38,461276,SCN1A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9101872988138568
+chr1_161306762_G_C_hg38,462796,MPZ,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9708646472114507
+chr2_218890040_G_A_hg38,464182,WNT10A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.8694082997615622
+chr5_161331083_G_A_hg38,464940,GABRB2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.995918312309261
+chrX_100407468_T_A_hg38,465296,PCDH19,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9988567349675285
+chr16_81354496_T_C_hg38,465396,GAN,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9982365913291629
+chr8_74363012_A_G_hg38,467767,GDAP1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.5548770127560301
+chr5_71652739_A_C_hg38,467805,MCCC2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.42566035716717504
+chr5_71626724_G_C_hg38,467808,MCCC2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9765579948050742
+chr17_50167418_C_T_hg38,471339,SGCA,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.31871809219726654
+chr9_131518862_G_C_hg38,471375,POMT1,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9177410458191574
+chr17_81511533_T_C_hg38,473006,ACTG1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.16898100186550202
+chr1_12011513_T_G_hg38,476769,MFN2,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9058905326719615
+chr1_11996170_A_G_hg38,476772,MFN2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9302356731341637
+chr17_63947061_C_T_hg38,477417,SCN4A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9572677286683201
+chr10_87933046_C_G_hg38,492730,PTEN,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9997527375328253
+chr16_2086263_T_C_hg38,50095,TSC2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.997181842268339
+chrX_101398541_G_T_hg38,524215,GLA,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9349336647377053
+chr14_23432646_C_T_hg38,524948,MYH7,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.993854087778667
+chr5_13717406_C_A_hg38,525262,DNAH5,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9938237129306424
+chr15_48468484_T_A_hg38,527168,FBN1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9870621413510193
+chr15_48495149_C_T_hg38,527201,FBN1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.978902521013483
+chrX_153726142_G_C_hg38,528346,ABCD1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9730287124229786
+chr5_128334762_A_C_hg38,528417,FBN2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9936901056457164
+chr22_32099272_A_G_hg38,529229,SLC5A1,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.7589263816336648
+chr19_12899473_C_G_hg38,529443,GCDH,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.4966110296399614
+chr1_241504173_C_T_hg38,529807,FH,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9822879004962723
+chr9_128626481_C_T_hg38,530418,SPTAN1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9949807884335299
+chr2_165992104_G_A_hg38,530420,SCN1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9771293079148315
+chr16_56351473_G_C_hg38,530527,GNAO1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9999429909223719
+chr2_166037860_C_A_hg38,530535,SCN1A,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9599755505457415
+chr17_43124044_A_C_hg38,531241,BRCA1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9646532205713884
+chr2_218892927_A_C_hg38,532829,WNT10A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.5353472307294027
+chr12_51913302_T_G_hg38,533352,ACVRL1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9131592675237817
+chrX_67643344_G_T_hg38,533379,AR,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9999553531823505
+chr16_2086241_T_C_hg38,535941,TSC2,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9967055273530155
+chr10_88948885_A_G_hg38,536915,ACTA2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9975232563360408
+chrX_136207828_A_G_hg38,537353,FHL1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9970416551341211
+chr1_42930724_C_G_hg38,538677,SLC2A1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8398000758647368
+chr1_42930856_T_C_hg38,538680,SLC2A1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.37392234507462146
+chr21_43063953_C_T_hg38,538698,CBS,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.7622770716387764
+chr7_2947655_C_T_hg38,540972,CARD11,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9394366133190047
+chr1_110603567_C_A_hg38,542666,KCNA2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9966737039449428
+chr19_13283302_C_T_hg38,542820,CACNA1A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9989847486392874
+chr15_48513600_A_G_hg38,549022,FBN1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.998890923370178
+chr15_48437379_G_A_hg38,549339,FBN1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.5669188369629247
+chr12_102855174_T_A_hg38,549912,PAH,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.22634091708191326
+chr7_117664821_T_A_hg38,551822,CFTR,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.952949757322048
+chr17_80112056_C_G_hg38,555153,GAA,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8719442512774892
+chr19_38440796_A_G_hg38,55831,RYR1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9040798769331999
+chr12_102851729_A_C_hg38,558612,PAH,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9971881710652832
+chr6_64388718_C_A_hg38,560459,EYS,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.8256129575943221
+chr21_34859494_T_G_hg38,561251,RUNX1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9999571041403598
+chr17_31325864_T_A_hg38,561702,NF1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9992103430509264
+chr20_63442410_C_T_hg38,565381,KCNQ2,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9997580892801846
+chr12_51788704_A_G_hg38,565796,SCN8A,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9942244056598322
+chrX_71109310_G_C_hg38,566632,IL2RG,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9893339814589899
+chr2_166058642_G_T_hg38,567303,SCN1A,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9966665937832749
+chr6_135433188_G_A_hg38,568060,AHI1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.23863049586164373
+chr16_2496834_T_C_hg38,56846,TBC1D24,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.783009152136907
+chr12_51686389_G_A_hg38,569559,SCN8A,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9905952810135854
+chr9_130494971_T_G_hg38,569667,ASS1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.4353662362735567
+chr19_38452916_A_T_hg38,571022,RYR1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.8947934898561388
+chr16_29813895_T_C_hg38,571487,PRRT2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9991593499511715
+chr13_48360061_T_G_hg38,572140,RB1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.40216238741897004
+chr9_34512149_T_A_hg38,572600,DNAI1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.593647532593845
+chr19_1399184_C_T_hg38,573140,GAMT,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9491667301536851
+chr19_38499683_G_A_hg38,573252,RYR1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.7065444501733121
+chr1_241511968_T_G_hg38,574229,FH,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9943423597324361
+chr19_12897738_A_G_hg38,574498,GCDH,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.1975324380228904
+chr17_7673806_C_G_hg38,574679,TP53,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.965362419545359
+chr8_74364135_G_A_hg38,574996,GDAP1,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.3263908647969113
+chr1_12009651_T_C_hg38,575589,MFN2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.988681111602245
+chr10_87957973_A_T_hg38,575811,PTEN,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9998098379852225
+chrX_100408356_A_C_hg38,575889,PCDH19,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9977049810774924
+chr1_229431629_G_A_hg38,575911,ACTA1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9397696205013109
+chr17_63943834_A_T_hg38,576524,SCN4A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9696760618762293
+chr10_123041353_G_A_hg38,577108,ACADSB,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.42643452204260773
+chr6_52044979_T_G_hg38,577838,PKHD1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.18527653224406126
+chr2_165992008_C_T_hg38,578647,SCN1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9973026877768415
+chr2_127428579_C_T_hg38,579309,PROC,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.314800065445114
+chr11_64808054_G_A_hg38,579495,MEN1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9819016097011616
+chr2_166036480_G_C_hg38,580287,SCN1A,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8365292047860454
+chr5_132370012_T_A_hg38,580421,SLC22A5,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8964933716089647
+chr18_23568936_T_C_hg38,581349,NPC1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9308338345014153
+chr2_166041292_A_C_hg38,581674,SCN1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9976949482874279
+chrX_70035419_T_C_hg38,582324,EDA,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9993115898680727
+chr12_120993619_C_A_hg38,586794,HNF1A,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9879447398462995
+chr19_38499730_G_A_hg38,590582,RYR1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9705721962838654
+chr19_51380577_G_A_hg38,625113,LIM2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.45210760886715157
+chr12_102894794_A_G_hg38,627,PAH,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9667983535383989
+chr11_61951901_T_C_hg38,636155,BEST1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9751181677873967
+chr14_104701595_T_C_hg38,637707,INF2,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.996934356704204
+chr2_47416351_G_T_hg38,638846,MSH2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9863046925344324
+chr6_90571698_T_G_hg38,639687,MAP3K7,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9997241363529538
+chr12_102840453_A_C_hg38,639999,PAH,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8892499665164988
+chr14_54902413_T_C_hg38,640711,GCH1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.964296952697799
+chr6_52073520_C_T_hg38,641166,PKHD1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9557028667459766
+chr19_38500625_G_A_hg38,642226,RYR1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9873878335832658
+chr17_63941894_C_T_hg38,642244,SCN4A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.7642869976921445
+chr8_93786252_C_T_hg38,642294,TMEM67,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.7352816698738965
+chrX_31507281_C_T_hg38,642578,DMD,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.31440625095949765
+chr12_51786543_T_C_hg38,642701,SCN8A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9903137400442489
+chr1_11998826_A_G_hg38,642939,MFN2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9141272038639828
+chr2_166073374_T_C_hg38,643007,SCN1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.37363750850412036
+chr5_13850730_C_T_hg38,643092,DNAH5,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9464796046258367
+chr9_95476850_G_T_hg38,643863,PTCH1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.998413339992551
+chr1_241517297_C_G_hg38,643911,FH,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9977080821337819
+chr10_70599063_C_G_hg38,645064,PRF1,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8732477818113162
+chr13_100257645_C_T_hg38,646053,PCCA,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.872301203230283
+chr9_95453532_G_A_hg38,646094,PTCH1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.994821264283872
+chr5_126546342_T_C_hg38,647989,ALDH7A1,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9425428507166901
+chr2_166047646_C_G_hg38,648421,SCN1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9971957773393099
+chrX_136656382_C_T_hg38,648466,CD40LG,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.6943512342451299
+chr17_43124027_A_C_hg38,649351,BRCA1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9928798181732944
+chr2_166013760_A_G_hg38,649785,SCN1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9963976249219223
+chr3_11018600_G_A_hg38,650130,SLC6A1,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.944464327497451
+chrX_31968339_C_A_hg38,650688,DMD,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.27674811640476576
+chr12_51766026_T_G_hg38,650755,SCN8A,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9508158371641894
+chr11_26634273_A_G_hg38,651774,ANO3,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.7968342293086597
+chr5_132390709_T_A_hg38,651951,SLC22A5,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9164247895712425
+chr14_50905510_G_A_hg38,653702,PYGL,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.48461520202460867
+chr10_110593185_T_C_hg38,653982,SMC3,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9994211896623596
+chr15_72351133_C_A_hg38,654741,HEXA,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.3280417623131445
+chr14_50910001_C_G_hg38,655030,PYGL,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9935065913005932
+chr3_11026281_G_A_hg38,656334,SLC6A1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9608003297407696
+chr17_7675232_G_T_hg38,656751,TP53,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9839525445411484
+chr12_13571850_A_C_hg38,657233,GRIN2B,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.986734076960374
+chr12_51765797_G_A_hg38,657717,SCN8A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9720804294598634
+chr2_71660648_G_T_hg38,658470,DYSF,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9882027475688983
+chr2_165992350_C_A_hg38,658621,SCN1A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9996570013379222
+chr7_76330152_G_A_hg38,659092,YWHAG,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9999402070152121
+chrX_18507149_T_A_hg38,659752,CDKL5,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9899940519641666
+chr1_161306762_G_A_hg38,661067,MPZ,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.993312998856614
+chr2_165313995_G_A_hg38,661206,SCN2A,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9382830949649512
+chr15_42401734_C_A_hg38,661943,CAPN3,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9969228306960848
+chr2_166037862_C_G_hg38,662140,SCN1A,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8987357139425519
+chr13_100301589_C_T_hg38,662772,PCCA,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9684219719254032
+chrX_101354688_G_C_hg38,663091,BTK,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.998439695662493
+chr2_166009796_G_C_hg38,663230,SCN1A,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.27929150583030526
+chr1_241508636_A_C_hg38,663861,FH,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9982548537631216
+chr6_80106889_G_T_hg38,664073,BCKDHB,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.5417451132803475
+chr2_166009792_C_T_hg38,664717,SCN1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.5858825171307425
+chr2_165389237_C_G_hg38,665483,SCN2A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.7275142515456468
+chr16_2496873_G_A_hg38,665574,TBC1D24,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9720714729224015
+chr9_95476830_C_G_hg38,666031,PTCH1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9977844478634993
+chr1_156136393_A_T_hg38,66805,LMNA,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9817169547907545
+chr2_166013829_A_G_hg38,68530,SCN1A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9930415903040947
+chr2_166002491_T_C_hg38,68540,SCN1A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9789395591393615
+chr2_218882330_G_A_hg38,68843,WNT10A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9925891374078174
+chr14_95107888_A_G_hg38,690445,DICER1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9985109866578101
+chr14_95094114_T_A_hg38,690454,DICER1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9998926180648231
+chr1_160041778_G_C_hg38,694648,KCNJ10,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9994869727989362
+chr12_55721847_C_T_hg38,8010,RDH5,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.6766704921633304
+chr1_94077880_A_T_hg38,801519,ABCA4,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.39203753606264213
+chr22_30937947_C_A_hg38,804165,MORC2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.40825193222384554
+chr2_63856320_A_G_hg38,805980,UGP2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.053588352471069654
+chr17_81511443_G_A_hg38,808333,ACTG1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9925073421982852
+chr2_196242163_G_A_hg38,809132,HECW2,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9967249765468137
+chr9_21971117_G_A_hg38,833629,CDKN2A,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8413737056192325
+chr3_179416533_T_C_hg38,834350,GNB4,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9996125019143076
+chr7_143330778_T_A_hg38,835784,CLCN1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.990654127122684
+chr1_236735677_C_T_hg38,837873,ACTN2,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.963535724581905
+chr4_1801671_C_T_hg38,838879,FGFR3,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.6808489955322502
+chrX_85957855_C_T_hg38,839475,CHM,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.17496705546934066
+chrX_101370055_A_G_hg38,840044,BTK,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9983582797418524
+chr2_166056467_C_G_hg38,842887,SCN1A,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8509679727633677
+chr2_165992118_T_G_hg38,843435,SCN1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9732369984015773
+chr2_165992093_C_T_hg38,846117,SCN1A,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.6844392576808078
+chr2_165998156_T_C_hg38,846248,SCN1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9800764380680896
+chr2_32127008_G_A_hg38,847453,SPAST,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9990853444885845
+chr2_166046927_A_T_hg38,848499,SCN1A,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9881614807902065
+chr1_229431869_T_C_hg38,848617,ACTA1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.74778115119462
+chr5_126554291_C_A_hg38,848879,ALDH7A1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9627606144162697
+chr1_94079329_A_G_hg38,850321,ABCA4,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8310134653688295
+chr2_98397151_C_T_hg38,851211,CNGA3,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.4260657666433764
+chr17_50186501_T_G_hg38,852121,COL1A1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9897581531998336
+chr2_165389476_A_C_hg38,853123,SCN2A,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9849197945029581
+chr2_108897040_C_G_hg38,853527,EDAR,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.779187260780712
+chr15_48495156_C_T_hg38,853703,FBN1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9688401002231508
+chr17_7222197_T_C_hg38,854698,ACADVL,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.4956019273018205
+chr2_166058673_T_A_hg38,857320,SCN1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8819152225736696
+chr1_75745874_T_C_hg38,858831,ACADM,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.8683984331534595
+chr2_71681062_G_A_hg38,858838,DYSF,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9654132130158062
+chr2_166047664_A_G_hg38,859315,SCN1A,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9994952711107429
+chr1_75734810_C_T_hg38,859752,ACADM,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.5169557463159414
+chr1_241502483_C_T_hg38,860747,FH,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8203112505366948
+chr16_56351478_A_T_hg38,861775,GNAO1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9975001316459782
+chr2_98396875_C_T_hg38,862038,CNGA3,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.1623115089281482
+chr1_115768444_C_T_hg38,862119,CASQ2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.7220881865282694
+chr10_87933142_A_G_hg38,864223,PTEN,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9615707252280457
+chrX_38318963_C_T_hg38,865959,RPGR,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9955117270355192
+chr12_51699665_A_T_hg38,871344,SCN8A,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9358840293604537
+chr2_47416365_G_A_hg38,90503,MSH2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.997369098229203
+chr2_47475064_C_T_hg38,90789,MSH2,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.93571285779172
+chr6_131581347_T_A_hg38,916528,ARG1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9822297916214215
+chr9_135779423_T_A_hg38,92165,KCNT1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9982930738574954
+chrX_18507134_T_C_hg38,929426,CDKL5,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9996297199107921
+chr8_118110454_C_A_hg38,934164,EXT1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9980271208674459
+chr17_7675233_A_G_hg38,934410,TP53,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9962098799697271
+chr2_108897040_C_T_hg38,934620,EDAR,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9685968478568681
+chr17_80112654_G_A_hg38,935199,GAA,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.2540892776145147
+chr1_47416606_C_G_hg38,935371,FOXE3,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9912767371731608
+chr9_124503104_G_C_hg38,935575,NR5A1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9999183290256235
+chr7_19116906_G_A_hg38,935674,TWIST1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9993480333585899
+chr12_102840462_G_A_hg38,937913,PAH,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.7264874661898733
+chr3_128481269_C_T_hg38,938037,GATA2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9998602223997474
+chr3_129531026_C_G_hg38,938969,RHO,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9869146230244809
+chr5_177280626_G_A_hg38,939144,NSD1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9999177245319513
+chr10_93659118_C_T_hg38,939368,PDE6C,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9668198928220808
+chr15_93020132_G_A_hg38,940592,CHD2,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.5300817554660144
+chr2_98396309_T_C_hg38,941488,CNGA3,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9811013522024452
+chrX_22076454_A_G_hg38,941583,PHEX,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9445575177494199
+chr2_165992224_T_C_hg38,942302,SCN1A,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8669581260857988
+chr20_63439617_G_C_hg38,942443,KCNQ2,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.7690424183188486
+chr1_68439023_G_A_hg38,942448,RPE65,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8259744957241854
+chr20_49374933_G_T_hg38,943082,KCNB1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9986171236320688
+chr4_3476425_G_C_hg38,943383,DOK7,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.5006117929930805
+chr19_12896365_A_G_hg38,944097,GCDH,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.2660657147254263
+chr1_2229031_C_T_hg38,944376,SKI,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.7149505936819173
+chr15_48444618_C_G_hg38,945021,FBN1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8971074053983219
+chr5_128330617_C_G_hg38,945271,FBN2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9921099762734081
+chr20_63442455_C_A_hg38,945463,KCNQ2,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.6991344814352743
+chr16_30997512_C_G_hg38,945499,STX1B,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9995821081232068
+chr5_162149152_C_G_hg38,946639,GABRG2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9751254547003863
+chr1_75732877_G_A_hg38,947874,ACADM,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.5779634988067297
+chrX_22247852_G_T_hg38,948579,PHEX,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9644093724745921
+chr3_10146535_A_T_hg38,949664,VHL,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9827949651386785
+chr20_63433885_C_T_hg38,950074,KCNQ2,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9225308613333482
+chr5_71604422_G_A_hg38,950084,MCCC2,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.26404265124261656
+chr11_112089002_A_C_hg38,950869,SDHD,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.7577090203208247
+chr4_158695581_T_C_hg38,951486,ETFDH,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.2216375052235061
+chr19_12896249_G_A_hg38,951653,GCDH,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.09748860859917834
+chr10_87952134_G_A_hg38,951765,PTEN,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9996208218665283
+chrX_22227559_T_G_hg38,951800,PHEX,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9857934498240691
+chr17_44385570_A_C_hg38,952995,ITGA2B,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.09470923842736914
+chr17_44374738_A_T_hg38,952997,ITGA2B,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.7742459345687913
+chr1_241500527_A_G_hg38,954126,FH,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9945613471539462
+chr1_237633708_T_C_hg38,954202,RYR2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9942395686969009
+chr19_47836270_G_A_hg38,956064,CRX,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9988991240754391
+chr14_73171017_T_G_hg38,957406,PSEN1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9614832741031412
+chr10_87933141_A_G_hg38,958105,PTEN,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.999715605623071
+chr13_48342714_G_T_hg38,958692,RB1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.5393229775656507
+chr1_94041324_C_A_hg38,959566,ABCA4,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9888373851239284
+chrX_100408236_T_G_hg38,960029,PCDH19,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9987763696681685
+chr16_2496828_G_A_hg38,960278,TBC1D24,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.38782357242837634
+chr5_251439_C_G_hg38,960976,SDHA,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9975933112637067
+chr1_94041379_G_A_hg38,961495,ABCA4,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9733180170641066
+chr2_71669691_T_C_hg38,962018,DYSF,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9839663993192472
+chr5_161895672_C_T_hg38,962701,GABRA1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9969360909139651
+chr1_94111557_C_G_hg38,963276,ABCA4,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.8687281180029085
+chr11_77190107_C_T_hg38,964372,MYO7A,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9994321653778804
+chr16_57919107_G_A_hg38,964956,CNGB1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.7916353759324106
+chr9_95453521_C_T_hg38,966913,PTCH1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9991169207923432
+chr11_68386499_C_A_hg38,967240,LRP5,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.951779557544995
+chrX_22219092_T_C_hg38,967268,PHEX,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.998193358455514
+chr1_75732857_C_T_hg38,967308,ACADM,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.8138090679294147
+chr9_128203598_G_A_hg38,968753,DNM1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9999220262754006
+chr9_130489405_G_A_hg38,970822,ASS1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.48592004453013277
+chr15_73329725_C_T_hg38,970883,HCN4,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9945615843702308
+chr6_63789144_C_G_hg38,972618,EYS,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.7983398905241629
+chr9_137162639_G_C_hg38,975942,GRIN1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9531080164388964
+chr12_56168139_T_C_hg38,976148,SMARCC2,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9980584752341071
+chr17_81511497_T_C_hg38,978237,ACTG1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.1467986228316297
+chr7_143350463_C_T_hg38,978544,CLCN1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9553826151974645
+chr15_66481794_A_C_hg38,981554,MAP2K1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9808025779814293
+chrX_53248177_A_G_hg38,982678,IQSEC2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9998582428298551
+chr3_49033208_C_A_hg38,982709,QRICH1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9332410683452945
+chrX_153688773_G_C_hg38,982780,SLC6A8,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9996084545703594
+chr12_89621760_T_C_hg38,982810,ATP2B1,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9917719103715805
+chr11_77336090_A_C_hg38,982892,PAK1,18,primary,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9986543380520257
+chrX_18644533_C_T_hg38,98957,CDKL5;RS1,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9982716243854637
+chr1_94111517_A_C_hg38,99122,ABCA4,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9579266766827158
+chr1_94051669_A_G_hg38,99149,ABCA4,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9118526551248206
+chr1_94031086_A_G_hg38,99254,ABCA4,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9478174104186707
+chr1_94031026_C_A_hg38,99261,ABCA4,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.7028010852859415
+chr1_94007716_C_G_hg38,99420,ABCA4,18,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.9382594410608853
+chr1_94001005_T_C_hg38,99455,ABCA4,18,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9648201779765035
+chr18_12337491_A_T_hg38,994947,AFG3L2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9973615326440807
+chr21_37480813_G_T_hg38,998571,DYRK1A,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.999919530108949
+chr1_110603564_G_A_hg38,999097,KCNA2,18,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9984142997910441
+chr9_135765131_G_A_hg38,999973,KCNT1,18,other,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.6777097947782774
+chr15_48513581_T_C_hg38,549024,FBN1,36,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9779009708651162
+chr15_48470634_C_T_hg38,549232,FBN1,36,primary,vus_to_plp,Uncertain significance,Pathogenic,1.0,0.9678085144308037
+chr11_31794630_C_T_hg38,806642,PAX6,36,other,vus_to_plp,Uncertain significance,Likely pathogenic,1.0,0.9996226648034935
+chr7_117610592_C_T_hg38,455774,CFTR,61,primary,vus_to_plp,Uncertain significance,Pathogenic/Likely pathogenic,1.0,0.42747135400459174
