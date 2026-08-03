@@ -24,7 +24,10 @@ Aggregation:
   * A practice-guideline or expert-panel submission overrides everything; its
     classification becomes the aggregate.
   * Otherwise only submissions that provide assertion criteria are aggregated.
-    Submissions without criteria contribute the 0-star fallback.
+    When none of them do, the variant is 0-star — but it still carries a
+    classification, aggregated over the submissions that exist. Emitting the
+    review status in the classification field instead would make every such
+    variant look like a disagreement with the real snapshot.
   * Conflict is declared across the medically distinct buckets P/LP, VUS and
     B/LB. Pathogenic vs Likely pathogenic is NOT a conflict — it aggregates to
     "Pathogenic/Likely pathogenic". Same for Benign vs Likely benign.
@@ -96,19 +99,43 @@ def reconstruct_sql(as_of):
             count(DISTINCT bucket) FILTER (
                 WHERE has_criteria AND bucket IN ('P/LP','VUS','B/LB'))
                                                                   AS n_buckets,
-            -- Buckets present among criteria-providing submissions.
-            bool_or(has_criteria AND bucket = 'P/LP')             AS has_plp,
-            bool_or(has_criteria AND bucket = 'B/LB')             AS has_blb,
-            bool_or(has_criteria AND bucket = 'VUS')              AS has_vus,
+            -- Buckets present. When no submission provides criteria, ClinVar
+            -- still reports a classification for the variant at 0 stars, so
+            -- the aggregation falls back to all submissions rather than
+            -- discarding the call. `agg` below picks which set applies.
+            bool_or(CASE WHEN has_criteria THEN bucket = 'P/LP' END)  AS crit_plp,
+            bool_or(CASE WHEN has_criteria THEN bucket = 'B/LB' END)  AS crit_blb,
+            bool_or(CASE WHEN has_criteria THEN bucket = 'VUS'  END)  AS crit_vus,
+            bool_or(bucket = 'P/LP')                                  AS any_plp,
+            bool_or(bucket = 'B/LB')                                  AS any_blb,
+            bool_or(bucket = 'VUS')                                   AS any_vus,
             -- Exact classifications, to tell Pathogenic from Likely pathogenic.
-            bool_or(has_criteria AND lower(trim(scv_class)) = 'pathogenic')       AS has_p,
-            bool_or(has_criteria AND lower(trim(scv_class)) = 'likely pathogenic')AS has_lp,
-            bool_or(has_criteria AND lower(trim(scv_class)) = 'benign')           AS has_b,
-            bool_or(has_criteria AND lower(trim(scv_class)) = 'likely benign')    AS has_lb,
+            bool_or(CASE WHEN has_criteria THEN lower(trim(scv_class)) = 'pathogenic' END)        AS crit_p,
+            bool_or(CASE WHEN has_criteria THEN lower(trim(scv_class)) = 'likely pathogenic' END) AS crit_lp,
+            bool_or(CASE WHEN has_criteria THEN lower(trim(scv_class)) = 'benign' END)            AS crit_b,
+            bool_or(CASE WHEN has_criteria THEN lower(trim(scv_class)) = 'likely benign' END)     AS crit_lb,
+            bool_or(lower(trim(scv_class)) = 'pathogenic')            AS any_p,
+            bool_or(lower(trim(scv_class)) = 'likely pathogenic')     AS any_lp,
+            bool_or(lower(trim(scv_class)) = 'benign')                AS any_b,
+            bool_or(lower(trim(scv_class)) = 'likely benign')         AS any_lb,
             -- A panel/guideline call, when one exists.
             max(CASE WHEN is_guideline THEN scv_class END)        AS guideline_class,
             max(CASE WHEN is_expert    THEN scv_class END)        AS expert_class
         FROM eligible GROUP BY variation_id
+    )
+    , agg AS (
+        -- Aggregate over criteria-providing submissions when any exist,
+        -- otherwise over all of them, so a 0-star variant still gets its
+        -- classification instead of being emptied out.
+        SELECT *,
+               CASE WHEN n_crit > 0 THEN crit_plp ELSE any_plp END AS has_plp,
+               CASE WHEN n_crit > 0 THEN crit_blb ELSE any_blb END AS has_blb,
+               CASE WHEN n_crit > 0 THEN crit_vus ELSE any_vus END AS has_vus,
+               CASE WHEN n_crit > 0 THEN crit_p   ELSE any_p   END AS has_p,
+               CASE WHEN n_crit > 0 THEN crit_lp  ELSE any_lp  END AS has_lp,
+               CASE WHEN n_crit > 0 THEN crit_b   ELSE any_b   END AS has_b,
+               CASE WHEN n_crit > 0 THEN crit_lb  ELSE any_lb  END AS has_lb
+        FROM per_variant
     )
     SELECT
         variation_id,
@@ -124,8 +151,9 @@ def reconstruct_sql(as_of):
         CASE
           WHEN any_guideline THEN guideline_class
           WHEN any_expert    THEN expert_class
-          WHEN n_crit = 0    THEN 'no assertion criteria provided'
-          WHEN n_buckets > 1 THEN 'Conflicting classifications of pathogenicity'
+          -- Conflict is only declared among criteria-providing submissions.
+          WHEN n_crit > 0 AND n_buckets > 1
+               THEN 'Conflicting classifications of pathogenicity'
           WHEN has_plp AND has_p AND has_lp THEN 'Pathogenic/Likely pathogenic'
           WHEN has_plp AND has_p            THEN 'Pathogenic'
           WHEN has_plp AND has_lp           THEN 'Likely pathogenic'
@@ -146,5 +174,5 @@ def reconstruct_sql(as_of):
                THEN 'criteria provided, multiple submitters, no conflicts'
           ELSE 'criteria provided, single submitter'
         END AS review_status
-    FROM per_variant
+    FROM agg
     """

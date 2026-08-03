@@ -166,7 +166,7 @@ def main():
         101: ("Conflicting classifications of pathogenicity", 1),  # P vs VUS
         102: ("Uncertain significance", 1),                        # single submitter
         103: ("Pathogenic", 3),                                    # expert panel overrides
-        104: ("no assertion criteria provided", 0),                # no criteria at all
+        104: ("Pathogenic", 0),          # 0-star variants still carry a classification
         105: ("Pathogenic/Likely pathogenic", 2),                  # P+LP is not a conflict
         108: ("Benign/Likely benign", 2),                          # B+LB is not a conflict
         109: ("Pathogenic", 1),                                    # same submitter twice
