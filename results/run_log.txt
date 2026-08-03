@@ -272,7 +272,7 @@ endpoint snapshot: data/variant_summary_2026-07.txt.gz
 
 
 ### step 3b: molecular consequence from the ClinVar VCF MC field
-VCF: data/clinvar.vcf.gz
+VCF: data/clinvar_20260728.vcf.gz
 VCF data lines: 4,458,175; with a numeric ID (VariationID): 4,458,175
 VariationIDs in map: 4,458,175; carrying an MC field: 4,438,223 (99.55%)
 
@@ -300,8 +300,8 @@ top SO terms falling into 'other' (audit for anything miscategorised):
 
 wrote data/consequence_map.parquet
 wrote results/_vcf_mc_stats.json
-deleting raw VCF (the parquet map is all we need downstream): data/clinvar.vcf.gz
-/dev/root       145G   43G  103G  30% /
+deleting raw VCF (the parquet map is all we need downstream): data/clinvar_20260728.vcf.gz
+/dev/root       145G   42G  103G  30% /
 
 ############ baseline 2021-06 ############
 baseline snapshot: data/variant_summary_2021-06.txt.gz
@@ -392,7 +392,7 @@ consequence map: 4,458,175 VariationIDs from consequence_map.parquet
   wrote 10,631 rows -> results/reclassified_benign.tsv
   wrote results/_counts_2021-06.json
 deleting raw baseline snapshot to reclaim disk: data/variant_summary_2021-06.txt.gz
-/dev/root       145G   43G  103G  30% /
+/dev/root       145G   42G  103G  30% /
 
 ############ baseline 2022-12 ############
 baseline snapshot: data/variant_summary_2022-12.txt.gz
@@ -483,18 +483,18 @@ consequence map: 4,458,175 VariationIDs from consequence_map.parquet
   wrote 17,292 rows -> results/reclassified_benign.tsv
   wrote results/_counts_2022-12.json
 deleting raw baseline snapshot to reclaim disk: data/variant_summary_2022-12.txt.gz
-/dev/root       145G   43G  103G  30% /
+/dev/root       145G   42G  103G  30% /
 
 ### step 7: submission_summary date-coverage probe
 === HEAD https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/submission_summary.txt.gz ===
 HTTP/1.1 200 OK
-Date: Sun, 02 Aug 2026 01:55:54 GMT
+Date: Mon, 03 Aug 2026 02:47:47 GMT
 Server: Apache
 Last-Modified: Tue, 28 Jul 2026 04:38:51 GMT
 Accept-Ranges: bytes
 Content-Length: 385669884
 Cache-Control: public, max-age=86400
-Expires: Sun, 09 Aug 2026 01:55:54 GMT
+Expires: Mon, 10 Aug 2026 02:47:47 GMT
 Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
 Access-Control-Allow-Origin: *
 Access-Control-Allow-Methods: GET,POST,PUT,OPTIONS
@@ -688,5 +688,5 @@ reclassified_pathogenic.tsv: 1858073 bytes
 reclassified_benign.tsv: 4985598 bytes
 
 ### free disk at end
-/dev/root       145G   43G  103G  30% /
+/dev/root       145G   42G  103G  30% /
 DONE. See results/transitions.md

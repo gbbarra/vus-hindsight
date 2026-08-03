@@ -1,5 +1,5 @@
 {
-  "vcf_file": "clinvar.vcf.gz",
+  "vcf_file": "clinvar_20260728.vcf.gz",
   "vcf_data_lines": 4458175,
   "variation_ids": 4458175,
   "with_mc_field": 4438223,

@@ -1,6 +1,6 @@
 # ClinVar VUS reclassification — measured transitions
 
-Generated 2026-08-02 from ClinVar `variant_summary` snapshots. Every count below is produced by `scripts/04_transitions.py` and reproducible with `scripts/run_all.sh`.
+Generated 2026-08-03 from ClinVar `variant_summary` snapshots. Every count below is produced by `scripts/04_transitions.py` and reproducible with `scripts/run_all.sh`.
 
 ## Snapshots
 
@@ -10,7 +10,7 @@ Generated 2026-08-02 from ClinVar `variant_summary` snapshots. Every count below
 | 2022-12 | `variant_summary_2022-12.txt.gz` | 1,588,306 | ClinicalSignificance | ReviewStatus |
 | current | `variant_summary_2026-07.txt.gz` | 4,459,687 | ClinicalSignificance | ReviewStatus |
 
-Molecular consequence is read from the `MC` (Sequence Ontology) field of the ClinVar GRCh38 VCF `clinvar.vcf.gz` — 4,458,175 VariationIDs, of which 4,438,223 carry an `MC` term. It is not inferred from HGVS.
+Molecular consequence is read from the `MC` (Sequence Ontology) field of the ClinVar GRCh38 VCF `clinvar_20260728.vcf.gz` — 4,458,175 VariationIDs, of which 4,438,223 carry an `MC` term. It is not inferred from HGVS.
 
 ## Baseline 2021-06 → current
 
@@ -105,7 +105,7 @@ By current review status:
 | role | file | bytes | release (Last-Modified) | md5 |
 |---|---|---|---|---|
 | archive 2026-07 | `variant_summary_2026-07.txt.gz` | 439,937,684 | Thu, 02 Jul 2026 04:05:02 GMT | `f03eea5e87f0ef5f696bbc958359fa78` |
-| vcf | `clinvar.vcf.gz` | 193,012,905 | Tue, 28 Jul 2026 22:07:55 GMT | `28d247f7b297d3605a7b10079aa4467e` |
+| vcf | `clinvar_20260728.vcf.gz` | 193,012,905 | Tue, 28 Jul 2026 22:07:55 GMT | `28d247f7b297d3605a7b10079aa4467e` |
 | archive 2021-06 | `variant_summary_2021-06.txt.gz` | 78,178,141 | Thu, 03 Jun 2021 04:05:02 GMT | `1f509ba1959d9cf882ee511572f4c185` |
 | archive 2022-12 | `variant_summary_2022-12.txt.gz` | 145,316,022 | Thu, 01 Dec 2022 05:05:01 GMT | `5e08de585ae392186ae5c3e2a1748003` |
 
