@@ -1,0 +1,101 @@
+name: Export for external join
+
+# Builds data/exports/vus_hindsight_for_am_join.csv — the flat cohort export
+# used to join predictor scores against variants whose ClinVar label changed
+# and against controls whose label did not.
+#
+# Manual only, like the other workflows: this writes a file people will join
+# against and cite, so regenerating it should be a decision.
+on:
+  workflow_dispatch:
+    inputs:
+      baseline_month:
+        description: 'Baseline month (YYYY-MM)'
+        required: true
+        default: '2021-06'
+      endpoint_spec:
+        description: >-
+          Endpoints as "YYYY-MM:months", space-separated, ascending.
+        required: true
+        default: '2022-12:18 2024-06:36 2026-07:61'
+      vcf_date:
+        description: 'Dated consequence VCF (YYYYMMDD)'
+        required: true
+        default: '20260728'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: export-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Free up disk before downloading
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+                      /usr/local/share/boost || true
+          df -h /
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install DuckDB
+        run: pip install --quiet duckdb pyyaml
+
+      - name: Validate against the fixture
+        run: python3 tests/test_pipeline.py
+
+      - name: Build the export
+        env:
+          BASELINE_MONTH: ${{ github.event.inputs.baseline_month }}
+          ENDPOINT_SPEC: ${{ github.event.inputs.endpoint_spec }}
+          VCF_DATE: ${{ github.event.inputs.vcf_date }}
+        run: |
+          mkdir -p results
+          set -o pipefail
+          scripts/run_export.sh 2>&1 | tee results/export_log.txt
+
+      - name: Show what was produced
+        if: always()
+        run: ls -lh data/exports/ results/ || true
+
+      - name: Upload as an artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: join-export
+          path: |
+            data/exports/
+            results/export_log.txt
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Commit the export
+        if: success()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f data/exports/ results/
+          if git diff --cached --quiet; then
+            echo "No changes — nothing to commit."
+            exit 0
+          fi
+          git commit -m "Add the external join export
+
+          Produced by the export workflow (run ${{ github.run_id }})."
+          for i in 1 2 3 4; do
+            git push origin HEAD:${{ github.ref_name }} && break
+            git pull --rebase origin ${{ github.ref_name }} || true
+            sleep $((2 ** i))
+          done

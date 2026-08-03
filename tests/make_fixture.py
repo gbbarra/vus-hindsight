@@ -18,7 +18,8 @@ OUT = os.path.join(os.path.dirname(__file__), "fixtures")
 
 COLS = ["AlleleID", "Type", "Name", "GeneID", "GeneSymbol", "HGNC_ID",
         "CLASSIFICATION", "LastEvaluated", "Assembly", "Chromosome",
-        "REVIEW", "NumberSubmitters", "VariationID"]
+        "REVIEW", "NumberSubmitters", "VariationID",
+        "PositionVCF", "ReferenceAlleleVCF", "AlternateAlleleVCF"]
 
 VUS = "Uncertain significance"
 CRIT1 = "criteria provided, single submitter"
@@ -63,6 +64,8 @@ def row(vid, gene, name, assembly, cls, review):
         "CLASSIFICATION": cls, "LastEvaluated": "Jan 01, 2020",
         "Assembly": assembly, "Chromosome": "17", "REVIEW": review,
         "NumberSubmitters": "3", "VariationID": str(vid),
+        "PositionVCF": str(900000 + vid), "ReferenceAlleleVCF": "C",
+        "AlternateAlleleVCF": "T",
     }
     return "\t".join(d[c] for c in COLS)
 

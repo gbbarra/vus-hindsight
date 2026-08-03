@@ -220,6 +220,55 @@ predictors:
           (aud["LateWindow"]["leak_low"], aud["LateWindow"]["leak_high"]), (2987, 4735))
     check("audit: clean tools leak nothing", aud["AtBaseline"]["leak_high"], 0)
 
+    # Join export: exact column list and order, the variant_id format, the arm
+    # split, and that a horizon is attached to every reclassified row.
+    export_csv = os.path.join(workdir, "exports", "join.csv")
+    subprocess.run(
+        [sys.executable, os.path.join(ROOT, "scripts", "12_export_for_join.py"),
+         "--baseline", os.path.join(HERE, "fixtures", "baseline_fixture.txt.gz")
+         + ":2021-06",
+         "--endpoint", os.path.join(HERE, "fixtures", "current_fixture.txt.gz")
+         + ":2026-07:61",
+         "--consequence-map", cons_map, "--out", export_csv],
+        check=True, cwd=workdir, env=env)
+    import csv as _csv
+    with open(export_csv) as fh:
+        exp_rows = list(_csv.DictReader(fh))
+        fh.seek(0)
+        header = fh.readline().strip().split(",")
+    check("export: exact column list and order", header,
+          ["variant_id_hg38", "variation_id", "chrom", "pos_hg38", "ref", "alt",
+           "gene_symbol", "molecular_consequence", "review_status", "gold_stars",
+           "classification_2021", "classification_current",
+           "date_last_evaluated", "horizon_months", "stratum", "arm"])
+    by_arm = {}
+    for r in exp_rows:
+        by_arm.setdefault(r["arm"], []).append(r)
+    check("export: vus_to_plp arm size", len(by_arm.get("vus_to_plp", [])),
+          EXPECTED["vus_to_plp"])
+    # Only VID 4 stays VUS, and it is intron by MC, so the missense-only
+    # control is empty for this fixture.
+    check("export: still_vus arm is missense-only", len(by_arm.get("still_vus", [])), 0)
+    one = by_arm["vus_to_plp"][0]
+    check("export: variant_id_hg38 format",
+          one["variant_id_hg38"] ==
+          f"chr{one['chrom']}_{one['pos_hg38']}_{one['ref']}_{one['alt']}_hg38",
+          True)
+    check("export: variant_id starts with chr",
+          all(r["variant_id_hg38"].startswith("chr") for r in exp_rows), True)
+    check("export: every reclassified row has a horizon",
+          all(r["horizon_months"] == "61" for r in by_arm["vus_to_plp"]), True)
+    check("export: date_last_evaluated is ISO",
+          all(r["date_last_evaluated"] == "2020-01-01" for r in exp_rows), True)
+    check("export: gold_stars is an integer 0-4",
+          all(r["gold_stars"].isdigit() and 0 <= int(r["gold_stars"]) <= 4
+              for r in exp_rows), True)
+    check("export: primary stratum is missense and >=2 stars",
+          sorted(r["stratum"] for r in by_arm["vus_to_plp"]),
+          sorted(["primary" if (r["molecular_consequence"] == "missense"
+                                and int(r["gold_stars"]) >= 2) else "other"
+                  for r in by_arm["vus_to_plp"]]))
+
     if failures:
         print("\nFAILURES:")
         for f in failures:
