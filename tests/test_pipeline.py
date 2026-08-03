@@ -178,6 +178,48 @@ def main():
     check("non-contributing submission excluded", 107 in got, False)
     check("undated submission excluded", 111 in got, False)
 
+    # Contamination audit: tiers and leakage brackets, against a synthetic
+    # registry so the assertions do not depend on anyone's literature search.
+    surv_path = os.path.join(workdir, "results", "_survival.json")
+    with open(surv_path, "w") as fh:
+        json.dump([{"months_elapsed": 18, "p_lp": 1058},
+                   {"months_elapsed": 36, "p_lp": 2987},
+                   {"months_elapsed": 61, "p_lp": 4735}], fh)
+    reg_path = os.path.join(workdir, "predictors_test.yaml")
+    with open(reg_path, "w") as fh:
+        fh.write("""
+predictors:
+  - {name: BeforeBaseline, training_cutoff: '2019-01', verified: true}
+  - {name: AtBaseline,     training_cutoff: '2021-06', verified: true}
+  - {name: MidWindow,      training_cutoff: '2023-06', verified: true}
+  - {name: LateWindow,     training_cutoff: '2025-06', verified: true}
+  - {name: PastEndpoint,   training_cutoff: '2026-07', verified: true}
+  - {name: Unsourced,      training_cutoff: '2019-01', verified: false}
+  - {name: NoCutoff,       training_cutoff: null,      verified: true}
+""")
+    subprocess.run(
+        [sys.executable, os.path.join(ROOT, "scripts", "11_contamination_audit.py"),
+         "--registry", reg_path, "--baseline", "2021-06", "--survival", surv_path],
+        check=True, cwd=workdir, env=env)
+    aud = {r["predictor"]: r for r in json.load(
+        open(os.path.join(workdir, "results", "_contamination_audit.json")))["predictors"]}
+    check("audit: cutoff before baseline is CLEAN",
+          aud["BeforeBaseline"]["tier"], "CLEAN")
+    check("audit: cutoff at baseline is CLEAN", aud["AtBaseline"]["tier"], "CLEAN")
+    check("audit: cutoff inside window is PARTIAL", aud["MidWindow"]["tier"], "PARTIAL")
+    check("audit: cutoff past endpoint is CONTAMINATED",
+          aud["PastEndpoint"]["tier"], "CONTAMINATED")
+    # An unsourced cutoff must never be credited as clean.
+    check("audit: unsourced cutoff is UNVERIFIED", aud["Unsourced"]["tier"],
+          "UNVERIFIED")
+    check("audit: missing cutoff is UNVERIFIED", aud["NoCutoff"]["tier"], "UNVERIFIED")
+    # Leakage is bracketed by measured points, never interpolated.
+    check("audit: mid-window leakage bracket",
+          (aud["MidWindow"]["leak_low"], aud["MidWindow"]["leak_high"]), (1058, 2987))
+    check("audit: late-window leakage bracket",
+          (aud["LateWindow"]["leak_low"], aud["LateWindow"]["leak_high"]), (2987, 4735))
+    check("audit: clean tools leak nothing", aud["AtBaseline"]["leak_high"], 0)
+
     if failures:
         print("\nFAILURES:")
         for f in failures:

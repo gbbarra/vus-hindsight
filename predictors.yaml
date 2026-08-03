@@ -1,0 +1,204 @@
+# Registry of variant pathogenicity predictors, for the contamination audit.
+#
+# WHY THIS FILE EXISTS
+#
+# The labels in this benchmark are ClinVar reclassifications: a variant that was
+# a VUS in 2021 and is Pathogenic today. Most predictors are trained on
+# disease-variant databases, ClinVar among them. A predictor whose training data
+# postdates the baseline may therefore have SEEN the answer, and any accuracy it
+# shows on this benchmark is partly memorisation rather than prediction.
+#
+# HOW TO FILL THIS IN
+#
+# `training_cutoff` is the latest date of data that could have entered the
+# model — usually the release date of the training database, not the paper's
+# publication date. They can differ by years.
+#
+# Leave it null when you do not know. 11_contamination_audit.py treats a null or
+# unsourced cutoff as its own tier and NEVER counts it as safe: an unverified
+# tool is not a clean tool, it is an unmeasured one.
+#
+# `source` must point at where the cutoff is stated — a paper section, a release
+# note, a README. "I think it was around 2015" is not a source, and the audit
+# refuses to honour a cutoff whose `verified` flag is false.
+#
+# Nothing here has been filled from memory. Every cutoff below is null because
+# it has to be read out of the literature, not recalled.
+
+predictors:
+
+  # ---- Benchmarked against VarPPUD (Yin et al., PLoS Comput Biol 2025) ------
+  # These nine are the comparison set in that paper. Most are old, so most are
+  # likely clean with respect to a 2021 baseline — but "likely" is what this
+  # audit exists to replace with a sourced date.
+
+  - name: SIFT
+    version: null
+    category: conservation
+    training_cutoff: null
+    training_data: []
+    uses_clinvar: unknown
+    source: null
+    verified: false
+    notes: >-
+      Scores missense only. Conservation-based rather than supervised on a
+      disease-variant set, which changes the contamination question: check what
+      it was calibrated on rather than assuming none.
+
+  - name: PolyPhen-2
+    version: HumDiv
+    category: supervised
+    training_cutoff: null
+    training_data: []
+    uses_clinvar: unknown
+    source: null
+    verified: false
+    notes: HumDiv and HumVar are separately trained; audit them separately.
+
+  - name: PolyPhen-2
+    version: HumVar
+    category: supervised
+    training_cutoff: null
+    training_data: []
+    uses_clinvar: unknown
+    source: null
+    verified: false
+    notes: null
+
+  - name: MutationTaster
+    version: null
+    category: supervised
+    training_cutoff: null
+    training_data: []
+    uses_clinvar: unknown
+    source: null
+    verified: false
+    notes: >-
+      Versions differ substantially; record which one was actually run, since
+      the newer release retrained on later data.
+
+  - name: MutationAssessor
+    version: null
+    category: conservation
+    training_cutoff: null
+    training_data: []
+    uses_clinvar: unknown
+    source: null
+    verified: false
+    notes: null
+
+  - name: PROVEAN
+    version: null
+    category: conservation
+    training_cutoff: null
+    training_data: []
+    uses_clinvar: unknown
+    source: null
+    verified: false
+    notes: Also scores in-frame indels.
+
+  - name: FATHMM
+    version: null
+    category: supervised
+    training_cutoff: null
+    training_data: []
+    uses_clinvar: unknown
+    source: null
+    verified: false
+    notes: >-
+      Weighted by disease-associated variant databases; check which database
+      and which release.
+
+  - name: VEST
+    version: '4'
+    category: supervised
+    training_cutoff: null
+    training_data: []
+    uses_clinvar: unknown
+    source: null
+    verified: false
+    notes: Missense only.
+
+  - name: CADD
+    version: null
+    category: ensemble
+    training_cutoff: null
+    training_data: []
+    uses_clinvar: unknown
+    source: null
+    verified: false
+    notes: >-
+      Versioned and periodically retrained, so the version string matters more
+      here than for the others. Pin the exact release used.
+
+  # ---- Modern predictors, absent from the VarPPUD comparison ---------------
+  # These are where contamination actually bites: recent, and several trained
+  # on ClinVar directly. A benchmark that only evaluates the legacy tools above
+  # avoids the problem by avoiding the tools anyone currently cares about.
+
+  - name: REVEL
+    version: null
+    category: ensemble
+    training_cutoff: null
+    training_data: []
+    uses_clinvar: unknown
+    source: null
+    verified: false
+    notes: null
+
+  - name: AlphaMissense
+    version: null
+    category: deep-learning
+    training_cutoff: null
+    training_data: []
+    uses_clinvar: unknown
+    source: null
+    verified: false
+    notes: >-
+      Post-2021 release, so on the face of it contaminated for a 2021 baseline.
+      Confirm what it was calibrated against before asserting that.
+
+  - name: EVE
+    version: null
+    category: deep-learning
+    training_cutoff: null
+    training_data: []
+    uses_clinvar: unknown
+    source: null
+    verified: false
+    notes: >-
+      Trained on sequence alignments rather than clinical labels, which may make
+      it clean regardless of release date. Worth checking carefully — it would
+      be a valuable uncontaminated comparator if so.
+
+  - name: ESM-1b
+    version: null
+    category: deep-learning
+    training_cutoff: null
+    training_data: []
+    uses_clinvar: unknown
+    source: null
+    verified: false
+    notes: >-
+      Protein language model; same reasoning as EVE. Unsupervised on clinical
+      labels is the property that matters, not the release year.
+
+  - name: PrimateAI
+    version: null
+    category: deep-learning
+    training_cutoff: null
+    training_data: []
+    uses_clinvar: unknown
+    source: null
+    verified: false
+    notes: null
+
+  - name: BayesDel
+    version: null
+    category: ensemble
+    training_cutoff: null
+    training_data: []
+    uses_clinvar: unknown
+    source: null
+    verified: false
+    notes: null
