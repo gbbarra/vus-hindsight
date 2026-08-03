@@ -27,18 +27,18 @@ reconstructed review-status distribution:
   [4*] practice guideline                                             34
 
 reconstructed classification distribution (top 12):
-  Uncertain significance                                    295,502
-  Likely benign                                             197,158
-  Benign                                                    154,253
-  no assertion criteria provided                             77,187
-  Pathogenic                                                 71,292
-  Likely pathogenic                                          34,470
+  Uncertain significance                                    315,855
+  Likely benign                                             214,874
+  Benign                                                    162,748
+  Pathogenic                                                 92,307
+  Likely pathogenic                                          40,172
   Conflicting classifications of pathogenicity               27,111
-  Benign/Likely benign                                       15,030
-  Pathogenic/Likely pathogenic                                4,971
+  Benign/Likely benign                                       15,148
+  Pathogenic/Likely pathogenic                                5,104
+  Other                                                       3,746
   drug response                                                 124
-  Other                                                          91
   other                                                           5
+  not provided                                                    1
 
 wrote data/reconstructed_2021-06.parquet
 
@@ -54,26 +54,26 @@ variants reconstructed (all assemblies)    : 877,195
 real variants with a reconstruction        : 597,970 (64.52%)
 
 agreement among covered variants (597,970):
-  bucket           : 531,723 (88.92%)
+  bucket           : 566,385 (94.72%)
   review stars     : 516,997 (86.46%)
-  both             : 464,549 (77.69%)
+  both             : 495,061 (82.79%)
 
 bucket confusion (actual -> reconstructed), top 15:
-  Still VUS        -> Still VUS          215,574
-  B/LB             -> B/LB               204,025
-  P/LP             -> P/LP                86,638
+  Still VUS        -> Still VUS          224,486
+  B/LB             -> B/LB               210,111
+  P/LP             -> P/LP               106,521
   Conflicting      -> Conflicting         21,841
-  P/LP             -> Other               19,922   <-- mismatch
-  Conflicting      -> Still VUS           11,769   <-- mismatch
-  Still VUS        -> Other                8,978   <-- mismatch
-  Conflicting      -> B/LB                 6,242   <-- mismatch
-  B/LB             -> Other                6,095   <-- mismatch
-  Other            -> Other                3,645
+  Conflicting      -> Still VUS           11,798   <-- mismatch
+  Conflicting      -> B/LB                 6,265   <-- mismatch
+  Other            -> Other                3,426
   Still VUS        -> Conflicting          3,277   <-- mismatch
-  Still VUS        -> B/LB                 2,543   <-- mismatch
-  Conflicting      -> P/LP                 2,487   <-- mismatch
+  Conflicting      -> P/LP                 2,574   <-- mismatch
+  Still VUS        -> B/LB                 2,568   <-- mismatch
   B/LB             -> Conflicting          1,156   <-- mismatch
-  B/LB             -> Still VUS            1,121   <-- mismatch
+  B/LB             -> Still VUS            1,122   <-- mismatch
+  Still VUS        -> P/LP                   680   <-- mismatch
+  P/LP             -> Still VUS              514   <-- mismatch
+  Other            -> B/LB                   452   <-- mismatch
 
 star drift (reconstructed minus actual), covered variants:
   -3          7  ( 0.00%)
@@ -87,7 +87,7 @@ star drift (reconstructed minus actual), covered variants:
 === the cohort that matters ===
 real VUS cohort (>=1 star)          : 382,704
   with any reconstruction           : 223,277 (58.34%)
-  reconstructed as VUS              : 215,202 (56.23%)
+  reconstructed as VUS              : 216,986 (56.70%)
   reconstructed as VUS with >=1 star: 215,202 (56.23%)
 
 wrote results/_reconstruction_validation_2021-06.json

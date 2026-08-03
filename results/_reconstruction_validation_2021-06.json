@@ -7,28 +7,28 @@
   "pct_covered": 64.5199,
   "agreement": {
     "n": 597970,
-    "bucket": 531723,
-    "pct_bucket": 88.9214,
+    "bucket": 566385,
+    "pct_bucket": 94.718,
     "stars": 516997,
     "pct_stars": 86.4587,
-    "both": 464549,
-    "pct_both": 77.6877
+    "both": 495061,
+    "pct_both": 82.7903
   },
   "confusion": [
     {
       "actual": "Still VUS",
       "reconstructed": "Still VUS",
-      "n": 215574
+      "n": 224486
     },
     {
       "actual": "B/LB",
       "reconstructed": "B/LB",
-      "n": 204025
+      "n": 210111
     },
     {
       "actual": "P/LP",
       "reconstructed": "P/LP",
-      "n": 86638
+      "n": 106521
     },
     {
       "actual": "Conflicting",
@@ -36,34 +36,19 @@
       "n": 21841
     },
     {
-      "actual": "P/LP",
-      "reconstructed": "Other",
-      "n": 19922
-    },
-    {
       "actual": "Conflicting",
       "reconstructed": "Still VUS",
-      "n": 11769
-    },
-    {
-      "actual": "Still VUS",
-      "reconstructed": "Other",
-      "n": 8978
+      "n": 11798
     },
     {
       "actual": "Conflicting",
       "reconstructed": "B/LB",
-      "n": 6242
-    },
-    {
-      "actual": "B/LB",
-      "reconstructed": "Other",
-      "n": 6095
+      "n": 6265
     },
     {
       "actual": "Other",
       "reconstructed": "Other",
-      "n": 3645
+      "n": 3426
     },
     {
       "actual": "Still VUS",
@@ -71,14 +56,14 @@
       "n": 3277
     },
     {
-      "actual": "Still VUS",
-      "reconstructed": "B/LB",
-      "n": 2543
-    },
-    {
       "actual": "Conflicting",
       "reconstructed": "P/LP",
-      "n": 2487
+      "n": 2574
+    },
+    {
+      "actual": "Still VUS",
+      "reconstructed": "B/LB",
+      "n": 2568
     },
     {
       "actual": "B/LB",
@@ -88,7 +73,22 @@
     {
       "actual": "B/LB",
       "reconstructed": "Still VUS",
-      "n": 1121
+      "n": 1122
+    },
+    {
+      "actual": "Still VUS",
+      "reconstructed": "P/LP",
+      "n": 680
+    },
+    {
+      "actual": "P/LP",
+      "reconstructed": "Still VUS",
+      "n": 514
+    },
+    {
+      "actual": "Other",
+      "reconstructed": "B/LB",
+      "n": 452
     }
   ],
   "star_drift": [
@@ -124,7 +124,7 @@
   "cohort": {
     "real": 382704,
     "covered": 223277,
-    "recovered_as_vus": 215202,
+    "recovered_as_vus": 216986,
     "recovered_with_criteria": 215202,
     "pct_recovered_with_criteria": 56.232
   }
