@@ -104,6 +104,74 @@ def write_vcf(path):
     print(f"wrote {path} ({len(VCF_MC)} records)")
 
 
+# --- submission_summary fixture, for the frozen-date reconstruction ----------
+# One row per SCV. Each case pins down one rule of ClinVar's aggregation, so a
+# regression in aggregate.py fails here instead of in a 366 MB download.
+SUB_COLS = ["VariationID", "ClinicalSignificance", "DateLastEvaluated",
+            "Description", "SubmittedPhenotypeInfo", "ReportedPhenotypeInfo",
+            "ReviewStatus", "CollectionMethod", "OriginCounts", "Submitter",
+            "SCV", "SubmittedGeneSymbol", "ExplanationOfInterpretation",
+            "SomaticClinicalImpact", "Oncogenicity",
+            "ContributesToAggregateClassification"]
+
+CRIT = "criteria provided, single submitter"
+NOCRIT_SUB = "no assertion criteria provided"
+EXPERT_SUB = "reviewed by expert panel"
+GUIDE_SUB = "practice guideline"
+
+# (vid, class, date, review, submitter, contributes)
+SUBMISSIONS = [
+    # 100: two submitters agreeing -> 2 stars, Pathogenic
+    (100, "Pathogenic", "Jan 05, 2020", CRIT, "Lab A", "yes"),
+    (100, "Pathogenic", "Feb 10, 2020", CRIT, "Lab B", "yes"),
+    # 101: P vs VUS across submitters -> conflict, 1 star
+    (101, "Pathogenic", "Jan 05, 2020", CRIT, "Lab A", "yes"),
+    (101, "Uncertain significance", "Feb 10, 2020", CRIT, "Lab B", "yes"),
+    # 102: single submitter VUS -> 1 star
+    (102, "Uncertain significance", "Mar 01, 2020", CRIT, "Lab A", "yes"),
+    # 103: expert panel overrides a disagreeing ordinary submission -> 3 stars
+    (103, "Uncertain significance", "Jan 05, 2020", CRIT, "Lab A", "yes"),
+    (103, "Pathogenic", "Feb 01, 2020", EXPERT_SUB, "Panel X", "yes"),
+    # 104: only submissions without criteria -> 0 stars
+    (104, "Pathogenic", "Jan 05, 2020", NOCRIT_SUB, "Lab C", "yes"),
+    # 105: Pathogenic + Likely pathogenic is NOT a conflict -> P/LP, 2 stars
+    (105, "Pathogenic", "Jan 05, 2020", CRIT, "Lab A", "yes"),
+    (105, "Likely pathogenic", "Feb 10, 2020", CRIT, "Lab B", "yes"),
+    # 106: evaluated AFTER the cutoff -> variant absent from the reconstruction
+    (106, "Pathogenic", "Jan 05, 2024", CRIT, "Lab A", "yes"),
+    # 107: flagged as not contributing -> ignored
+    (107, "Pathogenic", "Jan 05, 2020", CRIT, "Lab A", "no"),
+    # 108: Benign + Likely benign -> B/LB, 2 stars
+    (108, "Benign", "Jan 05, 2020", CRIT, "Lab A", "yes"),
+    (108, "Likely benign", "Feb 10, 2020", CRIT, "Lab B", "yes"),
+    # 109: same submitter twice is still ONE submitter -> 1 star, not 2
+    (109, "Pathogenic", "Jan 05, 2020", CRIT, "Lab A", "yes"),
+    (109, "Pathogenic", "Feb 10, 2020", CRIT, "Lab A", "yes"),
+    # 110: practice guideline outranks an expert panel -> 4 stars
+    (110, "Pathogenic", "Jan 05, 2020", EXPERT_SUB, "Panel X", "yes"),
+    (110, "Likely pathogenic", "Feb 01, 2020", GUIDE_SUB, "Guideline Y", "yes"),
+    # 111: missing date -> excluded, so this variant never appears
+    (111, "Pathogenic", "-", CRIT, "Lab A", "yes"),
+]
+
+
+def write_submissions(path):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with gzip.open(path, "wt") as fh:
+        fh.write("##Overview of interpretation, phenotypes and methods\n")
+        fh.write("##Explanation of the columns in this report\n")
+        fh.write("#" + "\t".join(SUB_COLS) + "\n")
+        for vid, cls, date, review, submitter, contributes in SUBMISSIONS:
+            row = {c: "-" for c in SUB_COLS}
+            row.update({"VariationID": str(vid), "ClinicalSignificance": cls,
+                        "DateLastEvaluated": date, "ReviewStatus": review,
+                        "Submitter": submitter,
+                        "SCV": f"SCV{vid}{submitter[-1]}{date[:3]}",
+                        "ContributesToAggregateClassification": contributes})
+            fh.write("\t".join(row[c] for c in SUB_COLS) + "\n")
+    print(f"wrote {path} ({len(SUBMISSIONS)} submissions)")
+
+
 def write(path, header_cols, rows):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with gzip.open(path, "wt") as fh:
@@ -130,6 +198,7 @@ def main():
     write(os.path.join(OUT, "baseline_fixture.txt.gz"), base_cols, base_rows)
     write(os.path.join(OUT, "current_fixture.txt.gz"), cur_cols, cur_rows)
     write_vcf(os.path.join(OUT, "clinvar_fixture.vcf.gz"))
+    write_submissions(os.path.join(OUT, "submission_fixture.txt.gz"))
 
 
 if __name__ == "__main__":

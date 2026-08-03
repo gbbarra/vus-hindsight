@@ -1,0 +1,92 @@
+name: Frozen-date reconstruction (validated)
+
+# Rebuilds ClinVar's aggregate classification as of a past date from submission
+# dates, then compares it against the archived snapshot for that same date.
+#
+# Manual only, for the same reason as the benchmark workflow: this writes
+# measured numbers into the repository, and regenerating them should be a
+# decision rather than a side effect.
+on:
+  workflow_dispatch:
+    inputs:
+      month:
+        description: >-
+          Month to reconstruct and validate against (YYYY-MM). Needs an
+          archived snapshot to exist for it.
+        required: true
+        default: '2021-06'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reconstruction-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  reconstruct:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Free up disk before downloading
+        run: |
+          echo "--- before ---"; df -h /
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+                      /usr/local/share/boost || true
+          echo "--- after ---"; df -h /
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install DuckDB
+        run: pip install --quiet duckdb && python -c "import duckdb; print('duckdb', duckdb.__version__)"
+
+      - name: Validate the aggregation rules against the fixture
+        run: python3 tests/test_pipeline.py
+
+      - name: Reconstruct and validate
+        env:
+          RECON_MONTH: ${{ github.event.inputs.month }}
+        run: |
+          mkdir -p results
+          set -o pipefail
+          scripts/run_reconstruction.sh "${RECON_MONTH}" 2>&1 \
+            | tee "results/reconstruction_log_${RECON_MONTH}.txt"
+
+      - name: Show what was produced
+        if: always()
+        run: ls -lh results/ || true
+
+      - name: Upload results as an artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reconstruction-results
+          path: results/
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Commit results back to the branch
+        if: success()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/
+          if git diff --cached --quiet; then
+            echo "No changes to results/ — nothing to commit."
+            exit 0
+          fi
+          git commit -m "Add frozen-date reconstruction validation
+
+          Produced by the reconstruction workflow (run ${{ github.run_id }})."
+          for i in 1 2 3 4; do
+            git push origin HEAD:${{ github.ref_name }} && break
+            git pull --rebase origin ${{ github.ref_name }} || true
+            sleep $((2 ** i))
+          done

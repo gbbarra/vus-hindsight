@@ -150,6 +150,34 @@ def main():
     check("survival chart is a valid-looking svg",
           svg.startswith("<svg") and svg.rstrip().endswith("</svg>"), True)
 
+    # Frozen-date reconstruction: each fixture variant pins one aggregation rule.
+    recon_pq = os.path.join(workdir, "recon.parquet")
+    subprocess.run(
+        [sys.executable, os.path.join(ROOT, "scripts", "09_reconstruct.py"),
+         "--submissions", os.path.join(HERE, "fixtures", "submission_fixture.txt.gz"),
+         "--as-of", "2021-06-03", "--out", recon_pq],
+        check=True, cwd=workdir, env=env)
+    import duckdb
+    got = {r[0]: (r[1], r[2]) for r in duckdb.connect().execute(
+        f"SELECT variation_id, classification, stars FROM read_parquet('{recon_pq}')"
+    ).fetchall()}
+    expected_recon = {
+        100: ("Pathogenic", 2),                                    # two submitters agree
+        101: ("Conflicting classifications of pathogenicity", 1),  # P vs VUS
+        102: ("Uncertain significance", 1),                        # single submitter
+        103: ("Pathogenic", 3),                                    # expert panel overrides
+        104: ("no assertion criteria provided", 0),                # no criteria at all
+        105: ("Pathogenic/Likely pathogenic", 2),                  # P+LP is not a conflict
+        108: ("Benign/Likely benign", 2),                          # B+LB is not a conflict
+        109: ("Pathogenic", 1),                                    # same submitter twice
+        110: ("Likely pathogenic", 4),                             # guideline outranks panel
+    }
+    for vid, want in expected_recon.items():
+        check(f"reconstruction VID {vid}", got.get(vid), want)
+    check("post-cutoff submission excluded", 106 in got, False)
+    check("non-contributing submission excluded", 107 in got, False)
+    check("undated submission excluded", 111 in got, False)
+
     if failures:
         print("\nFAILURES:")
         for f in failures:
