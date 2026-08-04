@@ -30,3 +30,13 @@ tests/fixtures/
 __pycache__/
 *.pyc
 .venv/
+
+# Artefatos das ferramentas de qualidade (§4.6) — nenhum é fonte.
+.coverage
+coverage.json
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.mutmut-cache
+mutants/

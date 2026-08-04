@@ -1,0 +1,60 @@
+[project]
+name = "vus-hindsight"
+version = "1.0.0"
+description = "ClinVar VUS reclassification benchmark, with a contamination audit"
+requires-python = ">=3.11"
+dependencies = ["duckdb", "numpy", "scikit-learn", "scipy", "PyYAML"]
+
+[project.optional-dependencies]
+dev = [
+  "pytest", "pytest-cov", "pytest-bdd",
+  "ruff", "mypy", "radon", "bandit", "detect-secrets", "mutmut",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# The pipeline scripts are not a package; `schema`, `aggregate` and `snapshot`
+# are imported directly and the numbered ones are loaded by path. See
+# tests/conftest.py and tests/unit/loader.py.
+addopts = "-q --strict-markers"
+markers = [
+  "integration: runs the whole pipeline over the synthetic fixture (slow)",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["scripts"]
+omit = ["tests/make_fixture.py"]
+
+[tool.coverage.report]
+exclude_also = [
+  'if __name__ == .__main__.:',
+  'if TYPE_CHECKING:',
+]
+# No `fail_under` here on purpose. The threshold lives on the command line
+# (CLAUDE.md section 3) and is not switched on until the pipeline running under
+# subprocess is actually measured — turning the gate on at whatever number
+# happens to pass is what rule 3 forbids. See docs/TEST_PLAN.md section 6.1.
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "C90", "UP", "SIM"]
+
+[tool.ruff.lint.mccabe]
+# CLAUDE.md section 4.5. This is the gate for new code; the existing violations
+# are inventoried in docs/TEST_PLAN.md section 6.3 and have their own plan.
+max-complexity = 10
+
+[tool.mypy]
+python_version = "3.11"
+files = ["scripts"]
+# Starting permissive and tightening module by module, as agreed. The code
+# carries no annotations today, so --strict would report hundreds of errors on
+# day one and teach nobody anything.
+ignore_missing_imports = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unreachable = true
