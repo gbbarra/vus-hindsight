@@ -167,9 +167,15 @@ def test_as_duas_grafias_de_conflito_caem_no_mesmo_bucket(scalar, classificacao)
 
 
 @pytest.mark.parametrize("variacao", [
-    "pathogenic", "PATHOGENIC", "  Pathogenic  ", "\tPathogenic\n",
+    "pathogenic", "PATHOGENIC", "  Pathogenic  ",
 ])
 def test_caixa_e_espaco_em_volta_nao_mudam_o_bucket(scalar, variacao):
+    # Só espaço. Tab e quebra de linha não entram aqui porque a origem é
+    # tab-delimited: dentro de um campo, um deles vira coluna e o outro vira
+    # linha. O CR de um arquivo CRLF, que seria o caso realista, o read_csv do
+    # DuckDB já remove antes de a coluna existir. O trim() do DuckDB remove
+    # apenas espaço, então um teste com \t aqui reprovaria por uma entrada que
+    # o formato impede.
     assert scalar(bucket_sql("cls"), {"cls": variacao}) == "P/LP"
 
 
