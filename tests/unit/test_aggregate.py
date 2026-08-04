@@ -42,7 +42,7 @@ def consolidar(con):
                         [s["variante"], s["classificacao"], s["revisao"],
                          s["submissor"], f"SCV{i:06d}", s["data"], s["contribui"]])
         linhas = con.execute(reconstruct_sql(ate)).fetchall()
-        return {linha[0]: dict(zip(COLUNAS, linha)) for linha in linhas}
+        return {linha[0]: dict(zip(COLUNAS, linha, strict=True)) for linha in linhas}
 
     return _consolidar
 
@@ -305,4 +305,5 @@ def test_contagens_reportadas_batem_com_as_submissoes_elegiveis(consolidar):
 
     variante = consolidar(submissoes)["1"]
 
-    assert (variante["n_scv"], variante["n_crit"], variante["n_submitters"]) == (3, 2, 2)
+    assert (variante["n_scv"], variante["n_crit"],
+            variante["n_submitters"]) == (3, 2, 2)
