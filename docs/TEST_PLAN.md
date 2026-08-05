@@ -438,7 +438,7 @@ Funcionalidade: Comparação entre listas de variantes de origens diferentes
     Então o resultado deve ser ausência de sobreposição
 ```
 
-**14 cenários.** Nenhum cita nome de função, coluna ou estrutura de dados — só
+**11 cenários** (5 + 4 + 2). Nenhum cita nome de função, coluna ou estrutura de dados — só
 vocabulário de genética clínica, como §4.2 exige.
 
 ---
@@ -555,7 +555,7 @@ nunca a asserção.
 | 2 | §4.1.1 `schema.py` + §4.1.2 `aggregate.py` | ~68 testes, os dois módulos mais críticos |
 | 3 | §4.1.3 a §4.1.6 (11, 14, 15, 16) + extrações de §7.1 | ~66 testes |
 | 4 | §4.1.7 e §4.1.8 (módulos normais, contrato de CLI) | ~29 testes |
-| 5 | BDD: 3 features, 14 cenários | steps `pytest-bdd` |
+| 5 | BDD: 3 features, 11 cenários | steps `pytest-bdd` |
 | 6 | cobertura: `check_coverage_floors.py` + resolver a medição no subprocess | números reais, antes e depois |
 | 7 | gates: `ruff`, `mypy`, `bandit`, `detect-secrets`, `quality.yml`, `pre-commit` | CI vermelha vira verde |
 | 8 | mutação em `aggregate.py` e `schema.py` | mutantes sobreviventes mortos ou explicados |
