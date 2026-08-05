@@ -22,8 +22,7 @@ import os
 import sys
 
 import duckdb
-
-from schema import bucket_sql, stars_sql
+from schema import bucket_sql
 from snapshot import load_snapshot
 
 RESULTS = "results"
@@ -124,7 +123,7 @@ def main():
         FROM cmp
     """).fetchone()
     real_cohort, covered_cohort, recovered_vus, recovered_cohort = coh
-    print(f"\n=== the cohort that matters ===")
+    print("\n=== the cohort that matters ===")
     print(f"real VUS cohort (>=1 star)          : {real_cohort:,}")
     print(f"  with any reconstruction           : {covered_cohort:,} "
           f"({100.0 * covered_cohort / real_cohort:.2f}%)")

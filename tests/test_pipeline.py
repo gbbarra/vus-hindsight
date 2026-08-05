@@ -30,6 +30,19 @@ EXPECTED = {
 }
 
 
+
+def _carrega_json(caminho):
+    """json.load com o arquivo fechado no fim (ruff SIM115)."""
+    with open(caminho) as fh:
+        return json.load(fh)
+
+
+def _le_texto(caminho):
+    """Lê um arquivo inteiro com o descritor fechado no fim (ruff SIM115)."""
+    with open(caminho) as fh:
+        return fh.read()
+
+
 def main():
     subprocess.run([sys.executable, os.path.join(HERE, "make_fixture.py")],
                    check=True, cwd=ROOT)
@@ -50,7 +63,7 @@ def main():
          "--label", "FIXTURE", "--consequence-map", cons_map],
         check=True, cwd=workdir, env=env)
 
-    meta = json.load(open(os.path.join(workdir, "results", "_counts_FIXTURE.json")))
+    meta = _carrega_json(os.path.join(workdir, "results", "_counts_FIXTURE.json"))
     failures = []
 
     def check(name, got, want):
@@ -93,14 +106,15 @@ def main():
     # discrimination. The fixture has exactly one VUS -> B/LB variant.
     check("benign arm exported", meta["tsv_benign_rows_written"],
           EXPECTED["transitions"]["B/LB"])
-    benign = open(os.path.join(workdir, "results",
-                               "reclassified_benign.tsv")).read().splitlines()
+    benign = _le_texto(os.path.join(workdir, "results",
+                               "reclassified_benign.tsv")).splitlines()
     check("benign tsv has header + rows", len(benign),
           1 + EXPECTED["transitions"]["B/LB"])
+    patogenico = _le_texto(os.path.join(workdir, "results",
+                                        "reclassified_pathogenic.tsv"))
     check("both arms share a schema",
           benign[0],
-          open(os.path.join(workdir, "results",
-                            "reclassified_pathogenic.tsv")).readline().rstrip("\n"))
+          patogenico.splitlines()[0])
 
     # Report assembly must survive the real shape of the counts JSON, otherwise a
     # bug here would only surface after a multi-GB download.
@@ -110,7 +124,7 @@ def main():
                  "Tue, 28 Jul 2026 04:38:51 GMT\tdeadbeefcafe\n")
     subprocess.run([sys.executable, os.path.join(ROOT, "scripts", "06_report.py")],
                    check=True, cwd=workdir, env=env)
-    md = open(os.path.join(workdir, "results", "transitions.md")).read()
+    md = _le_texto(os.path.join(workdir, "results", "transitions.md"))
     for needle in ["VUS → P/LP", "Hard stratum", "not_in_vcf", "MC",
                    "Exact inputs", "deadbeefcafe", "28 Jul 2026"]:
         check(f"transitions.md mentions {needle!r}", needle in md, True)
@@ -129,7 +143,7 @@ def main():
          "--endpoint", os.path.join(HERE, "fixtures", "current_fixture.txt.gz"),
          "--endpoint-label", "2022-12", "--consequence-map", cons_map],
         check=True, cwd=workdir, env=env)
-    surv = json.load(open(os.path.join(workdir, "results", "_survival.json")))
+    surv = _carrega_json(os.path.join(workdir, "results", "_survival.json"))
     check("survival: one point recorded", len(surv), 1)
     pt = surv[0]
     check("survival: cohort matches transition baseline", pt["cohort_size"],
@@ -143,10 +157,10 @@ def main():
     subprocess.run([sys.executable,
                     os.path.join(ROOT, "scripts", "08_survival_report.py")],
                    check=True, cwd=workdir, env=env)
-    sm = open(os.path.join(workdir, "results", "survival.md")).read()
+    sm = _le_texto(os.path.join(workdir, "results", "survival.md"))
     for needle in ["survival_curve.svg", "Month 0 is definitional", "hard stratum"]:
         check(f"survival.md mentions {needle!r}", needle in sm, True)
-    svg = open(os.path.join(workdir, "results", "survival_curve.svg")).read()
+    svg = _le_texto(os.path.join(workdir, "results", "survival_curve.svg"))
     check("survival chart is a valid-looking svg",
           svg.startswith("<svg") and svg.rstrip().endswith("</svg>"), True)
 
@@ -161,16 +175,21 @@ def main():
     got = {r[0]: (r[1], r[2]) for r in duckdb.connect().execute(
         f"SELECT variation_id, classification, stars FROM read_parquet('{recon_pq}')"
     ).fetchall()}
+    # 100 two submitters agree           105 P+LP is not a conflict
+    # 101 P vs VUS, a declared conflict    108 B+LB is not a conflict
+    # 102 single submitter                 109 same submitter twice
+    # 103 expert panel overrides           110 guideline outranks panel
+    # 104 0-star variants still carry a classification
     expected_recon = {
-        100: ("Pathogenic", 2),                                    # two submitters agree
-        101: ("Conflicting classifications of pathogenicity", 1),  # P vs VUS
-        102: ("Uncertain significance", 1),                        # single submitter
-        103: ("Pathogenic", 3),                                    # expert panel overrides
-        104: ("Pathogenic", 0),          # 0-star variants still carry a classification
-        105: ("Pathogenic/Likely pathogenic", 2),                  # P+LP is not a conflict
-        108: ("Benign/Likely benign", 2),                          # B+LB is not a conflict
-        109: ("Pathogenic", 1),                                    # same submitter twice
-        110: ("Likely pathogenic", 4),                             # guideline outranks panel
+        100: ("Pathogenic", 2),
+        101: ("Conflicting classifications of pathogenicity", 1),
+        102: ("Uncertain significance", 1),
+        103: ("Pathogenic", 3),
+        104: ("Pathogenic", 0),
+        105: ("Pathogenic/Likely pathogenic", 2),
+        108: ("Benign/Likely benign", 2),
+        109: ("Pathogenic", 1),
+        110: ("Likely pathogenic", 4),
     }
     for vid, want in expected_recon.items():
         check(f"reconstruction VID {vid}", got.get(vid), want)
@@ -189,33 +208,65 @@ def main():
     with open(reg_path, "w") as fh:
         fh.write("""
 predictors:
-  - {name: BeforeBaseline, training_cutoff: '2019-01', verified: true, label_exposure: training_labels}
-  - {name: AtBaseline,     training_cutoff: '2021-06', verified: true, label_exposure: training_labels}
-  - {name: MidWindow,      training_cutoff: '2023-06', verified: true, label_exposure: training_labels}
-  - {name: LateWindow,     training_cutoff: '2025-06', verified: true, label_exposure: training_labels}
-  - {name: PastEndpoint,   training_cutoff: '2026-07', verified: true, label_exposure: training_labels}
-  - {name: Unsourced,      training_cutoff: '2019-01', verified: false, label_exposure: training_labels}
-  - {name: NoCutoff,       training_cutoff: null,      verified: true, label_exposure: training_labels}
-  - {name: LabelFreeRecent, training_cutoff: null,     verified: false, label_exposure: none}
-  - {name: Measured,       training_cutoff: null,      verified: false, label_exposure: evaluation_only,
-     measured_overlap: {vus_to_plp: '531 / 2883', control_still_vus: '1 / 25000'}}
+  - name: BeforeBaseline
+    training_cutoff: '2019-01'
+    verified: true
+    label_exposure: training_labels
+  - name: AtBaseline
+    training_cutoff: '2021-06'
+    verified: true
+    label_exposure: training_labels
+  - name: MidWindow
+    training_cutoff: '2023-06'
+    verified: true
+    label_exposure: training_labels
+  - name: LateWindow
+    training_cutoff: '2025-06'
+    verified: true
+    label_exposure: training_labels
+  - name: PastEndpoint
+    training_cutoff: '2026-07'
+    verified: true
+    label_exposure: training_labels
+  - name: Unsourced
+    training_cutoff: '2019-01'
+    verified: false
+    label_exposure: training_labels
+  - name: NoCutoff
+    training_cutoff: null
+    verified: true
+    label_exposure: training_labels
+  - name: LabelFreeRecent
+    training_cutoff: null
+    verified: false
+    label_exposure: none
+  - name: Measured
+    training_cutoff: null
+    verified: false
+    label_exposure: evaluation_only
+    measured_overlap:
+      vus_to_plp: '531 / 2883'
+      control_still_vus: '1 / 25000'
 """)
     subprocess.run(
         [sys.executable, os.path.join(ROOT, "scripts", "11_contamination_audit.py"),
          "--registry", reg_path, "--baseline", "2021-06", "--survival", surv_path],
         check=True, cwd=workdir, env=env)
-    aud = {r["predictor"]: r for r in json.load(
-        open(os.path.join(workdir, "results", "_contamination_audit.json")))["predictors"]}
+    aud = {r["predictor"]: r for r in _carrega_json(os.path.join(
+        workdir, "results", "_contamination_audit.json"))["predictors"]}
     check("audit: cutoff before baseline is CLEAN",
           aud["BeforeBaseline"]["date_tier"], "CLEAN")
-    check("audit: cutoff at baseline is CLEAN", aud["AtBaseline"]["date_tier"], "CLEAN")
-    check("audit: cutoff inside window is PARTIAL", aud["MidWindow"]["date_tier"], "PARTIAL")
+    check("audit: cutoff at baseline is CLEAN",
+          aud["AtBaseline"]["date_tier"], "CLEAN")
+    check("audit: cutoff inside window is PARTIAL",
+          aud["MidWindow"]["date_tier"], "PARTIAL")
     check("audit: cutoff past endpoint is CONTAMINATED",
           aud["PastEndpoint"]["date_tier"], "CONTAMINATED")
     # An unsourced cutoff must never be credited as clean.
     check("audit: unsourced cutoff is UNVERIFIED", aud["Unsourced"]["date_tier"],
           "UNVERIFIED")
-    check("audit: missing cutoff is UNVERIFIED", aud["NoCutoff"]["date_tier"], "UNVERIFIED")
+    check("audit: missing cutoff is UNVERIFIED",
+          aud["NoCutoff"]["date_tier"], "UNVERIFIED")
     # Leakage is bracketed by measured points, never interpolated.
     check("audit: mid-window leakage bracket",
           (aud["MidWindow"]["leak_low"], aud["MidWindow"]["leak_high"]), (1058, 2987))
@@ -328,8 +379,8 @@ predictors:
 
     r5 = run_dbnsfp(v5, "scores")
     check("dbnsfp: 4.x/5.x layout converts", r5.returncode, 0)
-    conv = json.load(open(os.path.join(workdir, "results",
-                                       "_dbnsfp_conversion.json")))
+    conv = _carrega_json(os.path.join(workdir, "results",
+                                       "_dbnsfp_conversion.json"))
     check("dbnsfp: GRCh38 read from the main columns in the 4.x/5.x layout",
           (conv["chr_col"], conv["pos_col"]), ("#chr", "pos(1-based)"))
     check("dbnsfp: every cohort row joined", conv["joined"], len(exp_rows))
@@ -352,8 +403,8 @@ predictors:
 
     r_raw = run_dbnsfp(v5, "raw", ["--raw", "--only", "SIFT,MutationAssessor"])
     check("dbnsfp: raw mode converts", r_raw.returncode, 0)
-    raw = json.load(open(os.path.join(workdir, "results",
-                                      "_dbnsfp_conversion.json")))
+    raw = _carrega_json(os.path.join(workdir, "results",
+                                      "_dbnsfp_conversion.json"))
     raw_by = {p["predictor"]: p for p in raw["predictors"]}
     check("dbnsfp: raw SIFT keeps its published low-is-damaging direction",
           raw_by["SIFT"]["direction"], "low")
@@ -366,8 +417,8 @@ predictors:
 
     r3 = run_dbnsfp(v3, "scores_v3")
     check("dbnsfp: 3.x layout converts", r3.returncode, 0)
-    conv3 = json.load(open(os.path.join(workdir, "results",
-                                        "_dbnsfp_conversion.json")))
+    conv3 = _carrega_json(os.path.join(workdir, "results",
+                                        "_dbnsfp_conversion.json"))
     check("dbnsfp: GRCh38 read from the aliases in the 3.x layout",
           (conv3["chr_col"], conv3["pos_col"]),
           ("hg38_chr", "hg38_pos(1-based)"))

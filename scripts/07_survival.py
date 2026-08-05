@@ -31,7 +31,6 @@ import os
 import sys
 
 import duckdb
-
 from snapshot import load_snapshot
 
 RESULTS = "results"

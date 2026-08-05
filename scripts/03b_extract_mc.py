@@ -21,7 +21,6 @@ import os
 import sys
 
 import duckdb
-
 from schema import mc_bucket_sql
 
 # A byte that cannot appear in a VCF text line, so read_csv yields whole lines.

@@ -20,7 +20,6 @@ import os
 import sys
 
 import duckdb
-
 from aggregate import DATE_PARSE, reconstruct_sql
 
 LINE_DELIM = "\x01"

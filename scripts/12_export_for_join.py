@@ -26,10 +26,8 @@ import hashlib
 import json
 import os
 import sys
-from datetime import date
 
 import duckdb
-
 from snapshot import load_snapshot
 
 COLUMNS = ["variant_id_hg38", "variation_id", "chrom", "pos_hg38", "ref", "alt",
@@ -97,7 +95,7 @@ def main():
             WHERE e.bucket = 'P/LP'
               AND c.variation_id NOT IN (SELECT variation_id FROM first_plp)
         """)
-        n = con.execute(f"SELECT count(*) FROM first_plp").fetchone()[0]
+        n = con.execute("SELECT count(*) FROM first_plp").fetchone()[0]
         print(f"  cumulative first-P/LP by +{months}m: {n:,}")
         if (path, label, months) != endpoints[-1]:
             con.execute(f"DROP TABLE {alias}")
@@ -181,7 +179,7 @@ def main():
         raw = [(s, STILL_VUS_SAMPLE * n / total, n) for s, n in strata]
         alloc = {s: min(int(q), n) for s, q, n in raw}
         rem = STILL_VUS_SAMPLE - sum(alloc.values())
-        for s, q, n in sorted(raw, key=lambda r: -(r[1] - int(r[1]))):
+        for s, _q, n in sorted(raw, key=lambda r: -(r[1] - int(r[1]))):
             if rem <= 0:
                 break
             if alloc[s] < n:
@@ -245,7 +243,11 @@ def main():
         with open(args.manifest) as fh:
             manifest = [ln.rstrip("\n").split("\t") for ln in fh if ln.strip()]
 
-    csv_md5 = hashlib.md5(open(args.out, "rb").read()).hexdigest()
+    with open(args.out, "rb") as fh:
+        # md5 aqui é impressão digital de proveniência, não segurança: ele
+        # identifica os bytes exatos que produziram este relatório, para que um
+        # revisor confira que está olhando o mesmo arquivo.
+        csv_md5 = hashlib.md5(fh.read(), usedforsecurity=False).hexdigest()
     R = [f"# `{os.path.basename(args.out)}`\n"]
     R.append("Flat export of the vus-hindsight cohort for external "
              "contamination analysis — joining predictor scores against "
@@ -271,7 +273,7 @@ def main():
     R.append(f"CSV md5: `{csv_md5}`\n")
 
     R.append("## Arms\n")
-    R.append(f"| arm | rows | definition |")
+    R.append("| arm | rows | definition |")
     R.append("|---|---|---|")
     R.append(f"| `vus_to_plp` | {n_plp:,} | VUS with assertion criteria at "
              f"{base_label}, P/LP at {final_label} (+{final_months} months) |")

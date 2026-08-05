@@ -64,7 +64,7 @@ def leakage_range(months, points):
         return 0, first["p_lp"], (
             f"cutoff before the first measured point "
             f"({first['months_elapsed']} months)")
-    for lo, hi in zip(ordered, ordered[1:]):
+    for lo, hi in zip(ordered, ordered[1:], strict=False):
         if lo["months_elapsed"] <= months < hi["months_elapsed"]:
             return lo["p_lp"], hi["p_lp"], (
                 f"cutoff between the {lo['months_elapsed']}- and "

@@ -39,7 +39,7 @@ RESULTS = "results"
 
 
 def md5(path):
-    h = hashlib.md5()
+    h = hashlib.md5(usedforsecurity=False)
     with open(path, "rb") as fh:
         for chunk in iter(lambda: fh.read(1 << 20), b""):
             h.update(chunk)
@@ -226,7 +226,7 @@ def main():
                    "by_arm": stats,
                    "odds_ratio": float(odds) if odds is not None else None,
                    "p_value": float(pval) if pval is not None else None,
-                   "labels": {str(l): n for l, n in labels},
+                   "labels": {str(lab): n for lab, n in labels},
                    "by_horizon": [{"horizon": h, "n": n, "hit": hit,
                                    "pct": round(100.0 * hit / n, 4)}
                                   for h, n, hit in horizons],

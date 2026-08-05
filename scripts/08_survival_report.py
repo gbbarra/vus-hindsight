@@ -170,7 +170,7 @@ def main():
     # can leave the bucket. Say so if it actually happens rather than implying
     # a monotone cumulative hazard.
     plps = [p["p_lp"] for p in points]
-    if any(b < a for a, b in zip(plps, plps[1:])):
+    if any(b < a for a, b in zip(plps, plps[1:], strict=False)):
         L.append("> **Note:** the P/LP count is not monotonic across these "
                  "points. Each figure is the cohort's state *at that date*, not a "
                  "cumulative hazard — a variant reclassified to P/LP can later "

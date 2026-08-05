@@ -54,6 +54,40 @@ select = ["E", "F", "W", "I", "B", "C90", "UP", "SIM"]
 # are inventoried in docs/TEST_PLAN.md section 6.3 and have their own plan.
 max-complexity = 10
 
+[tool.ruff.lint.per-file-ignores]
+# Dívida existente, congelada e enumerada em 2026-08-05 — 48 violações em 16
+# arquivos. CLAUDE.md §4.5: os limites valem como gate para código NOVO, e a
+# dívida estrutural tem plano próprio (docs/TEST_PLAN.md §6.3) em vez de ser
+# refatorada de surpresa no meio de outra tarefa.
+#
+# Só três regras entram aqui, e nenhuma é automatizável:
+#   C901    main() de 12 a 47 de complexidade — exige quebrar a função
+#   SIM115  json.load(open(...)) — exige reestruturar o fluxo de leitura
+#   E501    linha longa, quase toda dentro de SQL e de texto de relatório
+#
+# O RISCO desta lista é real e fica declarado: ela também silencia violação NOVA
+# da mesma regra nestes arquivos. Arquivo novo entra com o conjunto completo, e
+# encurtar esta lista é o objetivo — não mantê-la.
+"scripts/04_transitions.py" = ["C901", "E501"]
+"scripts/05b_submission_dates.py" = ["E501"]
+"scripts/06_report.py" = ["E501", "SIM115"]
+"scripts/07_survival.py" = ["E501", "SIM115"]
+"scripts/08_survival_report.py" = ["SIM115"]
+"scripts/09_reconstruct.py" = ["E501"]
+"scripts/10_validate_reconstruction.py" = ["E501"]
+"scripts/11_contamination_audit.py" = ["C901", "E501", "SIM115"]
+"scripts/12_export_for_join.py" = ["C901", "E501", "SIM115"]
+"scripts/13_alphamissense_overlap.py" = ["C901", "E501"]
+"scripts/14_overlap_test.py" = ["C901"]
+"scripts/15_evaluate.py" = ["C901", "E501", "SIM115"]
+"scripts/16_dbnsfp_to_scores.py" = ["C901", "E501"]
+"scripts/aggregate.py" = ["E501"]
+"scripts/schema.py" = ["E501"]
+# A suíte legada: 30 violações caíram para 1. O que resta é a complexidade do
+# main(), que só some quebrando um harness de 400 linhas que as regras 1 e 2
+# protegem.
+"tests/test_pipeline.py" = ["C901"]
+
 [tool.mypy]
 python_version = "3.11"
 files = ["scripts"]

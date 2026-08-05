@@ -599,29 +599,67 @@ de conviver com dívida, e se ninguém a encurtar ela vira permanente. Sugiro qu
 lista entre com os nomes atuais congelados, de modo que qualquer função nova ou
 renomeada caia no limite.
 
-### 6.4 Quality gates (§4.6)
+### 6.4 Quality gates (§4.6) — na CI
 
-Novo workflow `.github/workflows/quality.yml`, disparado em push e PR:
+`.github/workflows/quality.yml`, em push e em pull request. Separado do
+`benchmark.yml`, que baixa o ClinVar e faz commit de resultados e continua
+manual de propósito.
 
-| gate | comando | falha em |
+| gate | comando | estado |
 |---|---|---|
-| lint | `ruff check .` | qualquer erro |
-| formato | `ruff format --check .` | qualquer diferença |
-| tipos | `mypy scripts/` | qualquer erro |
-| testes | `pytest -q` | qualquer falha |
-| cobertura global | `--cov-branch --cov-fail-under=80` | < 80% |
-| pisos críticos | `python3 tests/check_coverage_floors.py` | < 95% em qualquer crítico |
-| segurança | `bandit -r scripts/ -ll` | severidade alta |
-| segredos | `detect-secrets scan --baseline .secrets.baseline` | qualquer novo |
-| integração | `python3 tests/test_pipeline.py` | exit ≠ 0 |
+| lint | `ruff check .` | verde |
+| tipos | `mypy` | verde |
+| testes | `pytest --cov=scripts --cov-branch` | 317 passando |
+| pisos de cobertura | `python3 tests/check_coverage_floors.py` | verde |
+| segurança | `bandit -r scripts/ tests/ -lll -q` | verde |
+| segredos | `detect-secrets-hook --baseline .secrets.baseline` | verde |
+| formatação | `ruff format --check .` | **não adotado, ver abaixo** |
 
-Espelhados em `.pre-commit-config.yaml`, menos a integração (lenta demais para
-hook de commit).
+Espelhados em `.pre-commit-config.yaml` com hooks locais, menos a fixture ponta a
+ponta — um minuto é caro demais para hook de commit.
 
-O workflow `benchmark.yml` atual **não muda**: ele baixa ClinVar e faz commit de
-resultados, e é manual de propósito. Qualidade entra em workflow separado.
+**Lint: de 94 violações para zero, em três movimentos.**
 
----
+1. `tests/test_pipeline.py` saiu de 30 para 1 (autorizado, mensagem a mensagem).
+   As 9 aberturas de arquivo sem context manager viraram dois helpers, o YAML do
+   registro de teste virou blocos em vez de mapeamentos em fluxo de 103 colunas,
+   e os comentários alinhados que estouravam a margem subiram para cima do dict.
+   **Nenhuma asserção foi tocada, e isso foi verificado e não afirmado**: as 87
+   asserções do arquivo foram extraídas antes e depois e comparadas com
+   normalização de ordem de `set` e `dict` — mesmos nomes, zero valores
+   divergentes.
+2. Em `scripts/`, 12 correções automáticas (ordem de import, import não usado,
+   f-string sem placeholder) e 5 manuais de uma linha cada: dois `zip(x, x[1:])`
+   com `strict=False` explícito, uma variável de laço não usada, e dois `l`
+   ambíguos.
+3. O que sobrou — 48 violações em 16 arquivos, só `C901`, `SIM115` e `E501` — foi
+   **congelado e enumerado** em `[tool.ruff.lint.per-file-ignores]`, arquivo por
+   arquivo e regra por regra. É o que o §4.5 manda: os limites valem como gate
+   para código novo, e a dívida estrutural tem plano próprio. O risco da lista
+   está declarado no próprio `pyproject.toml`: ela também silencia violação nova
+   da mesma regra nesses arquivos.
+
+**`bandit`: os 4 achados de severidade alta eram todos B324**, uso de MD5. Aqui o
+MD5 é impressão digital de proveniência — identifica os bytes exatos de cada
+entrada, como o §7 exige — e não mecanismo de segurança. Resolvido declarando a
+intenção com `usedforsecurity=False`, que é a API documentada para isso e ainda
+faz o código funcionar em sistema com FIPS ligado. **O digest não muda**, o que
+foi conferido antes de aplicar. Os 47 achados de severidade média que restam são
+todos B608, SQL montado por interpolação — que é o que um pipeline DuckDB é, sem
+nenhuma entrada de usuário chegando a uma query.
+
+**`mypy` passa, e isso vale pouco.** "Success: no issues found in 18 source
+files" com configuração permissiva sobre código sem nenhuma anotação significa
+quase nada: o mypy não tem o que verificar. O gate está lá para segurar
+regressão quando anotações forem entrando, módulo a módulo, e não como atestado
+de que a tipagem está correta hoje.
+
+**`ruff format --check` não foi adotado, e é decisão sua.** Ele reformataria 40
+dos 53 arquivos de uma vez — inclusive os testes escritos nesta série, que passam
+no `ruff check` mas não seguem o estilo do formatador. Os números de linha de
+`scripts/` aparecem no README e no `docs/BRIEFING.md`, o repositório tem DOI, e
+um `git blame` inteiro seria reescrito. Isso é uma decisão a tomar de propósito,
+não efeito colateral de ligar a CI.
 
 ## 7. O que precisa mudar no código de produção
 
