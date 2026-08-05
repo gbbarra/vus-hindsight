@@ -482,26 +482,41 @@ particionam `[first, last)`, então algum par sempre casa. Com um único ponto
 medido, `months >= first` e `months < last` não podem valer ao mesmo tempo, e as
 cláusulas anteriores já retornaram.
 
-Duas saídas, e nenhuma delas é baixar o piso:
+**Resolvido: `# pragma: no cover`, autorizado.** A linha ficou no lugar, com o
+motivo escrito ao lado — inclusive por que não há teste honesto que a alcance.
+`leakage_range` foi para 100%.
 
-1. `# pragma: no cover` na linha, com o motivo escrito ao lado. É anotação, não
-   mudança de comportamento — mas mexe em módulo crítico e precisa de OK.
-2. Deixar o gate vermelho e conviver com isso.
+**Gate global de 80%: escopo declarado, número intacto (opção autorizada).**
+A cobertura sobre tudo é 29%, e os 51 pontos que faltam estão quase todos nos 11
+`main()`. Ligar em 80% quebraria a CI em toda execução; ligar em 29% seria
+escolher o número que passa. A decisão foi aplicar os dois limiares do §4.3 —
+80% e 95% — sobre a **superfície de decisão** em vez do repositório inteiro, e
+declarar isso no `CLAUDE.md`. Nenhum número foi baixado.
 
-Só há uma forma de cobrir a linha com teste: passar `NaN` em `months_elapsed`,
-porque toda comparação com `NaN` é falsa e o laço inteiro falha em casar. Seria
-um teste artificial para um valor que a curva nunca produz — a mesma objeção que
-o §4.4 faz a matar mutante equivalente com teste inventado.
+`tests/check_coverage_floors.py` aplica os dois:
 
-**Gate global de 80%: não ligado, e o motivo é o número.** A cobertura global é
-29%, e os 51 pontos que faltam estão quase todos nos 11 `main()`. Ligar o
-`--cov-fail-under=80` hoje quebraria a CI em toda execução; ligar em 29% seria
-escolher o número que passa, que é o que a regra 3 proíbe. O gate fica declarado
-no `CLAUDE.md` §3 e **desligado** na configuração, com esta nota, até que
-existam testes que cubram os `main()`. Alternativa honesta, se você preferir um
-gate ativo desde já: aplicá-lo só ao conjunto de módulos de decisão, onde ele
-já passaria com folga, e declarar isso explicitamente em vez de deixar um 80%
-global que ninguém cumpre.
+```
+Piso de 95% nas funções de decisão (CLAUDE.md §7)
+
+  ok   scripts/11_contamination_audit.py::leakage_range     100.0%
+  ok   scripts/14_overlap_test.py::analyse                  100.0%
+  ok   scripts/15_evaluate.py::metrics                      100.0%
+  ok   scripts/16_dbnsfp_to_scores.py::coordinate_columns   100.0%
+  ok   scripts/aggregate.py::reconstruct_sql                100.0%
+  ...
+Agregado da superfície de decisão: 100.0% (182 de 182 linhas e branches), piso 80%
+17 funções de decisão, todas em 95% ou acima.
+exit=0
+```
+
+E reprova quando deve — verificado rodando a suíte com um módulo só:
+
+```
+  scripts/14_overlap_test.py::analyse: 0.0% < 95% (25 linhas e 8 branches sem cobrir)
+  ...
+  agregado 29.7% < 80%
+exit=1
+```
 
 ### 6.2 Mutação (§4.4) — executada
 

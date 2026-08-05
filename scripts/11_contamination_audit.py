@@ -69,7 +69,14 @@ def leakage_range(months, points):
             return lo["p_lp"], hi["p_lp"], (
                 f"cutoff between the {lo['months_elapsed']}- and "
                 f"{hi['months_elapsed']}-month points")
-    return None, None, "could not bracket the cutoff"
+    # Unreachable, and kept anyway. By the time control arrives here the curve
+    # is non-empty and first <= months < last, and consecutive pairs partition
+    # [first, last), so some pair always matches; with a single measured point
+    # the two conditions cannot hold together and an earlier branch returned.
+    # Excluded from coverage rather than covered by a test, because the only
+    # input that reaches it is a NaN in months_elapsed — every comparison
+    # against NaN being false — and the survival curve never produces one.
+    return None, None, "could not bracket the cutoff"  # pragma: no cover
 
 
 def main():
