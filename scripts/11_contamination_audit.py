@@ -79,6 +79,70 @@ def leakage_range(months, points):
     return None, None, "could not bracket the cutoff"  # pragma: no cover
 
 
+def date_tier(cutoff, verified, baseline, points, endpoint_months):
+    """The date axis alone: when the training data was fixed, and what leaked.
+
+    Returns (tier, months past baseline, leak low, leak high, note). UNVERIFIED
+    is not folded into CLEAN — a tool whose cutoff nobody has checked is not a
+    clean tool, it is an unmeasured one, and reporting it as clean is how a
+    contaminated result gets published.
+    """
+    if not cutoff or not verified:
+        why = ("no sourced training cutoff" if not cutoff
+               else "cutoff present but not verified against a source")
+        return "UNVERIFIED", None, None, None, why
+
+    months = months_between(baseline, parse_month(str(cutoff)))
+    if months <= 0:
+        tier = "CLEAN"
+    elif endpoint_months is not None and months >= endpoint_months:
+        tier = "CONTAMINATED"
+    else:
+        tier = "PARTIAL"
+    lo, hi, why = leakage_range(months, points)
+    return tier, months, lo, hi, why
+
+
+def verdict_for(exposure, measured, tier):
+    """The label axis, combined with the date tier.
+
+    A measurement outranks any inference. A model with no clinical labels cannot
+    memorise reclassifications whatever its release date, so dating it is beside
+    the point — which is why the two axes stay separate up to here.
+    """
+    if measured:
+        return "MEASURED LEAK"
+    if exposure == "none":
+        return "LABEL-FREE"
+    if exposure == "threshold_only":
+        return "LABEL-FREE (score)"
+    if exposure == "evaluation_only":
+        return f"INDIRECT / {tier}"
+    if exposure == "training_labels":
+        return f"DIRECT / {tier}"
+    return f"UNKNOWN / {tier}"
+
+
+def audit_predictor(pred, baseline, points, endpoint_months):
+    """One predictor's row of the audit, from both axes."""
+    exposure = pred.get("label_exposure", "unknown")
+    measured = pred.get("measured_overlap")
+    tier, months, lo, hi, why = date_tier(
+        pred.get("training_cutoff"), bool(pred.get("verified")),
+        baseline, points, endpoint_months)
+
+    label = pred["name"] + (f" ({pred['version']})" if pred.get("version") else "")
+    return {"predictor": label, "date_tier": tier,
+            "exposure": exposure,
+            "verdict": verdict_for(exposure, measured, tier),
+            "cutoff": pred.get("training_cutoff"),
+            "verified": bool(pred.get("verified")),
+            "months_past_baseline": months,
+            "leak_low": lo, "leak_high": hi, "leak_note": why,
+            "uses_clinvar": pred.get("uses_clinvar", "unknown"),
+            "measured": measured, "source": pred.get("source")}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--registry", default="predictors.yaml")
@@ -96,54 +160,7 @@ def main():
     total_plp = max((p["p_lp"] for p in points), default=None)
     endpoint_months = max((p["months_elapsed"] for p in points), default=None)
 
-    rows = []
-    for p in preds:
-        label = p["name"] + (f" ({p['version']})" if p.get("version") else "")
-        cutoff = p.get("training_cutoff")
-        verified = bool(p.get("verified"))
-        exposure = p.get("label_exposure", "unknown")
-        measured = p.get("measured_overlap")
-
-        # Date axis. Only meaningful once we know labels were involved at all.
-        if not cutoff or not verified:
-            date_tier = "UNVERIFIED"
-            months = lo = hi = None
-            why = ("no sourced training cutoff" if not cutoff
-                   else "cutoff present but not verified against a source")
-        else:
-            c = parse_month(str(cutoff))
-            months = months_between(baseline, c)
-            if months <= 0:
-                date_tier = "CLEAN"
-            elif endpoint_months is not None and months >= endpoint_months:
-                date_tier = "CONTAMINATED"
-            else:
-                date_tier = "PARTIAL"
-            lo, hi, why = leakage_range(months, points)
-
-        # Verdict combines both axes. A measurement outranks any inference; a
-        # model with no clinical labels cannot memorise reclassifications
-        # whatever its release date, so dating it is beside the point.
-        if measured:
-            verdict = "MEASURED LEAK"
-        elif exposure == "none":
-            verdict = "LABEL-FREE"
-        elif exposure == "threshold_only":
-            verdict = "LABEL-FREE (score)"
-        elif exposure == "evaluation_only":
-            verdict = f"INDIRECT / {date_tier}"
-        elif exposure == "training_labels":
-            verdict = f"DIRECT / {date_tier}"
-        else:
-            verdict = f"UNKNOWN / {date_tier}"
-
-        rows.append({"predictor": label, "date_tier": date_tier,
-                     "exposure": exposure, "verdict": verdict,
-                     "cutoff": cutoff, "verified": verified,
-                     "months_past_baseline": months,
-                     "leak_low": lo, "leak_high": hi, "leak_note": why,
-                     "uses_clinvar": p.get("uses_clinvar", "unknown"),
-                     "measured": measured, "source": p.get("source")})
+    rows = [audit_predictor(p, baseline, points, endpoint_months) for p in preds]
 
     # Riskiest first: measured leaks, then direct label exposure, then the rest.
     def risk(r):

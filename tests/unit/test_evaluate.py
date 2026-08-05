@@ -188,3 +188,64 @@ def test_a_chave_e_o_primeiro_termo_do_nome_da_lista(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
 
     assert list(load_audit()) == ["eve"]
+
+
+# --- headline: o número que sai excluindo horizonte contaminado --------------
+
+headline = AVALIACAO.headline
+
+
+def cohorte_por_horizonte(por_horizonte, negativos=40):
+    """Positivos agrupados por horizonte, mais um controle comum."""
+    y, s, hz = [], [], []
+    for horizonte, (n, score) in por_horizonte.items():
+        y += [1] * n
+        s += [score] * n
+        hz += [horizonte] * n
+    y += [0] * negativos
+    s += [0.5] * negativos
+    hz += ["still_vus"] * negativos
+    return y, s, hz
+
+
+def test_sem_horizonte_sinalizado_a_manchete_e_o_conjunto_inteiro():
+    y, s, hz = cohorte_por_horizonte({"18": (30, 0.9), "61": (30, 0.9)})
+
+    assert headline(y, s, hz, set()) == metrics(y, s)
+
+
+def test_o_horizonte_sinalizado_sai_da_conta():
+    # No horizonte exposto o preditor acerta tudo; no limpo, erra tudo. Se a
+    # exclusão não acontecer, a manchete fica no meio do caminho.
+    y, s, hz = cohorte_por_horizonte({"18": (30, 0.99), "61": (30, 0.01)})
+
+    manchete = headline(y, s, hz, {"18"})
+
+    assert manchete["n_pos"] == 30
+    assert manchete["auroc"] == 0.0
+
+
+def test_o_controle_continua_na_conta_quando_um_horizonte_sai():
+    # Os negativos não pertencem a horizonte nenhum: são as variantes que
+    # continuaram VUS. Removê-los junto esvaziaria a classe negativa.
+    y, s, hz = cohorte_por_horizonte({"18": (30, 0.9), "61": (30, 0.9)},
+                                     negativos=40)
+
+    manchete = headline(y, s, hz, {"18"})
+
+    assert manchete["n_neg"] == 40
+
+
+def test_excluir_todos_os_horizontes_recusa_em_vez_de_devolver_numero():
+    y, s, hz = cohorte_por_horizonte({"18": (30, 0.9), "61": (30, 0.9)})
+
+    manchete = headline(y, s, hz, {"18", "61"})
+
+    assert manchete["n_pos"] == 0
+    assert manchete["auroc"] is None
+
+
+def test_sinalizar_horizonte_que_nao_existe_na_coorte_nao_muda_nada():
+    y, s, hz = cohorte_por_horizonte({"18": (30, 0.9), "61": (30, 0.9)})
+
+    assert headline(y, s, hz, {"36"}) == headline(y, s, hz, set())

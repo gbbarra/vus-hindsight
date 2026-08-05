@@ -115,3 +115,111 @@ def test_parse_month_ignora_o_dia_quando_a_data_vem_completa():
 def test_parse_month_recusa_texto_que_nao_e_data():
     with pytest.raises(ValueError):
         parse_month("junho de 2021")
+
+
+# --- audit_predictor: a matriz de veredito nos dois eixos --------------------
+
+audit_predictor = AUDITORIA.audit_predictor
+BASELINE = parse_month("2021-06")
+FIM_DA_JANELA = 61
+
+
+def audita(**campos):
+    preditor = {"name": "Ferramenta X", "training_cutoff": None,
+                "verified": False, "label_exposure": "unknown"}
+    preditor.update(campos)
+    return audit_predictor(preditor, BASELINE, CURVA, FIM_DA_JANELA)
+
+
+def test_medicao_de_sobreposicao_vence_qualquer_data():
+    # Uma exposição medida não vira menos exposição porque a data declarada é
+    # boa. É o único veredito que não depende do eixo temporal.
+    linha = audita(training_cutoff="2015-01", verified=True,
+                   label_exposure="evaluation_only",
+                   measured_overlap={"vus_to_plp": "531 / 2883"})
+
+    assert linha["verdict"] == "MEASURED LEAK"
+    assert linha["date_tier"] == "CLEAN"
+
+
+def test_modelo_sem_rotulo_clinico_e_livre_qualquer_que_seja_a_data():
+    # Não há o que memorizar. Ranquear pela data poria este modelo no mesmo
+    # lugar de um ajustado sobre P/LP do ClinVar, o que é errado.
+    linha = audita(training_cutoff="2027-01", verified=True,
+                   label_exposure="none")
+
+    assert linha["verdict"] == "LABEL-FREE"
+    assert linha["date_tier"] == "CONTAMINATED"
+
+
+def test_score_livre_de_rotulo_com_limiar_calibrado_e_marcado_a_parte():
+    linha = audita(training_cutoff="2020-01", verified=True,
+                   label_exposure="threshold_only")
+
+    assert linha["verdict"] == "LABEL-FREE (score)"
+
+
+def test_sem_cutoff_o_veredito_e_nao_verificado_e_nunca_limpo():
+    # A distinção que mais importa deste módulo: "ninguém conferiu" não é
+    # "está limpo".
+    linha = audita(label_exposure="training_labels")
+
+    assert linha["date_tier"] == "UNVERIFIED"
+    assert linha["verdict"] == "DIRECT / UNVERIFIED"
+    assert linha["leak_note"] == "no sourced training cutoff"
+
+
+def test_cutoff_presente_mas_sem_fonte_tambem_e_nao_verificado():
+    linha = audita(training_cutoff="2015-01", verified=False,
+                   label_exposure="training_labels")
+
+    assert linha["date_tier"] == "UNVERIFIED"
+    assert linha["leak_note"] == "cutoff present but not verified against a source"
+
+
+@pytest.mark.parametrize("cutoff,tier", [
+    ("2019-01", "CLEAN"),          # antes do baseline
+    ("2021-06", "CLEAN"),          # borda: exatamente no baseline
+    ("2021-07", "PARTIAL"),        # borda: um mês depois
+    ("2026-06", "PARTIAL"),        # borda: um mês antes do fim da janela
+    ("2026-07", "CONTAMINATED"),   # borda: exatamente no fim da janela
+    ("2030-01", "CONTAMINATED"),   # depois do fim
+])
+def test_o_tier_de_data_nas_suas_fronteiras(cutoff, tier):
+    linha = audita(training_cutoff=cutoff, verified=True,
+                   label_exposure="training_labels")
+
+    assert linha["date_tier"] == tier
+
+
+def test_exposicao_desconhecida_nao_e_tratada_como_ausencia_de_exposicao():
+    linha = audita(training_cutoff="2019-01", verified=True)
+
+    assert linha["verdict"] == "UNKNOWN / CLEAN"
+
+
+def test_a_versao_entra_no_nome_reportado_quando_existe():
+    linha = audita(version="r3", label_exposure="none")
+
+    assert linha["predictor"] == "Ferramenta X (r3)"
+
+
+def test_sem_curva_de_sobrevivencia_o_tier_de_data_ainda_e_decidido():
+    preditor = {"name": "X", "training_cutoff": "2019-01", "verified": True,
+                "label_exposure": "training_labels"}
+
+    linha = audit_predictor(preditor, BASELINE, [], None)
+
+    assert linha["date_tier"] == "CLEAN"
+    assert (linha["leak_low"], linha["leak_high"]) == (None, None)
+
+
+def test_exposicao_por_avaliacao_sem_medicao_e_indireta_e_nao_limpa():
+    # Rótulos entraram por seleção de modelo ou por relato de desempenho, e
+    # ninguém mediu a sobreposição. Não é vazamento medido, e também não é
+    # ausência de exposição: é exposição indireta, herdando o tier de data.
+    linha = audita(training_cutoff="2023-06", verified=True,
+                   label_exposure="evaluation_only")
+
+    assert linha["verdict"] == "INDIRECT / PARTIAL"
+    assert linha["measured"] is None

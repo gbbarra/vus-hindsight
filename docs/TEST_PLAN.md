@@ -663,19 +663,48 @@ não efeito colateral de ligar a CI.
 
 ## 7. O que precisa mudar no código de produção
 
-### 7.1 Extrações necessárias (mínimas)
+### 7.1 Extrações — feitas
 
-Duas funções hoje vivem dentro de `main()` e precisam sair para serem testáveis
-sem mockar DuckDB:
+Duas funções viviam dentro de `main()` e não eram testáveis sem mockar o DuckDB.
 
-- `11_contamination_audit.py`: `verdict_for(predictor, points, baseline, endpoint)`
-  — a matriz de veredito, hoje um bloco `if/elif` dentro do laço.
-- `15_evaluate.py`: `headline(rows, flagged_horizons)` — a exclusão de horizontes.
+`15_evaluate.py` ganhou **`headline(y, s, hz, bad_horizons)`** — a exclusão de
+horizonte contaminado, que é o número publicado.
 
-São extrações puras, sem mudança de comportamento, e a fixture existente prova
-isso: os números de `results/` têm que sair idênticos depois. Isso também
-derruba o CC de `main` em 11 de 54 para algo próximo de 40 — melhora, ainda
-acima do limite.
+`11_contamination_audit.py` ganhou três, e não uma. A extração direta saiu com
+complexidade 13, acima do limite de 10 que o §4.5 impõe a código novo, então
+virou **`date_tier`** (o eixo temporal, CC 7), **`verdict_for`** (o eixo de
+rótulo combinado com o tier, CC 6) e **`audit_predictor`** (monta a linha, CC 2).
+Separar os dois eixos no código é o que a documentação do módulo já dizia em
+prosa.
+
+Complexidade dos `main()`, medida com `radon`:
+
+```
+antes:  11_contamination_audit.py:main  F (50)     15_evaluate.py:main  F (42)
+depois: 11_contamination_audit.py:main  E (38)     15_evaluate.py:main  E (38)
+```
+
+Melhora real, e os dois seguem acima de 10 — continuam na lista congelada do
+`per-file-ignores`.
+
+**A prova de que nada mudou de comportamento não é a suíte, é a saída real.**
+`11_contamination_audit.py` roda sobre o `predictors.yaml` de verdade e a curva
+de sobrevivência medida, e o resultado foi comparado com o que está commitado em
+`results/`:
+
+```
+diff results/_contamination_audit.json  <nova execução>   → idêntico
+diff results/contamination_audit.md     <nova execução>   → idêntico
+md5 72411fe940736b931978f045324e9900 nos dois
+```
+
+**A extração já pagou por si.** Assim que `verdict_for` virou função visível, o
+piso de cobertura reprovou em 90,5%: o caminho `evaluation_only` **sem** medição
+nunca havia sido exercitado — uma ferramenta que usou rótulos para seleção de
+modelo e cuja sobreposição ninguém mediu. Dentro do `main()` de 186 linhas esse
+buraco era invisível. Coberto agora, e as quatro funções novas entraram no
+registro de `tests/check_coverage_floors.py`, que passou de 17 para 21 funções de
+decisão.
 
 ### 7.2 Não proposto agora
 

@@ -64,6 +64,20 @@ def metrics(y, s):
             "note": None}
 
 
+def headline(y, s, hz, bad_horizons):
+    """Discrimination with the contaminated horizons dropped.
+
+    Extracted from `main` because this is the number that gets published. Only
+    positives carry a horizon; the negatives are the controls that stayed VUS
+    and belong to no horizon at all, so excluding a horizon removes exposed
+    positives and leaves the control arm intact. Dropping the controls too would
+    empty the negative class, and a metric computed on the remainder would look
+    like a result.
+    """
+    keep = [i for i, horizon in enumerate(hz) if horizon not in bad_horizons]
+    return metrics([y[i] for i in keep], [s[i] for i in keep])
+
+
 def load_audit():
     """Which predictors are exposed, and at which horizons, from the overlap tests."""
     path = os.path.join(RESULTS, "_overlap_tests.json")
@@ -162,8 +176,7 @@ def main():
         # The headline excludes horizons the overlap test flagged. A single
         # number computed across a contaminated horizon is the thing this whole
         # project exists to avoid producing.
-        clean_idx = [i for i, v in enumerate(hz) if v not in bad_h]
-        clean = metrics([y[i] for i in clean_idx], [s[i] for i in clean_idx])
+        clean = headline(y, s, hz, bad_h)
 
         if overall["auroc"] is not None:
             print(f"  all horizons : AUROC {overall['auroc']:.3f}  "
