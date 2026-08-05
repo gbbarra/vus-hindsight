@@ -38,11 +38,10 @@ jobs:
       - name: Lint
         run: ruff check .
 
-      # `ruff format --check` is NOT enforced yet. Adopting it would reformat 40
-      # of 53 files at once, across scripts whose line numbers are cited in the
-      # README and in docs/BRIEFING.md, and the repository carries a DOI. That
-      # is a decision to take deliberately, not a side effect of adding CI.
-      # Measured on 2026-08-05; see docs/TEST_PLAN.md section 6.4.
+      # Adopted on 2026-08-05, in one commit that touched 40 of 53 files and
+      # changed no AST. See docs/TEST_PLAN.md section 6.4.
+      - name: Format
+        run: ruff format --check .
 
       - name: Types
         run: mypy

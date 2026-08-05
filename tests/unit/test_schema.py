@@ -3,6 +3,7 @@
 As expectativas aqui vêm do vocabulário do ClinVar, não do output do código: um
 teste escrito a partir do que a função devolve hoje não detecta nada.
 """
+
 import pytest
 
 from scripts.schema import (
@@ -16,13 +17,28 @@ from scripts.schema import (
     stars_sql,
 )
 
-CABECALHO_ATUAL = ["VariationID", "GeneSymbol", "Name", "Assembly", "Type",
-                   "GermlineClassification", "GermlineReviewStatus"]
-CABECALHO_LEGADO = ["VariationID", "GeneSymbol", "Name", "Assembly", "Type",
-                    "ClinicalSignificance", "ReviewStatus"]
+CABECALHO_ATUAL = [
+    "VariationID",
+    "GeneSymbol",
+    "Name",
+    "Assembly",
+    "Type",
+    "GermlineClassification",
+    "GermlineReviewStatus",
+]
+CABECALHO_LEGADO = [
+    "VariationID",
+    "GeneSymbol",
+    "Name",
+    "Assembly",
+    "Type",
+    "ClinicalSignificance",
+    "ReviewStatus",
+]
 
 
 # --- resolve_columns ---------------------------------------------------------
+
 
 def test_resolve_columns_encontra_a_coluna_de_classificacao_atual():
     resolvido = resolve_columns(CABECALHO_ATUAL)
@@ -60,8 +76,9 @@ def test_resolve_columns_recusa_cabecalho_sem_coluna_de_revisao():
         resolve_columns(cabecalho)
 
 
-@pytest.mark.parametrize("ausente", ["VariationID", "GeneSymbol", "Name",
-                                     "Assembly", "Type"])
+@pytest.mark.parametrize(
+    "ausente", ["VariationID", "GeneSymbol", "Name", "Assembly", "Type"]
+)
 def test_resolve_columns_recusa_cabecalho_sem_coluna_obrigatoria(ausente):
     cabecalho = [c for c in CABECALHO_ATUAL if c != ausente]
 
@@ -81,10 +98,16 @@ def test_colunas_obrigatorias_sao_mapeadas_para_si_mesmas_em_minusculas():
     # eram invisíveis para a suíte — mutantes sobreviventes apontaram a falta.
     resolvido = resolve_columns(CABECALHO_ATUAL)
 
-    assert {chave: resolvido[chave] for chave in
-            ("variationid", "genesymbol", "name", "assembly", "type")} == {
-        "variationid": "VariationID", "genesymbol": "GeneSymbol",
-        "name": "Name", "assembly": "Assembly", "type": "Type"}
+    assert {
+        chave: resolvido[chave]
+        for chave in ("variationid", "genesymbol", "name", "assembly", "type")
+    } == {
+        "variationid": "VariationID",
+        "genesymbol": "GeneSymbol",
+        "name": "Name",
+        "assembly": "Assembly",
+        "type": "Type",
+    }
 
 
 def test_a_mensagem_de_erro_diz_o_que_foi_procurado():
@@ -111,9 +134,13 @@ def test_colunas_de_coordenada_ausentes_viram_none_e_nao_erro():
 
 
 def test_colunas_de_coordenada_sao_resolvidas_quando_o_snapshot_as_traz():
-    cabecalho = CABECALHO_ATUAL + ["Chromosome", "PositionVCF",
-                                   "ReferenceAlleleVCF", "AlternateAlleleVCF",
-                                   "LastEvaluated"]
+    cabecalho = CABECALHO_ATUAL + [
+        "Chromosome",
+        "PositionVCF",
+        "ReferenceAlleleVCF",
+        "AlternateAlleleVCF",
+        "LastEvaluated",
+    ]
 
     resolvido = resolve_columns(cabecalho)
 
@@ -136,66 +163,85 @@ def test_coluna_de_consequencia_explicita_e_preferida_quando_existe():
     assert resolvido["consequence"] == "MolecularConsequence"
 
 
-@pytest.mark.parametrize("candidatos,cabecalho,esperado", [
-    (CLASSIFICATION_CANDIDATES, ["GermlineClassification"], "GermlineClassification"),
-    (CLASSIFICATION_CANDIDATES, ["ClinicalSignificance"], "ClinicalSignificance"),
-    (REVIEW_CANDIDATES, ["ReviewStatus"], "ReviewStatus"),
-    (CLASSIFICATION_CANDIDATES, [], None),
-    (CLASSIFICATION_CANDIDATES, ["OutraCoisa"], None),
-])
+@pytest.mark.parametrize(
+    "candidatos,cabecalho,esperado",
+    [
+        (
+            CLASSIFICATION_CANDIDATES,
+            ["GermlineClassification"],
+            "GermlineClassification",
+        ),
+        (CLASSIFICATION_CANDIDATES, ["ClinicalSignificance"], "ClinicalSignificance"),
+        (REVIEW_CANDIDATES, ["ReviewStatus"], "ReviewStatus"),
+        (CLASSIFICATION_CANDIDATES, [], None),
+        (CLASSIFICATION_CANDIDATES, ["OutraCoisa"], None),
+    ],
+)
 def test_pick_devolve_o_primeiro_candidato_presente(candidatos, cabecalho, esperado):
     assert _pick(cabecalho, candidatos) == esperado
 
 
 # --- bucket_sql --------------------------------------------------------------
 
-@pytest.mark.parametrize("classificacao,bucket", [
-    # Patogênicas, incluindo as formas compostas que o ClinVar emite.
-    ("Pathogenic", "P/LP"),
-    ("Likely pathogenic", "P/LP"),
-    ("Pathogenic/Likely pathogenic", "P/LP"),
-    ("Pathogenic; risk factor", "P/LP"),
-    ("Likely pathogenic; risk factor", "P/LP"),
-    ("Pathogenic/Likely pathogenic; risk factor", "P/LP"),
-    ("Pathogenic/Likely pathogenic; other", "P/LP"),
-    ("Pathogenic, low penetrance", "P/LP"),
-    ("Likely pathogenic, low penetrance", "P/LP"),
-    ("Pathogenic/Likely pathogenic, low penetrance", "P/LP"),
-    # Benignas.
-    ("Benign", "B/LB"),
-    ("Likely benign", "B/LB"),
-    ("Benign/Likely benign", "B/LB"),
-    ("Benign; risk factor", "B/LB"),
-    ("Likely benign; risk factor", "B/LB"),
-    ("Benign/Likely benign; other", "B/LB"),
-    # Incertas.
-    ("Uncertain significance", "Still VUS"),
-    ("Uncertain risk allele", "Still VUS"),
-    ("Uncertain significance/Uncertain risk allele", "Still VUS"),
-    # Fora do eixo clínico.
-    ("drug response", "Other"),
-    ("risk factor", "Other"),
-    ("association", "Other"),
-    ("not provided", "Other"),
-    ("Affects", "Other"),
-])
+
+@pytest.mark.parametrize(
+    "classificacao,bucket",
+    [
+        # Patogênicas, incluindo as formas compostas que o ClinVar emite.
+        ("Pathogenic", "P/LP"),
+        ("Likely pathogenic", "P/LP"),
+        ("Pathogenic/Likely pathogenic", "P/LP"),
+        ("Pathogenic; risk factor", "P/LP"),
+        ("Likely pathogenic; risk factor", "P/LP"),
+        ("Pathogenic/Likely pathogenic; risk factor", "P/LP"),
+        ("Pathogenic/Likely pathogenic; other", "P/LP"),
+        ("Pathogenic, low penetrance", "P/LP"),
+        ("Likely pathogenic, low penetrance", "P/LP"),
+        ("Pathogenic/Likely pathogenic, low penetrance", "P/LP"),
+        # Benignas.
+        ("Benign", "B/LB"),
+        ("Likely benign", "B/LB"),
+        ("Benign/Likely benign", "B/LB"),
+        ("Benign; risk factor", "B/LB"),
+        ("Likely benign; risk factor", "B/LB"),
+        ("Benign/Likely benign; other", "B/LB"),
+        # Incertas.
+        ("Uncertain significance", "Still VUS"),
+        ("Uncertain risk allele", "Still VUS"),
+        ("Uncertain significance/Uncertain risk allele", "Still VUS"),
+        # Fora do eixo clínico.
+        ("drug response", "Other"),
+        ("risk factor", "Other"),
+        ("association", "Other"),
+        ("not provided", "Other"),
+        ("Affects", "Other"),
+    ],
+)
 def test_bucket_traduz_a_classificacao_do_clinvar(scalar, classificacao, bucket):
     assert scalar(bucket_sql("cls"), {"cls": classificacao}) == bucket
 
 
-@pytest.mark.parametrize("classificacao", [
-    "Conflicting interpretations of pathogenicity",       # grafia até 2023
-    "Conflicting classifications of pathogenicity",       # grafia atual
-    "Conflicting interpretations of pathogenicity; risk factor",
-    "Conflicting classifications of pathogenicity; other",
-])
+@pytest.mark.parametrize(
+    "classificacao",
+    [
+        "Conflicting interpretations of pathogenicity",  # grafia até 2023
+        "Conflicting classifications of pathogenicity",  # grafia atual
+        "Conflicting interpretations of pathogenicity; risk factor",
+        "Conflicting classifications of pathogenicity; other",
+    ],
+)
 def test_as_duas_grafias_de_conflito_caem_no_mesmo_bucket(scalar, classificacao):
     assert scalar(bucket_sql("cls"), {"cls": classificacao}) == "Conflicting"
 
 
-@pytest.mark.parametrize("variacao", [
-    "pathogenic", "PATHOGENIC", "  Pathogenic  ",
-])
+@pytest.mark.parametrize(
+    "variacao",
+    [
+        "pathogenic",
+        "PATHOGENIC",
+        "  Pathogenic  ",
+    ],
+)
 def test_caixa_e_espaco_em_volta_nao_mudam_o_bucket(scalar, variacao):
     # Só espaço. Tab e quebra de linha não entram aqui porque a origem é
     # tab-delimited: dentro de um campo, um deles vira coluna e o outro vira
@@ -225,17 +271,21 @@ def test_conflito_e_decidido_antes_de_incerta(scalar):
 
 # --- stars_sql ---------------------------------------------------------------
 
-@pytest.mark.parametrize("status,estrelas", [
-    ("practice guideline", 4),
-    ("reviewed by expert panel", 3),
-    ("criteria provided, multiple submitters, no conflicts", 2),
-    ("criteria provided, conflicting classifications", 1),
-    ("criteria provided, conflicting interpretations", 1),
-    ("criteria provided, single submitter", 1),
-    ("no assertion criteria provided", 0),
-    ("no assertion provided", 0),
-    ("no classification provided", 0),
-])
+
+@pytest.mark.parametrize(
+    "status,estrelas",
+    [
+        ("practice guideline", 4),
+        ("reviewed by expert panel", 3),
+        ("criteria provided, multiple submitters, no conflicts", 2),
+        ("criteria provided, conflicting classifications", 1),
+        ("criteria provided, conflicting interpretations", 1),
+        ("criteria provided, single submitter", 1),
+        ("no assertion criteria provided", 0),
+        ("no assertion provided", 0),
+        ("no classification provided", 0),
+    ],
+)
 def test_escada_de_estrelas_do_clinvar(scalar, status, estrelas):
     assert scalar(stars_sql("rev"), {"rev": status}) == estrelas
 
@@ -245,9 +295,14 @@ def test_status_desconhecido_vale_zero_estrela_e_nao_lanca(scalar, status):
     assert scalar(stars_sql("rev"), {"rev": status}) == 0
 
 
-@pytest.mark.parametrize("variacao", [
-    "PRACTICE GUIDELINE", "  practice guideline  ", "Practice Guideline",
-])
+@pytest.mark.parametrize(
+    "variacao",
+    [
+        "PRACTICE GUIDELINE",
+        "  practice guideline  ",
+        "Practice Guideline",
+    ],
+)
 def test_caixa_e_espaco_nao_derrubam_a_variante_para_zero_estrela(scalar, variacao):
     assert scalar(stars_sql("rev"), {"rev": variacao}) == 4
 
@@ -260,8 +315,10 @@ def test_guideline_vence_expert_panel_quando_o_texto_traz_os_dois(scalar):
 
 
 def test_multiplos_submissores_vale_mais_que_submissor_unico(scalar):
-    dois = scalar(stars_sql("rev"),
-                  {"rev": "criteria provided, multiple submitters, no conflicts"})
+    dois = scalar(
+        stars_sql("rev"),
+        {"rev": "criteria provided, multiple submitters, no conflicts"},
+    )
     um = scalar(stars_sql("rev"), {"rev": "criteria provided, single submitter"})
 
     assert (dois, um) == (2, 1)
@@ -269,27 +326,34 @@ def test_multiplos_submissores_vale_mais_que_submissor_unico(scalar):
 
 # --- mc_bucket_sql -----------------------------------------------------------
 
-@pytest.mark.parametrize("mc,bucket", [
-    ("SO:0001589|frameshift_variant", "frameshift"),
-    ("SO:0001587|nonsense", "nonsense"),
-    ("SO:0001587|stop_gained", "nonsense"),
-    ("SO:0001574|splice_acceptor_variant", "splice"),
-    ("SO:0001575|splice_donor_variant", "splice"),
-    ("SO:0001583|missense_variant", "missense"),
-    ("SO:0001819|synonymous_variant", "other"),
-    ("SO:0001627|intron_variant", "other"),
-    ("SO:0001624|3_prime_UTR_variant", "other"),
-])
+
+@pytest.mark.parametrize(
+    "mc,bucket",
+    [
+        ("SO:0001589|frameshift_variant", "frameshift"),
+        ("SO:0001587|nonsense", "nonsense"),
+        ("SO:0001587|stop_gained", "nonsense"),
+        ("SO:0001574|splice_acceptor_variant", "splice"),
+        ("SO:0001575|splice_donor_variant", "splice"),
+        ("SO:0001583|missense_variant", "missense"),
+        ("SO:0001819|synonymous_variant", "other"),
+        ("SO:0001627|intron_variant", "other"),
+        ("SO:0001624|3_prime_UTR_variant", "other"),
+    ],
+)
 def test_termo_unico_do_mc_cai_no_bucket_certo(scalar, mc, bucket):
     assert scalar(mc_bucket_sql("mc"), {"mc": mc}) == bucket
 
 
-@pytest.mark.parametrize("mc,bucket", [
-    ("SO:0001583|missense_variant,SO:0001589|frameshift_variant", "frameshift"),
-    ("SO:0001574|splice_acceptor_variant,SO:0001587|nonsense", "nonsense"),
-    ("SO:0001583|missense_variant,SO:0001575|splice_donor_variant", "splice"),
-    ("SO:0001819|synonymous_variant,SO:0001583|missense_variant", "missense"),
-])
+@pytest.mark.parametrize(
+    "mc,bucket",
+    [
+        ("SO:0001583|missense_variant,SO:0001589|frameshift_variant", "frameshift"),
+        ("SO:0001574|splice_acceptor_variant,SO:0001587|nonsense", "nonsense"),
+        ("SO:0001583|missense_variant,SO:0001575|splice_donor_variant", "splice"),
+        ("SO:0001819|synonymous_variant,SO:0001583|missense_variant", "missense"),
+    ],
+)
 def test_precedencia_quando_a_variante_tem_varios_termos(scalar, mc, bucket):
     # Uma variante recebe um termo por transcrito. A precedência é a regra:
     # truncante vence missense, missense vence não-codificante.
@@ -317,20 +381,26 @@ def test_termo_desconhecido_cai_em_other(scalar):
 
 # --- consequence_sql ---------------------------------------------------------
 
+
 def test_consequencia_usa_a_coluna_explicita_quando_ela_existe(scalar):
     sql = consequence_sql("nome", "tipo", explicit_col="mc")
 
-    assert scalar(sql, {"nome": "irrelevante", "tipo": "SNV",
-                        "mc": "  MISSENSE  "}) == "missense"
+    assert (
+        scalar(sql, {"nome": "irrelevante", "tipo": "SNV", "mc": "  MISSENSE  "})
+        == "missense"
+    )
 
 
-@pytest.mark.parametrize("nome,esperado", [
-    ("NM_000059.4(BRCA2):c.1234del (p.Lys412fs)", "frameshift"),
-    ("NM_000059.4(BRCA2):c.1234A>T (p.Lys412Ter)", "nonsense"),
-    ("NM_000059.4(BRCA2):c.1234+5A>T", "splice"),
-    ("NM_000059.4(BRCA2):c.1234A>T (p.Lys412Asn)", "missense"),
-    ("NM_000059.4(BRCA2):c.1234A>G (p.Lys412=)", "other"),
-])
+@pytest.mark.parametrize(
+    "nome,esperado",
+    [
+        ("NM_000059.4(BRCA2):c.1234del (p.Lys412fs)", "frameshift"),
+        ("NM_000059.4(BRCA2):c.1234A>T (p.Lys412Ter)", "nonsense"),
+        ("NM_000059.4(BRCA2):c.1234+5A>T", "splice"),
+        ("NM_000059.4(BRCA2):c.1234A>T (p.Lys412Asn)", "missense"),
+        ("NM_000059.4(BRCA2):c.1234A>G (p.Lys412=)", "other"),
+    ],
+)
 def test_consequencia_derivada_do_hgvs_quando_nao_ha_coluna(scalar, nome, esperado):
     sql = consequence_sql("nome", "tipo")
 
@@ -341,12 +411,13 @@ def test_derivacao_do_hgvs_prefere_truncante_a_missense(scalar):
     # p.Lys412fs também casa o padrão de missense se a ordem inverter.
     sql = consequence_sql("nome", "tipo")
 
-    assert scalar(sql, {"nome": "c.1234del (p.Lys412fs)", "tipo": "Deletion"}) \
+    assert (
+        scalar(sql, {"nome": "c.1234del (p.Lys412fs)", "tipo": "Deletion"})
         == "frameshift"
+    )
 
 
 def test_derivacao_do_hgvs_sem_proteina_cai_em_other(scalar):
     sql = consequence_sql("nome", "tipo")
 
-    assert scalar(sql, {"nome": "NC_000013.11:g.32340301A>T", "tipo": "SNV"}) \
-        == "other"
+    assert scalar(sql, {"nome": "NC_000013.11:g.32340301A>T", "tipo": "SNV"}) == "other"

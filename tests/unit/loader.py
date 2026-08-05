@@ -9,6 +9,7 @@ Every one of those files keeps its work inside `main()` behind an
 `if __name__ == "__main__"` guard, so loading one runs its imports and constants
 and nothing else.
 """
+
 import importlib.util
 import os
 import sys

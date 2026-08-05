@@ -5,6 +5,7 @@ A duplicação está registrada por um teste em vez de corrigida de surpresa: un
 as duas é refatoração de código que ninguém pediu, e o CLAUDE.md manda propor
 antes. O teste garante que, enquanto as duas existirem, elas não divirjam.
 """
+
 import pytest
 from loader import load_script
 
@@ -14,12 +15,11 @@ table_da_sobrevivencia = load_script("08_survival_report").table
 
 
 def test_tabela_markdown_completa():
-    resultado = table(["baseline", "P/LP", "B/LB"],
-                      [["2021-06", 4771, 1612]])
+    resultado = table(["baseline", "P/LP", "B/LB"], [["2021-06", 4771, 1612]])
 
-    assert resultado == ("| baseline | P/LP | B/LB |\n"
-                         "|---|---|---|\n"
-                         "| 2021-06 | 4771 | 1612 |")
+    assert resultado == (
+        "| baseline | P/LP | B/LB |\n|---|---|---|\n| 2021-06 | 4771 | 1612 |"
+    )
 
 
 def test_tabela_sem_linhas_traz_so_cabecalho_e_separador():
@@ -43,12 +43,15 @@ def test_linhas_com_menos_celulas_que_o_cabecalho_nao_sao_preenchidas():
     assert resultado.splitlines()[2] == "| 1 |"
 
 
-@pytest.mark.parametrize("valor,esperado", [
-    (0, "| 0 |"),
-    (None, "| None |"),
-    (4771, "| 4771 |"),
-    (0.0, "| 0.0 |"),
-])
+@pytest.mark.parametrize(
+    "valor,esperado",
+    [
+        (0, "| 0 |"),
+        (None, "| None |"),
+        (4771, "| 4771 |"),
+        (0.0, "| 0.0 |"),
+    ],
+)
 def test_zero_aparece_como_zero_e_nao_como_celula_vazia(valor, esperado):
     assert table(["x"], [[valor]]).splitlines()[2] == esperado
 

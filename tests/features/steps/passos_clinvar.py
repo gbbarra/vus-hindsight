@@ -4,6 +4,7 @@ Cada passo mexe nas submissões de uma variante e o passo de "quando" roda a
 regra de consolidação de verdade, no motor SQL. Nada aqui é simulado: o que o
 cenário chama de "consolidar" é a mesma função que o pipeline usa.
 """
+
 import duckdb
 import pytest
 from pytest_bdd import given, parsers, then, when
@@ -14,8 +15,15 @@ COM_CRITERIOS = "criteria provided, single submitter"
 SEM_CRITERIOS = "no assertion criteria provided"
 PAINEL = "reviewed by expert panel"
 
-COLUNAS = ["variation_id", "n_scv", "n_crit", "n_submitters", "stars",
-           "classification", "review_status"]
+COLUNAS = [
+    "variation_id",
+    "n_scv",
+    "n_crit",
+    "n_submitters",
+    "stars",
+    "classification",
+    "review_status",
+]
 CONFLITANTE = "Conflicting classifications of pathogenicity"
 
 
@@ -30,8 +38,14 @@ def resultado():
 
 
 def _registra(submissoes, classificacao, revisao=None, data="2021-01-15"):
-    submissoes.append({"classificacao": classificacao, "revisao": revisao,
-                       "submissor": f"Lab {len(submissoes)}", "data": data})
+    submissoes.append(
+        {
+            "classificacao": classificacao,
+            "revisao": revisao,
+            "submissor": f"Lab {len(submissoes)}",
+            "data": data,
+        }
+    )
 
 
 def _consolida(submissoes, ate):
@@ -39,7 +53,8 @@ def _consolida(submissoes, ate):
     if faltando:
         raise AssertionError(
             "o cenário não disse se os critérios foram declarados; sem isso a "
-            "consolidação não tem como ser avaliada")
+            "consolidação não tem como ser avaliada"
+        )
 
     con = duckdb.connect()
     con.execute("""
@@ -48,9 +63,16 @@ def _consolida(submissoes, ate):
             date_last_evaluated VARCHAR, contributes VARCHAR)
     """)
     for i, s in enumerate(submissoes):
-        con.execute("INSERT INTO subs VALUES ('1', ?, ?, ?, ?, ?, 'yes')",
-                    [s["classificacao"], s["revisao"], s["submissor"],
-                     f"SCV{i:06d}", s["data"]])
+        con.execute(
+            "INSERT INTO subs VALUES ('1', ?, ?, ?, ?, ?, 'yes')",
+            [
+                s["classificacao"],
+                s["revisao"],
+                s["submissor"],
+                f"SCV{i:06d}",
+                s["data"],
+            ],
+        )
     linhas = con.execute(reconstruct_sql(ate)).fetchall()
     con.close()
     return {linha[0]: dict(zip(COLUNAS, linha, strict=True)) for linha in linhas}
@@ -58,14 +80,16 @@ def _consolida(submissoes, ate):
 
 # --- Dado --------------------------------------------------------------------
 
+
 @given(parsers.parse('um laboratório que classificou a variante como "{cls}"'))
 @given(parsers.parse('outro laboratório que a classificou como "{cls}"'))
 def laboratorio_classificou(submissoes, cls):
     _registra(submissoes, cls)
 
 
-@given(parsers.parse('um laboratório que classificou a variante como "{cls}" '
-                     'em "{data}"'))
+@given(
+    parsers.parse('um laboratório que classificou a variante como "{cls}" em "{data}"')
+)
 def laboratorio_classificou_em(submissoes, cls, data):
     _registra(submissoes, cls, data=data)
 
@@ -85,13 +109,15 @@ def nao_declararam_criterios(submissoes):
             s["revisao"] = SEM_CRITERIOS
 
 
-@given(parsers.parse('um painel de especialistas que classificou a variante '
-                     'como "{cls}"'))
+@given(
+    parsers.parse('um painel de especialistas que classificou a variante como "{cls}"')
+)
 def painel_classificou(submissoes, cls):
     _registra(submissoes, cls, revisao=PAINEL)
 
 
 # --- Quando ------------------------------------------------------------------
+
 
 @when("a classificação da variante for consolidada")
 def consolida(submissoes, resultado):
@@ -104,6 +130,7 @@ def consolida_na_data(submissoes, resultado, data):
 
 
 # --- Então -------------------------------------------------------------------
+
 
 @then(parsers.parse('o resultado deve ser "{esperado}"'))
 def resultado_deve_ser(resultado, esperado):

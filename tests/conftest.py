@@ -5,6 +5,7 @@ modules. Putting it on the path is what lets `import schema` work in the unit
 tests; the numbered files need `tests/unit/loader.py` instead, because a module
 name cannot begin with a digit.
 """
+
 import os
 import sys
 
@@ -56,6 +57,7 @@ def scalar(con):
     `scalar("bucket_sql_result", {"cls": "Pathogenic"})` binds each key as a
     column so the expression under test can reference it by name.
     """
+
     def _scalar(expression, columns):
         if columns:
             # Cast so a None binds as a typed VARCHAR NULL rather than an

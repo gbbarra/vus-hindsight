@@ -17,6 +17,7 @@ Renomear uma função de decisão e ver o gate continuar verde porque ele parou 
 encontrá-la é exatamente o modo de falha silenciosa que este repositório existe
 para não cometer.
 """
+
 import json
 import os
 import sys
@@ -40,12 +41,21 @@ PISO_AGREGADO = 80.0
 CRITICOS = {
     "scripts/aggregate.py": None,
     "scripts/schema.py": None,
-    "scripts/11_contamination_audit.py": ["leakage_range", "months_between",
-                                          "parse_month", "date_tier",
-                                          "verdict_for", "audit_predictor"],
+    "scripts/11_contamination_audit.py": [
+        "leakage_range",
+        "months_between",
+        "parse_month",
+        "date_tier",
+        "verdict_for",
+        "audit_predictor",
+    ],
     "scripts/15_evaluate.py": ["metrics", "load_audit", "headline"],
-    "scripts/16_dbnsfp_to_scores.py": ["coordinate_columns", "resolve",
-                                       "agg_expr", "q"],
+    "scripts/16_dbnsfp_to_scores.py": [
+        "coordinate_columns",
+        "resolve",
+        "agg_expr",
+        "q",
+    ],
     "scripts/14_overlap_test.py": ["analyse"],
 }
 
@@ -59,8 +69,11 @@ def relatorio_json():
     try:
         dados.load()
     except coverage.exceptions.CoverageException as erro:
-        print(f"FATAL: não há dados de cobertura para ler ({erro}).\n"
-              "Rode antes: pytest --cov=scripts --cov-branch", file=sys.stderr)
+        print(
+            f"FATAL: não há dados de cobertura para ler ({erro}).\n"
+            "Rode antes: pytest --cov=scripts --cov-branch",
+            file=sys.stderr,
+        )
         raise SystemExit(1) from erro
 
     with tempfile.NamedTemporaryFile("r+", suffix=".json", delete=False) as fh:
@@ -81,46 +94,68 @@ def main():
     total_medido = total_coberto = 0
     for caminho, nomeadas in sorted(CRITICOS.items()):
         if caminho not in arquivos:
-            falhas.append(f"{caminho}: ausente do relatório de cobertura — o "
-                          "módulo foi renomeado ou não foi importado por "
-                          "nenhum teste")
+            falhas.append(
+                f"{caminho}: ausente do relatório de cobertura — o "
+                "módulo foi renomeado ou não foi importado por "
+                "nenhum teste"
+            )
             continue
 
         funcoes = arquivos[caminho]["functions"]
-        alvos = (nomeadas if nomeadas is not None
-                 else sorted(n for n in funcoes if n not in FORA))
+        alvos = (
+            nomeadas
+            if nomeadas is not None
+            else sorted(n for n in funcoes if n not in FORA)
+        )
 
         for nome in alvos:
             if nome not in funcoes:
-                falhas.append(f"{caminho}::{nome}: a função não existe mais. O "
-                              "piso não pode ser verificado, então isto é "
-                              "falha e não item pulado.")
+                falhas.append(
+                    f"{caminho}::{nome}: a função não existe mais. O "
+                    "piso não pode ser verificado, então isto é "
+                    "falha e não item pulado."
+                )
                 continue
 
             resumo = funcoes[nome]["summary"]
             pct = resumo["percent_covered"]
-            linhas.append((caminho, nome, pct, resumo["missing_lines"],
-                           resumo["missing_branches"]))
+            linhas.append(
+                (
+                    caminho,
+                    nome,
+                    pct,
+                    resumo["missing_lines"],
+                    resumo["missing_branches"],
+                )
+            )
             total_medido += resumo["num_statements"] + resumo["num_branches"]
             total_coberto += resumo["covered_lines"] + resumo["covered_branches"]
             if pct < PISO:
                 falhas.append(
                     f"{caminho}::{nome}: {pct:.1f}% < {PISO:.0f}% "
                     f"({resumo['missing_lines']} linhas e "
-                    f"{resumo['missing_branches']} branches sem cobrir)")
+                    f"{resumo['missing_branches']} branches sem cobrir)"
+                )
 
     largura = max((len(f"{c}::{n}") for c, n, *_ in linhas), default=10)
     print(f"Piso de {PISO:.0f}% nas funções de decisão (CLAUDE.md §7)\n")
     for caminho, nome, pct, faltam_l, faltam_b in linhas:
         marca = "ok  " if pct >= PISO else "FALHA"
-        print(f"  {marca} {f'{caminho}::{nome}':{largura}s}  {pct:6.1f}%"
-              + (f"   faltam {faltam_l} linhas, {faltam_b} branches"
-                 if pct < PISO else ""))
+        print(
+            f"  {marca} {f'{caminho}::{nome}':{largura}s}  {pct:6.1f}%"
+            + (
+                f"   faltam {faltam_l} linhas, {faltam_b} branches"
+                if pct < PISO
+                else ""
+            )
+        )
 
     agregado = 100.0 * total_coberto / total_medido if total_medido else 0.0
-    print(f"\nAgregado da superfície de decisão: {agregado:.1f}% "
-          f"({total_coberto} de {total_medido} linhas e branches), "
-          f"piso {PISO_AGREGADO:.0f}%")
+    print(
+        f"\nAgregado da superfície de decisão: {agregado:.1f}% "
+        f"({total_coberto} de {total_medido} linhas e branches), "
+        f"piso {PISO_AGREGADO:.0f}%"
+    )
     if agregado < PISO_AGREGADO:
         falhas.append(f"agregado {agregado:.1f}% < {PISO_AGREGADO:.0f}%")
 

@@ -16,6 +16,7 @@ this date is an upper bound on what was publicly knowable, not an exact replay.
 
 Usage: 05b_submission_dates.py data/submission_summary.txt.gz
 """
+
 import argparse
 import json
 import os
@@ -32,8 +33,11 @@ def main():
     ap.add_argument("path")
     ap.add_argument("--memory-limit", default="6GB")
     ap.add_argument("--temp-dir", default="data/duckdb_tmp")
-    ap.add_argument("--reclassified", default="results/reclassified_pathogenic.tsv",
-                    help="optional; restricts a second report to the VUS->P/LP set")
+    ap.add_argument(
+        "--reclassified",
+        default="results/reclassified_pathogenic.tsv",
+        help="optional; restricts a second report to the VUS->P/LP set",
+    )
     args = ap.parse_args()
 
     os.makedirs(args.temp_dir, exist_ok=True)
@@ -60,8 +64,10 @@ def main():
 
     total = con.execute("SELECT count(*) FROM subs").fetchone()[0]
     if total == 0:
-        print("FATAL: no submission rows parsed — inspect the file layout.",
-              file=sys.stderr)
+        print(
+            "FATAL: no submission rows parsed — inspect the file layout.",
+            file=sys.stderr,
+        )
         return 1
 
     row = con.execute("""
@@ -79,8 +85,7 @@ def main():
     print(f"distinct VariationIDs:         {variants:,}")
     print(f"distinct SCV accessions:       {submissions:,}")
     print(f"rows with a DateLastEvaluated: {dated:,} ({pct:.2f}%)")
-    print(f"rows with no usable date:      {rows_total - dated:,} "
-          f"({100.0 - pct:.2f}%)")
+    print(f"rows with no usable date:      {rows_total - dated:,} ({100.0 - pct:.2f}%)")
 
     print("\nDateLastEvaluated by year:")
     years = con.execute("""
@@ -100,9 +105,11 @@ def main():
         "rows_with_date": dated,
         "pct_with_date": round(pct, 4),
         "by_year": [{"year": y, "n": n} for y, n in years],
-        "caveat": ("DateLastEvaluated is the submitter's evaluation date, not the "
-                   "ClinVar publication date; filtering on it bounds what was "
-                   "knowable rather than replaying what was public."),
+        "caveat": (
+            "DateLastEvaluated is the submitter's evaluation date, not the "
+            "ClinVar publication date; filtering on it bounds what was "
+            "knowable rather than replaying what was public."
+        ),
     }
 
     # If the reclassified set is present, report coverage on it specifically —
@@ -126,12 +133,16 @@ def main():
         n_recl, matched, with_date = r
         print(f"\nVUS -> P/LP cohort ({n_recl:,} distinct variants):")
         print(f"  present in submission_summary:        {matched:,}")
-        print(f"  with >=1 dated submission:            {with_date:,} "
-              f"({100.0 * with_date / n_recl:.2f}% of the cohort)")
+        print(
+            f"  with >=1 dated submission:            {with_date:,} "
+            f"({100.0 * with_date / n_recl:.2f}% of the cohort)"
+        )
         stats["reclassified_cohort"] = {
-            "distinct_variants": n_recl, "present": matched,
+            "distinct_variants": n_recl,
+            "present": matched,
             "with_dated_submission": with_date,
-            "pct_with_dated_submission": round(100.0 * with_date / n_recl, 4)}
+            "pct_with_dated_submission": round(100.0 * with_date / n_recl, 4),
+        }
 
     with open(os.path.join(RESULTS, "_submission_dates.json"), "w") as fh:
         json.dump(stats, fh, indent=2)

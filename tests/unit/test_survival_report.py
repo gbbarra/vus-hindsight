@@ -7,6 +7,7 @@ figura que entra num artigo sem ninguém conferir a aritmética.
 O plano de desenho: 760x400, margens 70/150/42/56, então a área útil tem 540 de
 largura por 302 de altura, o topo do eixo Y fica em y=42 e a base em y=344.
 """
+
 import pytest
 from loader import load_script
 
@@ -109,13 +110,11 @@ def test_o_arquivo_gerado_e_um_svg(tmp_path):
 
 # --- table -------------------------------------------------------------------
 
+
 def test_tabela_markdown_tem_cabecalho_separador_e_linhas():
     resultado = table(["a", "b"], [[1, 2], [3, 4]])
 
-    assert resultado == ("| a | b |\n"
-                         "|---|---|\n"
-                         "| 1 | 2 |\n"
-                         "| 3 | 4 |")
+    assert resultado == ("| a | b |\n|---|---|\n| 1 | 2 |\n| 3 | 4 |")
 
 
 def test_tabela_sem_linhas_ainda_traz_cabecalho_e_separador():
@@ -130,9 +129,15 @@ def test_o_separador_acompanha_a_quantidade_de_colunas():
     assert resultado.splitlines()[1] == "|---|---|---|"
 
 
-@pytest.mark.parametrize("valor,esperado", [
-    (0, "| 0 |"), (None, "| None |"), (1.5, "| 1.5 |"), ("", "|  |"),
-])
+@pytest.mark.parametrize(
+    "valor,esperado",
+    [
+        (0, "| 0 |"),
+        (None, "| None |"),
+        (1.5, "| 1.5 |"),
+        ("", "|  |"),
+    ],
+)
 def test_valores_nao_textuais_sao_convertidos_e_nao_omitidos(valor, esperado):
     # Um zero omitido numa tabela de contagens vira uma célula vazia, que se lê
     # como "não medido" em vez de "medido, deu zero".

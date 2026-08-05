@@ -21,6 +21,7 @@ Usage:
       --consequence-map data/consequence_map.parquet \
       --out data/exports/vus_hindsight_for_am_join.csv
 """
+
 import argparse
 import hashlib
 import json
@@ -30,10 +31,24 @@ import sys
 import duckdb
 from snapshot import load_snapshot
 
-COLUMNS = ["variant_id_hg38", "variation_id", "chrom", "pos_hg38", "ref", "alt",
-           "gene_symbol", "molecular_consequence", "review_status", "gold_stars",
-           "classification_2021", "classification_current", "date_last_evaluated",
-           "horizon_months", "stratum", "arm"]
+COLUMNS = [
+    "variant_id_hg38",
+    "variation_id",
+    "chrom",
+    "pos_hg38",
+    "ref",
+    "alt",
+    "gene_symbol",
+    "molecular_consequence",
+    "review_status",
+    "gold_stars",
+    "classification_2021",
+    "classification_current",
+    "date_last_evaluated",
+    "horizon_months",
+    "stratum",
+    "arm",
+]
 
 STILL_VUS_CAP = 200_000
 STILL_VUS_SAMPLE = 25_000
@@ -43,8 +58,12 @@ SAMPLE_SEED = 20260802
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--baseline", required=True, help="path:label")
-    ap.add_argument("--endpoint", action="append", required=True,
-                    help="path:label:months, repeatable, ascending")
+    ap.add_argument(
+        "--endpoint",
+        action="append",
+        required=True,
+        help="path:label:months, repeatable, ascending",
+    )
     ap.add_argument("--consequence-map", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--manifest", default="results/_manifest.tsv")
@@ -84,7 +103,9 @@ def main():
     # Walk the endpoints in order, recording the earliest horizon at which each
     # cohort member was P/LP. Point-in-time state, so a variant that reaches
     # P/LP and is later disputed still records the horizon where it first did.
-    con.execute("CREATE OR REPLACE TABLE first_plp (variation_id BIGINT, horizon_months INT)")
+    con.execute(
+        "CREATE OR REPLACE TABLE first_plp (variation_id BIGINT, horizon_months INT)"
+    )
     for path, label, months in endpoints:
         alias = f"ep{months}"
         load_snapshot(con, alias, path, f"endpoint {label} (+{months}m)")
@@ -156,9 +177,11 @@ def main():
     """)
 
     n_plp = con.execute(
-        "SELECT count(*) FROM rows_all WHERE arm = 'vus_to_plp'").fetchone()[0]
+        "SELECT count(*) FROM rows_all WHERE arm = 'vus_to_plp'"
+    ).fetchone()[0]
     n_vus_all = con.execute(
-        "SELECT count(*) FROM rows_all WHERE arm = 'still_vus'").fetchone()[0]
+        "SELECT count(*) FROM rows_all WHERE arm = 'still_vus'"
+    ).fetchone()[0]
     n_vus_mis = con.execute("""SELECT count(*) FROM rows_all
         WHERE arm = 'still_vus' AND molecular_consequence = 'missense'""").fetchone()[0]
     print(f"\nvus_to_plp rows (joinable)       : {n_plp:,}")
@@ -185,8 +208,10 @@ def main():
             if alloc[s] < n:
                 alloc[s] += 1
                 rem -= 1
-        print(f"\nstill_vus missense exceeds {STILL_VUS_CAP:,}; sampling "
-              f"{STILL_VUS_SAMPLE:,} stratified by gold_stars (seed {SAMPLE_SEED}):")
+        print(
+            f"\nstill_vus missense exceeds {STILL_VUS_CAP:,}; sampling "
+            f"{STILL_VUS_SAMPLE:,} stratified by gold_stars (seed {SAMPLE_SEED}):"
+        )
         for s, n in strata:
             print(f"  {s}*: {n:,} -> {alloc[s]:,}")
         cases = " ".join(f"WHEN {s} THEN {alloc[s]}" for s, _ in strata)
@@ -223,9 +248,12 @@ def main():
     """)
     n_out = con.execute("SELECT count(*) FROM final_rows").fetchone()[0]
     n_out_vus = con.execute(
-        "SELECT count(*) FROM final_rows WHERE arm='still_vus'").fetchone()[0]
-    print(f"\nwrote {args.out}: {n_out:,} rows "
-          f"({n_plp:,} vus_to_plp + {n_out_vus:,} still_vus)")
+        "SELECT count(*) FROM final_rows WHERE arm='still_vus'"
+    ).fetchone()[0]
+    print(
+        f"\nwrote {args.out}: {n_out:,} rows "
+        f"({n_plp:,} vus_to_plp + {n_out_vus:,} still_vus)"
+    )
 
     by_h = con.execute("""
         SELECT horizon_months, count(*) n FROM final_rows
@@ -249,10 +277,12 @@ def main():
         # revisor confira que está olhando o mesmo arquivo.
         csv_md5 = hashlib.md5(fh.read(), usedforsecurity=False).hexdigest()
     R = [f"# `{os.path.basename(args.out)}`\n"]
-    R.append("Flat export of the vus-hindsight cohort for external "
-             "contamination analysis — joining predictor scores against "
-             "variants whose ClinVar label changed, and against controls whose "
-             "label did not.\n")
+    R.append(
+        "Flat export of the vus-hindsight cohort for external "
+        "contamination analysis — joining predictor scores against "
+        "variants whose ClinVar label changed, and against controls whose "
+        "label did not.\n"
+    )
     R.append("## Exact inputs\n")
     if len(manifest) > 1:
         R.append("| role | file | release (Last-Modified) | md5 |")
@@ -265,42 +295,57 @@ def main():
             seen.add(key)
             R.append(f"| {r[0]} | `{r[1]}` | {r[4]} | `{r[5]}` |")
         R.append("")
-    R.append("Note that the endpoint is the **archived monthly** "
-             "`variant_summary_2026-07.txt.gz` dated 2 July 2026, not the "
-             "rolling `variant_summary.txt.gz` that NCBI overwrites in place. "
-             "The rolling file cannot be reproduced once superseded, so no "
-             "figure here is derived from it.\n")
+    R.append(
+        "Note that the endpoint is the **archived monthly** "
+        "`variant_summary_2026-07.txt.gz` dated 2 July 2026, not the "
+        "rolling `variant_summary.txt.gz` that NCBI overwrites in place. "
+        "The rolling file cannot be reproduced once superseded, so no "
+        "figure here is derived from it.\n"
+    )
     R.append(f"CSV md5: `{csv_md5}`\n")
 
     R.append("## Arms\n")
     R.append("| arm | rows | definition |")
     R.append("|---|---|---|")
-    R.append(f"| `vus_to_plp` | {n_plp:,} | VUS with assertion criteria at "
-             f"{base_label}, P/LP at {final_label} (+{final_months} months) |")
-    R.append(f"| `still_vus` | {n_out_vus:,} | VUS at {base_label}, still VUS at "
-             f"{final_label}; **missense only** |")
+    R.append(
+        f"| `vus_to_plp` | {n_plp:,} | VUS with assertion criteria at "
+        f"{base_label}, P/LP at {final_label} (+{final_months} months) |"
+    )
+    R.append(
+        f"| `still_vus` | {n_out_vus:,} | VUS at {base_label}, still VUS at "
+        f"{final_label}; **missense only** |"
+    )
     R.append("")
-    R.append(f"`vus_to_plp` is drawn from the {base_label} cohort alone, not the "
-             "union across baselines. A variant from a different baseline has no "
-             "horizon on this timeline, and the horizon is the field a "
-             "contamination analysis turns on — it says when the label first "
-             "appeared, and therefore the earliest a predictor could have been "
-             "told the answer.\n")
+    R.append(
+        f"`vus_to_plp` is drawn from the {base_label} cohort alone, not the "
+        "union across baselines. A variant from a different baseline has no "
+        "horizon on this timeline, and the horizon is the field a "
+        "contamination analysis turns on — it says when the label first "
+        "appeared, and therefore the earliest a predictor could have been "
+        "told the answer.\n"
+    )
 
     R.append("## Columns\n")
     R.append("| column | notes |\n|---|---|")
-    R.append("| `variant_id_hg38` | `chr{chrom}_{pos}_{ref}_{alt}_hg38`, GRCh38, "
-             "from ClinVar's VCF-normalised coordinates |")
-    R.append("| `horizon_months` | 18 / 36 / 61 — the first endpoint at which the "
-             "variant was P/LP; `still_vus` in the control arm |")
-    R.append("| `stratum` | `primary` = missense **and** ≥2 gold stars; "
-             "`other` otherwise |")
+    R.append(
+        "| `variant_id_hg38` | `chr{chrom}_{pos}_{ref}_{alt}_hg38`, GRCh38, "
+        "from ClinVar's VCF-normalised coordinates |"
+    )
+    R.append(
+        "| `horizon_months` | 18 / 36 / 61 — the first endpoint at which the "
+        "variant was P/LP; `still_vus` in the control arm |"
+    )
+    R.append(
+        "| `stratum` | `primary` = missense **and** ≥2 gold stars; `other` otherwise |"
+    )
     R.append("| `gold_stars` | 0–4 ClinVar review-status ladder |")
     R.append("| `date_last_evaluated` | ISO, empty when ClinVar reports none |")
     R.append("")
-    R.append("Rows lacking complete GRCh38 VCF coordinates are dropped: they "
-             "cannot be joined on `variant_id_hg38`, which is the point of the "
-             "export.\n")
+    R.append(
+        "Rows lacking complete GRCh38 VCF coordinates are dropped: they "
+        "cannot be joined on `variant_id_hg38`, which is the point of the "
+        "export.\n"
+    )
 
     R.append("## Horizons\n")
     R.append("| horizon (months) | rows |\n|---|---|")
@@ -310,23 +355,29 @@ def main():
 
     if sampled:
         R.append("## Sampling\n")
-        R.append(f"The missense `still_vus` control had **{n_vus_mis:,}** rows, "
-                 f"above the {STILL_VUS_CAP:,} threshold, so it was reduced to "
-                 f"{STILL_VUS_SAMPLE:,} by **proportional stratified sampling on "
-                 f"`gold_stars`**, largest-remainder to land on the target "
-                 f"exactly.\n")
-        R.append(f"Seed: `{SAMPLE_SEED}`. Selection orders each stratum by "
-                 "`hash(VariationID || seed)` and takes the first *n* — "
-                 "deterministic, so re-running reproduces the identical draw "
-                 "without depending on an RNG implementation.\n")
+        R.append(
+            f"The missense `still_vus` control had **{n_vus_mis:,}** rows, "
+            f"above the {STILL_VUS_CAP:,} threshold, so it was reduced to "
+            f"{STILL_VUS_SAMPLE:,} by **proportional stratified sampling on "
+            f"`gold_stars`**, largest-remainder to land on the target "
+            f"exactly.\n"
+        )
+        R.append(
+            f"Seed: `{SAMPLE_SEED}`. Selection orders each stratum by "
+            "`hash(VariationID || seed)` and takes the first *n* — "
+            "deterministic, so re-running reproduces the identical draw "
+            "without depending on an RNG implementation.\n"
+        )
         R.append("| gold_stars | available | sampled |\n|---|---|---|")
         for s, n in strata:
             R.append(f"| {s} | {n:,} | {alloc[s]:,} |")
         R.append("")
     else:
         R.append("## Sampling\n")
-        R.append(f"None. The missense `still_vus` control had {n_vus_mis:,} rows, "
-                 f"below the {STILL_VUS_CAP:,} threshold.\n")
+        R.append(
+            f"None. The missense `still_vus` control had {n_vus_mis:,} rows, "
+            f"below the {STILL_VUS_CAP:,} threshold.\n"
+        )
 
     readme = os.path.join(os.path.dirname(args.out), "README.md")
     with open(readme, "w") as fh:
@@ -334,12 +385,22 @@ def main():
     print(f"wrote {readme}")
 
     with open(os.path.join("results", "_export_join.json"), "w") as fh:
-        json.dump({"out": args.out, "csv_md5": csv_md5, "rows": n_out,
-                   "vus_to_plp": n_plp, "still_vus": n_out_vus,
-                   "still_vus_missense_available": n_vus_mis,
-                   "sampled": sampled, "seed": SAMPLE_SEED if sampled else None,
-                   "horizons": {str(h): n for h, n in by_h},
-                   "strata": {f"{a}/{s}": n for a, s, n in by_s}}, fh, indent=2)
+        json.dump(
+            {
+                "out": args.out,
+                "csv_md5": csv_md5,
+                "rows": n_out,
+                "vus_to_plp": n_plp,
+                "still_vus": n_out_vus,
+                "still_vus_missense_available": n_vus_mis,
+                "sampled": sampled,
+                "seed": SAMPLE_SEED if sampled else None,
+                "horizons": {str(h): n for h, n in by_h},
+                "strata": {f"{a}/{s}": n for a, s, n in by_s},
+            },
+            fh,
+            indent=2,
+        )
     con.close()
     return 0
 

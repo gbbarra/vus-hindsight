@@ -654,12 +654,22 @@ quase nada: o mypy não tem o que verificar. O gate está lá para segurar
 regressão quando anotações forem entrando, módulo a módulo, e não como atestado
 de que a tipagem está correta hoje.
 
-**`ruff format --check` não foi adotado, e é decisão sua.** Ele reformataria 40
-dos 53 arquivos de uma vez — inclusive os testes escritos nesta série, que passam
-no `ruff check` mas não seguem o estilo do formatador. Os números de linha de
-`scripts/` aparecem no README e no `docs/BRIEFING.md`, o repositório tem DOI, e
-um `git blame` inteiro seria reescrito. Isso é uma decisão a tomar de propósito,
-não efeito colateral de ligar a CI.
+**`ruff format` adotado.** 40 dos 53 arquivos reformatados num commit só, e o
+gate ligado na CI e no `pre-commit`.
+
+A verificação de que só o layout mudou não foi a suíte: **a AST de cada um dos 40
+arquivos foi comparada antes e depois, e é idêntica em todos**. Um formatador que
+alterasse conteúdo de string, ordem de operação ou associatividade apareceria ali.
+Em cima disso, as duas provas de comportamento de sempre — as 87 asserções da
+fixture legada com zero valores divergentes, e a execução real do
+`11_contamination_audit.py` sobre o `predictors.yaml` devolvendo JSON e markdown
+byte-a-byte idênticos aos commitados.
+
+Efeito colateral bom: a formatação sozinha resolveu 8 das 48 violações
+congeladas e apagou a regra inteira de cinco pares arquivo/regra. A lista de
+`per-file-ignores` foi **re-derivada** em vez de mantida como estava — uma lista
+que ignora regra que já não dispara é uma lista que ninguém está lendo. Restam 39
+violações, só `C901`, `SIM115` e `E501`.
 
 ## 7. O que precisa mudar no código de produção
 

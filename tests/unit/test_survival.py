@@ -5,6 +5,7 @@ de dois com o mesmo nome no repositório. O de `11_contamination_audit.py` receb
 objetos `date`. Confundir os dois é erro de tipo, não de aritmética, e o teste
 existe também para registrar a diferença.
 """
+
 import pytest
 from loader import load_script
 
@@ -12,15 +13,18 @@ SOBREVIVENCIA = load_script("07_survival")
 months_between = SOBREVIVENCIA.months_between
 
 
-@pytest.mark.parametrize("de,ate,esperado", [
-    ("2021-06", "2021-06", 0),
-    ("2021-06", "2021-07", 1),
-    ("2021-06", "2021-12", 6),
-    ("2021-06", "2022-01", 7),
-    ("2021-06", "2022-06", 12),
-    ("2021-06", "2024-06", 36),
-    ("2021-06", "2026-07", 61),
-])
+@pytest.mark.parametrize(
+    "de,ate,esperado",
+    [
+        ("2021-06", "2021-06", 0),
+        ("2021-06", "2021-07", 1),
+        ("2021-06", "2021-12", 6),
+        ("2021-06", "2022-01", 7),
+        ("2021-06", "2022-06", 12),
+        ("2021-06", "2024-06", 36),
+        ("2021-06", "2026-07", 61),
+    ],
+)
 def test_meses_decorridos_entre_dois_snapshots(de, ate, esperado):
     assert months_between(de, ate) == esperado
 

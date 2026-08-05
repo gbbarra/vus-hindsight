@@ -4,6 +4,7 @@ Duas coisas aqui erram para o lado silencioso. Uma AUC calculada sobre poucos
 casos não parece errada, e uma AUC calculada sobre um horizonte contaminado
 parece ótima.
 """
+
 import json
 import math
 import os
@@ -30,6 +31,7 @@ def coorte(n_pos, n_neg, separacao="perfeita"):
 
 
 # --- metrics -----------------------------------------------------------------
+
 
 def test_separacao_perfeita_da_auroc_um():
     y, s = coorte(30, 30)
@@ -58,12 +60,15 @@ def test_exatamente_o_minimo_por_classe_ja_produz_metrica():
     assert resultado["note"] is None
 
 
-@pytest.mark.parametrize("n_pos,n_neg", [
-    (MIN_PER_CLASS - 1, MIN_PER_CLASS),
-    (MIN_PER_CLASS, MIN_PER_CLASS - 1),
-    (0, 50),
-    (50, 0),
-])
+@pytest.mark.parametrize(
+    "n_pos,n_neg",
+    [
+        (MIN_PER_CLASS - 1, MIN_PER_CLASS),
+        (MIN_PER_CLASS, MIN_PER_CLASS - 1),
+        (0, 50),
+        (50, 0),
+    ],
+)
 def test_classe_fina_demais_recusa_em_vez_de_devolver_numero(n_pos, n_neg):
     y, s = coorte(n_pos, n_neg)
 
@@ -112,6 +117,7 @@ def test_auprc_de_separacao_perfeita_e_um():
 
 # --- load_audit --------------------------------------------------------------
 
+
 def escreve_auditoria(diretorio, registros):
     os.makedirs(os.path.join(diretorio, "results"), exist_ok=True)
     caminho = os.path.join(diretorio, "results", "_overlap_tests.json")
@@ -119,11 +125,18 @@ def escreve_auditoria(diretorio, registros):
         json.dump(registros, fh)
 
 
-def registro(nome="AlphaMissense S5", veredito="EXPOSED", controle=0.0,
-             horizontes=((("18"), 89.47), ("36", 0.27), ("61", 0.08))):
-    return {"name": nome, "verdict": veredito,
-            "by_arm": {"still_vus": {"pct": controle}},
-            "by_horizon": [{"horizon": h, "pct": p} for h, p in horizontes]}
+def registro(
+    nome="AlphaMissense S5",
+    veredito="EXPOSED",
+    controle=0.0,
+    horizontes=((("18"), 89.47), ("36", 0.27), ("61", 0.08)),
+):
+    return {
+        "name": nome,
+        "verdict": veredito,
+        "by_arm": {"still_vus": {"pct": controle}},
+        "by_horizon": [{"horizon": h, "pct": p} for h, p in horizontes],
+    }
 
 
 def test_sem_arquivo_de_auditoria_nada_e_sinalizado(monkeypatch, tmp_path):
@@ -132,8 +145,9 @@ def test_sem_arquivo_de_auditoria_nada_e_sinalizado(monkeypatch, tmp_path):
     assert load_audit() == {}
 
 
-def test_lista_exposta_sinaliza_o_horizonte_com_sobreposicao_alta(monkeypatch,
-                                                                 tmp_path):
+def test_lista_exposta_sinaliza_o_horizonte_com_sobreposicao_alta(
+    monkeypatch, tmp_path
+):
     escreve_auditoria(tmp_path, [registro()])
     monkeypatch.chdir(tmp_path)
 
@@ -143,8 +157,9 @@ def test_lista_exposta_sinaliza_o_horizonte_com_sobreposicao_alta(monkeypatch,
     assert sinalizados["alphamissense"]["list"] == "AlphaMissense S5"
 
 
-@pytest.mark.parametrize("veredito", ["MINIMAL", "NO OVERLAP",
-                                      "UNUSABLE (coordinate build mismatch)"])
+@pytest.mark.parametrize(
+    "veredito", ["MINIMAL", "NO OVERLAP", "UNUSABLE (coordinate build mismatch)"]
+)
 def test_lista_nao_exposta_nao_sinaliza_nada(monkeypatch, tmp_path, veredito):
     escreve_auditoria(tmp_path, [registro(veredito=veredito)])
     monkeypatch.chdir(tmp_path)
@@ -152,30 +167,35 @@ def test_lista_nao_exposta_nao_sinaliza_nada(monkeypatch, tmp_path, veredito):
     assert load_audit() == {}
 
 
-def test_com_controle_zero_o_piso_absoluto_de_um_por_cento_decide(monkeypatch,
-                                                                 tmp_path):
-    escreve_auditoria(tmp_path, [registro(
-        controle=0.0, horizontes=(("18", 1.01), ("36", 1.0), ("61", 0.99)))])
+def test_com_controle_zero_o_piso_absoluto_de_um_por_cento_decide(
+    monkeypatch, tmp_path
+):
+    escreve_auditoria(
+        tmp_path,
+        [registro(controle=0.0, horizontes=(("18", 1.01), ("36", 1.0), ("61", 0.99)))],
+    )
     monkeypatch.chdir(tmp_path)
 
     assert load_audit()["alphamissense"]["horizons"] == ["18"]
 
 
-def test_com_controle_alto_o_criterio_e_cinco_vezes_o_controle(monkeypatch,
-                                                              tmp_path):
+def test_com_controle_alto_o_criterio_e_cinco_vezes_o_controle(monkeypatch, tmp_path):
     # Controle 0,5% -> limiar 2,5%. Exatamente 2,5% não sinaliza: o critério é
     # estritamente maior, e um horizonte na mesma taxa do controle é a definição
     # de "nada acontecendo aqui".
-    escreve_auditoria(tmp_path, [registro(
-        controle=0.5, horizontes=(("18", 2.51), ("36", 2.5), ("61", 2.49)))])
+    escreve_auditoria(
+        tmp_path,
+        [registro(controle=0.5, horizontes=(("18", 2.51), ("36", 2.5), ("61", 2.49)))],
+    )
     monkeypatch.chdir(tmp_path)
 
     assert load_audit()["alphamissense"]["horizons"] == ["18"]
 
 
 def test_horizonte_sem_taxa_medida_nao_e_sinalizado(monkeypatch, tmp_path):
-    escreve_auditoria(tmp_path, [registro(
-        controle=0.0, horizontes=(("18", None), ("36", 5.0)))])
+    escreve_auditoria(
+        tmp_path, [registro(controle=0.0, horizontes=(("18", None), ("36", 5.0)))]
+    )
     monkeypatch.chdir(tmp_path)
 
     assert load_audit()["alphamissense"]["horizons"] == ["36"]
@@ -228,8 +248,7 @@ def test_o_horizonte_sinalizado_sai_da_conta():
 def test_o_controle_continua_na_conta_quando_um_horizonte_sai():
     # Os negativos não pertencem a horizonte nenhum: são as variantes que
     # continuaram VUS. Removê-los junto esvaziaria a classe negativa.
-    y, s, hz = cohorte_por_horizonte({"18": (30, 0.9), "61": (30, 0.9)},
-                                     negativos=40)
+    y, s, hz = cohorte_por_horizonte({"18": (30, 0.9), "61": (30, 0.9)}, negativos=40)
 
     manchete = headline(y, s, hz, {"18"})
 

@@ -4,6 +4,7 @@
 ter visto". A regra que importa é o que ela **não** faz: nunca interpola. Um
 número interpolado aqui teria a aparência de medição e a origem de uma reta.
 """
+
 import pytest
 from loader import load_script
 
@@ -13,12 +14,15 @@ months_between = AUDITORIA.months_between
 parse_month = AUDITORIA.parse_month
 
 # A curva de sobrevivência medida: meses decorridos -> variantes já em P/LP.
-CURVA = [{"months_elapsed": 18, "p_lp": 1000},
-         {"months_elapsed": 36, "p_lp": 2500},
-         {"months_elapsed": 61, "p_lp": 4771}]
+CURVA = [
+    {"months_elapsed": 18, "p_lp": 1000},
+    {"months_elapsed": 36, "p_lp": 2500},
+    {"months_elapsed": 61, "p_lp": 4771},
+]
 
 
 # --- leakage_range -----------------------------------------------------------
+
 
 def test_sem_curva_medida_nao_ha_o_que_afirmar():
     baixo, alto, motivo = leakage_range(24, [])
@@ -90,20 +94,26 @@ def test_o_valor_devolvido_e_sempre_um_ponto_medido_nunca_interpolado(meses):
 def test_curva_de_um_unico_ponto_ainda_produz_um_intervalo():
     unico = [{"months_elapsed": 61, "p_lp": 4771}]
 
-    assert leakage_range(30, unico) == (0, 4771,
-                                        "cutoff before the first measured point "
-                                        "(61 months)")
+    assert leakage_range(30, unico) == (
+        0,
+        4771,
+        "cutoff before the first measured point (61 months)",
+    )
 
 
 # --- months_between / parse_month --------------------------------------------
 
-@pytest.mark.parametrize("de,ate,esperado", [
-    ("2021-06", "2021-06", 0),
-    ("2021-06", "2021-07", 1),
-    ("2021-06", "2022-06", 12),
-    ("2021-06", "2026-07", 61),
-    ("2021-06", "2021-01", -5),
-])
+
+@pytest.mark.parametrize(
+    "de,ate,esperado",
+    [
+        ("2021-06", "2021-06", 0),
+        ("2021-06", "2021-07", 1),
+        ("2021-06", "2022-06", 12),
+        ("2021-06", "2026-07", 61),
+        ("2021-06", "2021-01", -5),
+    ],
+)
 def test_distancia_em_meses_entre_dois_marcos(de, ate, esperado):
     assert months_between(parse_month(de), parse_month(ate)) == esperado
 
@@ -125,8 +135,12 @@ FIM_DA_JANELA = 61
 
 
 def audita(**campos):
-    preditor = {"name": "Ferramenta X", "training_cutoff": None,
-                "verified": False, "label_exposure": "unknown"}
+    preditor = {
+        "name": "Ferramenta X",
+        "training_cutoff": None,
+        "verified": False,
+        "label_exposure": "unknown",
+    }
     preditor.update(campos)
     return audit_predictor(preditor, BASELINE, CURVA, FIM_DA_JANELA)
 
@@ -134,9 +148,12 @@ def audita(**campos):
 def test_medicao_de_sobreposicao_vence_qualquer_data():
     # Uma exposição medida não vira menos exposição porque a data declarada é
     # boa. É o único veredito que não depende do eixo temporal.
-    linha = audita(training_cutoff="2015-01", verified=True,
-                   label_exposure="evaluation_only",
-                   measured_overlap={"vus_to_plp": "531 / 2883"})
+    linha = audita(
+        training_cutoff="2015-01",
+        verified=True,
+        label_exposure="evaluation_only",
+        measured_overlap={"vus_to_plp": "531 / 2883"},
+    )
 
     assert linha["verdict"] == "MEASURED LEAK"
     assert linha["date_tier"] == "CLEAN"
@@ -145,16 +162,16 @@ def test_medicao_de_sobreposicao_vence_qualquer_data():
 def test_modelo_sem_rotulo_clinico_e_livre_qualquer_que_seja_a_data():
     # Não há o que memorizar. Ranquear pela data poria este modelo no mesmo
     # lugar de um ajustado sobre P/LP do ClinVar, o que é errado.
-    linha = audita(training_cutoff="2027-01", verified=True,
-                   label_exposure="none")
+    linha = audita(training_cutoff="2027-01", verified=True, label_exposure="none")
 
     assert linha["verdict"] == "LABEL-FREE"
     assert linha["date_tier"] == "CONTAMINATED"
 
 
 def test_score_livre_de_rotulo_com_limiar_calibrado_e_marcado_a_parte():
-    linha = audita(training_cutoff="2020-01", verified=True,
-                   label_exposure="threshold_only")
+    linha = audita(
+        training_cutoff="2020-01", verified=True, label_exposure="threshold_only"
+    )
 
     assert linha["verdict"] == "LABEL-FREE (score)"
 
@@ -170,24 +187,29 @@ def test_sem_cutoff_o_veredito_e_nao_verificado_e_nunca_limpo():
 
 
 def test_cutoff_presente_mas_sem_fonte_tambem_e_nao_verificado():
-    linha = audita(training_cutoff="2015-01", verified=False,
-                   label_exposure="training_labels")
+    linha = audita(
+        training_cutoff="2015-01", verified=False, label_exposure="training_labels"
+    )
 
     assert linha["date_tier"] == "UNVERIFIED"
     assert linha["leak_note"] == "cutoff present but not verified against a source"
 
 
-@pytest.mark.parametrize("cutoff,tier", [
-    ("2019-01", "CLEAN"),          # antes do baseline
-    ("2021-06", "CLEAN"),          # borda: exatamente no baseline
-    ("2021-07", "PARTIAL"),        # borda: um mês depois
-    ("2026-06", "PARTIAL"),        # borda: um mês antes do fim da janela
-    ("2026-07", "CONTAMINATED"),   # borda: exatamente no fim da janela
-    ("2030-01", "CONTAMINATED"),   # depois do fim
-])
+@pytest.mark.parametrize(
+    "cutoff,tier",
+    [
+        ("2019-01", "CLEAN"),  # antes do baseline
+        ("2021-06", "CLEAN"),  # borda: exatamente no baseline
+        ("2021-07", "PARTIAL"),  # borda: um mês depois
+        ("2026-06", "PARTIAL"),  # borda: um mês antes do fim da janela
+        ("2026-07", "CONTAMINATED"),  # borda: exatamente no fim da janela
+        ("2030-01", "CONTAMINATED"),  # depois do fim
+    ],
+)
 def test_o_tier_de_data_nas_suas_fronteiras(cutoff, tier):
-    linha = audita(training_cutoff=cutoff, verified=True,
-                   label_exposure="training_labels")
+    linha = audita(
+        training_cutoff=cutoff, verified=True, label_exposure="training_labels"
+    )
 
     assert linha["date_tier"] == tier
 
@@ -205,8 +227,12 @@ def test_a_versao_entra_no_nome_reportado_quando_existe():
 
 
 def test_sem_curva_de_sobrevivencia_o_tier_de_data_ainda_e_decidido():
-    preditor = {"name": "X", "training_cutoff": "2019-01", "verified": True,
-                "label_exposure": "training_labels"}
+    preditor = {
+        "name": "X",
+        "training_cutoff": "2019-01",
+        "verified": True,
+        "label_exposure": "training_labels",
+    }
 
     linha = audit_predictor(preditor, BASELINE, [], None)
 
@@ -218,8 +244,9 @@ def test_exposicao_por_avaliacao_sem_medicao_e_indireta_e_nao_limpa():
     # Rótulos entraram por seleção de modelo ou por relato de desempenho, e
     # ninguém mediu a sobreposição. Não é vazamento medido, e também não é
     # ausência de exposição: é exposição indireta, herdando o tier de data.
-    linha = audita(training_cutoff="2023-06", verified=True,
-                   label_exposure="evaluation_only")
+    linha = audita(
+        training_cutoff="2023-06", verified=True, label_exposure="evaluation_only"
+    )
 
     assert linha["verdict"] == "INDIRECT / PARTIAL"
     assert linha["measured"] is None

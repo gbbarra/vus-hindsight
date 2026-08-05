@@ -25,6 +25,7 @@ Two modes:
 
 Each evaluation appends one point to results/_survival.json.
 """
+
 import argparse
 import json
 import os
@@ -45,7 +46,9 @@ def months_between(a, b):
 
 
 def build_cohort(args, con):
-    meta = load_snapshot(con, "base", args.baseline, f"cohort baseline {args.baseline_label}")
+    meta = load_snapshot(
+        con, "base", args.baseline, f"cohort baseline {args.baseline_label}"
+    )
     con.execute("""
         CREATE OR REPLACE TABLE cohort AS
         SELECT variation_id, gene, hgvs, raw_class, raw_review
@@ -58,15 +61,23 @@ def build_cohort(args, con):
 
     os.makedirs(RESULTS, exist_ok=True)
     with open(os.path.join(RESULTS, "_survival_cohort.json"), "w") as fh:
-        json.dump({"baseline_label": args.baseline_label,
-                   "baseline_file": os.path.basename(args.baseline),
-                   "cohort_size": n, "snapshot": meta}, fh, indent=2)
+        json.dump(
+            {
+                "baseline_label": args.baseline_label,
+                "baseline_file": os.path.basename(args.baseline),
+                "cohort_size": n,
+                "snapshot": meta,
+            },
+            fh,
+            indent=2,
+        )
     return 0
 
 
 def evaluate_point(args, con):
-    con.execute(f"CREATE OR REPLACE TABLE cohort AS "
-                f"SELECT * FROM read_parquet('{args.cohort}')")
+    con.execute(
+        f"CREATE OR REPLACE TABLE cohort AS SELECT * FROM read_parquet('{args.cohort}')"
+    )
     n_cohort = con.execute("SELECT count(*) FROM cohort").fetchone()[0]
     load_snapshot(con, "endp", args.endpoint, f"endpoint {args.endpoint_label}")
 
@@ -123,13 +134,17 @@ def evaluate_point(args, con):
         "pct_still_vus": round(100.0 * still / n_cohort, 4),
     }
 
-    print(f"\n=== {args.baseline_label} cohort at {args.endpoint_label} "
-          f"(+{months} months) ===")
+    print(
+        f"\n=== {args.baseline_label} cohort at {args.endpoint_label} "
+        f"(+{months} months) ==="
+    )
     for b, n in rows:
         print(f"  {b:16s} {n:>10,}  {100.0 * n / n_cohort:5.2f}%")
-    print(f"  -> P/LP {plp:,} ({point['pct_p_lp']:.2f}%), "
-          f"definitive {plp + blb:,} ({point['pct_definitive']:.2f}%), "
-          f"hard stratum {hard:,}, genes {genes:,}")
+    print(
+        f"  -> P/LP {plp:,} ({point['pct_p_lp']:.2f}%), "
+        f"definitive {plp + blb:,} ({point['pct_definitive']:.2f}%), "
+        f"hard stratum {hard:,}, genes {genes:,}"
+    )
 
     os.makedirs(RESULTS, exist_ok=True)
     points = []
@@ -166,9 +181,11 @@ def main():
         return build_cohort(args, con)
     if args.cohort and args.endpoint and args.endpoint_label:
         if not args.consequence_map or not os.path.exists(args.consequence_map):
-            print("FATAL: --consequence-map is required and must exist; the hard "
-                  "stratum is defined by the VCF MC field, never inferred here.",
-                  file=sys.stderr)
+            print(
+                "FATAL: --consequence-map is required and must exist; the hard "
+                "stratum is defined by the VCF MC field, never inferred here.",
+                file=sys.stderr,
+            )
             return 1
         return evaluate_point(args, con)
     ap.error("either --baseline/--out-cohort or --cohort/--endpoint/--endpoint-label")

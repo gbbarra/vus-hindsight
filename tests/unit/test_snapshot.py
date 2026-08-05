@@ -6,14 +6,22 @@ desemparelhadas dentro de campos não citados. As duas estão exercitadas aqui
 sobre arquivos de verdade em `tmp_path`, porque é justamente o comportamento do
 leitor que está em jogo.
 """
+
 import gzip
 
 import pytest
 from schema import resolve_columns
 from snapshot import header_of, reader_sql
 
-CABECALHO = ["VariationID", "GeneSymbol", "Name", "Assembly", "Type",
-             "GermlineClassification", "GermlineReviewStatus"]
+CABECALHO = [
+    "VariationID",
+    "GeneSymbol",
+    "Name",
+    "Assembly",
+    "Type",
+    "GermlineClassification",
+    "GermlineReviewStatus",
+]
 
 
 def escreve_snapshot(tmp_path, cabecalho, linhas, prefixo_hash=True, nome="s.txt.gz"):
@@ -26,6 +34,7 @@ def escreve_snapshot(tmp_path, cabecalho, linhas, prefixo_hash=True, nome="s.txt
 
 
 # --- header_of ---------------------------------------------------------------
+
 
 def test_o_cerquilha_do_cabecalho_nao_vira_parte_do_nome_da_coluna(tmp_path):
     caminho = escreve_snapshot(tmp_path, CABECALHO, [])
@@ -58,14 +67,25 @@ def test_arquivo_vazio_produz_erro_nomeando_a_coluna_que_falta(tmp_path):
 
 # --- reader_sql --------------------------------------------------------------
 
+
 def test_le_um_snapshot_com_os_nomes_de_coluna_declarados(con, tmp_path):
-    linhas = [["12345", "BRCA2", "NM_000059.4:c.1A>T", "GRCh38", "SNV",
-               "Uncertain significance", "criteria provided, single submitter"]]
+    linhas = [
+        [
+            "12345",
+            "BRCA2",
+            "NM_000059.4:c.1A>T",
+            "GRCh38",
+            "SNV",
+            "Uncertain significance",
+            "criteria provided, single submitter",
+        ]
+    ]
     caminho = escreve_snapshot(tmp_path, CABECALHO, linhas)
 
     linha = con.execute(
         f"SELECT VariationID, GeneSymbol, GermlineClassification "
-        f"FROM {reader_sql(caminho, CABECALHO)}").fetchone()
+        f"FROM {reader_sql(caminho, CABECALHO)}"
+    ).fetchone()
 
     assert linha == ("12345", "BRCA2", "Uncertain significance")
 
@@ -74,16 +94,20 @@ def test_aspas_duplas_desemparelhadas_nao_engolem_as_linhas_seguintes(con, tmp_p
     # O ClinVar emite coisas como 5" ou p."Ter dentro de campos não citados. Um
     # leitor com quote habilitado trataria daí em diante como um campo só e
     # perderia todas as variantes seguintes — sem erro nenhum.
-    linhas = [["1", 'GENE"X', "nome", "GRCh38", "SNV", "Pathogenic", "rev"],
-              ["2", "GENE2", "nome", "GRCh38", "SNV", "Benign", "rev"],
-              ["3", "GENE3", "nome", "GRCh38", "SNV", "Benign", "rev"]]
+    linhas = [
+        ["1", 'GENE"X', "nome", "GRCh38", "SNV", "Pathogenic", "rev"],
+        ["2", "GENE2", "nome", "GRCh38", "SNV", "Benign", "rev"],
+        ["3", "GENE3", "nome", "GRCh38", "SNV", "Benign", "rev"],
+    ]
     caminho = escreve_snapshot(tmp_path, CABECALHO, linhas)
 
     resultado = con.execute(
-        f"SELECT count(*) FROM {reader_sql(caminho, CABECALHO)}").fetchone()[0]
+        f"SELECT count(*) FROM {reader_sql(caminho, CABECALHO)}"
+    ).fetchone()[0]
     com_aspas = con.execute(
         f"SELECT GeneSymbol FROM {reader_sql(caminho, CABECALHO)} "
-        f"WHERE VariationID = '1'").fetchone()[0]
+        f"WHERE VariationID = '1'"
+    ).fetchone()[0]
 
     assert resultado == 3
     assert com_aspas == 'GENE"X'
@@ -94,13 +118,13 @@ def test_a_linha_de_cabecalho_nao_entra_como_dado(con, tmp_path):
     caminho = escreve_snapshot(tmp_path, CABECALHO, linhas)
 
     total = con.execute(
-        f"SELECT count(*) FROM {reader_sql(caminho, CABECALHO)}").fetchone()[0]
+        f"SELECT count(*) FROM {reader_sql(caminho, CABECALHO)}"
+    ).fetchone()[0]
 
     assert total == 1
 
 
-def test_snapshot_so_com_cabecalho_falha_em_vez_de_contar_zero_variante(con,
-                                                                        tmp_path):
+def test_snapshot_so_com_cabecalho_falha_em_vez_de_contar_zero_variante(con, tmp_path):
     # Um download truncado chega assim. Lê-lo como "zero variantes" produziria um
     # benchmark de zero reclassificações — um número publicável, plausível e
     # falso. Falhar alto é o comportamento certo, e é o que a regra 8 do
@@ -118,7 +142,8 @@ def test_apostrofo_no_nome_da_coluna_nao_quebra_o_sql(con, tmp_path):
     caminho = escreve_snapshot(tmp_path, cabecalho, [["1", "v"]])
 
     linha = con.execute(
-        f'SELECT "d\'Alembert" FROM {reader_sql(caminho, cabecalho)}').fetchone()
+        f'SELECT "d\'Alembert" FROM {reader_sql(caminho, cabecalho)}'
+    ).fetchone()
 
     assert linha == ("v",)
 
@@ -130,6 +155,7 @@ def test_todos_os_campos_chegam_como_texto(con, tmp_path):
     caminho = escreve_snapshot(tmp_path, CABECALHO, linhas)
 
     valor = con.execute(
-        f"SELECT VariationID FROM {reader_sql(caminho, CABECALHO)}").fetchone()[0]
+        f"SELECT VariationID FROM {reader_sql(caminho, CABECALHO)}"
+    ).fetchone()[0]
 
     assert valor == "00123"

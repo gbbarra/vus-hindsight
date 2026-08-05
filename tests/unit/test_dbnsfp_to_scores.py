@@ -5,6 +5,7 @@ depende da versão. Ler o par errado produz identificadores que não casam com
 nada, e zero sobreposição é indistinguível de uma ferramenta que simplesmente
 não cobre a coorte. Por isso a detecção é do arquivo, e a recusa é explícita.
 """
+
 from argparse import Namespace
 
 import pytest
@@ -16,15 +17,30 @@ resolve = CONVERSOR.resolve
 agg_expr = CONVERSOR.agg_expr
 q = CONVERSOR.q
 
-COLUNAS_V5 = ["#chr", "pos(1-based)", "ref", "alt",
-              "hg19_chr", "hg19_pos(1-based)", "SIFT_score"]
-COLUNAS_V3 = ["#chr", "pos(1-based)", "ref", "alt",
-              "hg38_chr", "hg38_pos(1-based)", "SIFT_score"]
+COLUNAS_V5 = [
+    "#chr",
+    "pos(1-based)",
+    "ref",
+    "alt",
+    "hg19_chr",
+    "hg19_pos(1-based)",
+    "SIFT_score",
+]
+COLUNAS_V3 = [
+    "#chr",
+    "pos(1-based)",
+    "ref",
+    "alt",
+    "hg38_chr",
+    "hg38_pos(1-based)",
+    "SIFT_score",
+]
 
 SEM_OVERRIDE = Namespace(hg38_chr_col=None, hg38_pos_col=None)
 
 
 # --- coordinate_columns ------------------------------------------------------
+
 
 def test_layout_4x_5x_le_grch38_das_colunas_principais():
     chr_col, pos_col, motivo = coordinate_columns(COLUNAS_V5, SEM_OVERRIDE)
@@ -96,13 +112,17 @@ def test_arquivo_sem_coluna_de_posicao_nao_resolve_pelo_layout_recente():
 
 # --- resolve -----------------------------------------------------------------
 
-@pytest.mark.parametrize("cabecalho,aliases,esperado", [
-    (["SIFT_score"], ["SIFT_score"], "SIFT_score"),
-    (["sift_score"], ["SIFT_score"], "sift_score"),
-    (["SIFT_SCORE"], ["SIFT_score"], "SIFT_SCORE"),
-    (["outra"], ["SIFT_score"], None),
-    ([], ["SIFT_score"], None),
-])
+
+@pytest.mark.parametrize(
+    "cabecalho,aliases,esperado",
+    [
+        (["SIFT_score"], ["SIFT_score"], "SIFT_score"),
+        (["sift_score"], ["SIFT_score"], "sift_score"),
+        (["SIFT_SCORE"], ["SIFT_score"], "SIFT_SCORE"),
+        (["outra"], ["SIFT_score"], None),
+        ([], ["SIFT_score"], None),
+    ],
+)
 def test_resolve_casa_alias_sem_diferenciar_caixa(cabecalho, aliases, esperado):
     assert resolve(cabecalho, aliases) == esperado
 
@@ -111,18 +131,23 @@ def test_resolve_respeita_a_ordem_dos_aliases():
     # A ordem da lista é a preferência declarada, não a ordem do cabeçalho.
     cabecalho = ["MutationAssessor_score_rankscore", "MutationAssessor_score"]
 
-    escolhido = resolve(cabecalho, ["MutationAssessor_score",
-                                    "MutationAssessor_score_rankscore"])
+    escolhido = resolve(
+        cabecalho, ["MutationAssessor_score", "MutationAssessor_score_rankscore"]
+    )
 
     assert escolhido == "MutationAssessor_score"
 
 
 # --- agg_expr ----------------------------------------------------------------
 
-@pytest.mark.parametrize("como,esperado", [
-    ("min", 0.02),
-    ("max", 0.40),
-])
+
+@pytest.mark.parametrize(
+    "como,esperado",
+    [
+        ("min", 0.02),
+        ("max", 0.40),
+    ],
+)
 def test_valores_por_transcrito_colapsam_no_extremo_pedido(scalar, como, esperado):
     # O dbNSFP traz um valor por transcrito, separados por ';', com '.' onde não
     # há score. Para o SIFT o mais danoso é o menor.
@@ -158,12 +183,14 @@ def test_valores_negativos_sao_preservados(scalar):
 
 # --- q -----------------------------------------------------------------------
 
-@pytest.mark.parametrize("nome", ["#chr", "pos(1-based)", "hg19_pos(1-based)",
-                                  "SIFT_score"])
+
+@pytest.mark.parametrize(
+    "nome", ["#chr", "pos(1-based)", "hg19_pos(1-based)", "SIFT_score"]
+)
 def test_nome_de_coluna_do_dbnsfp_sobrevive_a_citacao(con, nome):
     # '#', parênteses e hífen são sintaxe em SQL; sem citação o SELECT nem
     # compila.
-    con.execute(f'CREATE TABLE t ({q(nome)} VARCHAR)')
+    con.execute(f"CREATE TABLE t ({q(nome)} VARCHAR)")
     con.execute("INSERT INTO t VALUES ('x')")
 
     assert con.execute(f"SELECT {q(nome)} FROM t").fetchone()[0] == "x"
