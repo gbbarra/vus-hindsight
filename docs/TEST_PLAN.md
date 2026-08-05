@@ -445,22 +445,63 @@ vocabulário de genética clínica, como §4.2 exige.
 
 ## 6. Categorias 4.3 a 4.6
 
-### 6.1 Cobertura (§4.3)
+### 6.1 Cobertura (§4.3) — executada
 
-- `pytest --cov=scripts --cov-branch --cov-fail-under=80` como gate global.
-- Piso de 95% nos seis módulos críticos de §7 do `CLAUDE.md`. O `coverage` só
-  aceita um `fail_under` global, então o piso por módulo vai num script próprio,
-  `tests/check_coverage_floors.py`, que lê `coverage.json` e falha nomeando o
-  módulo e o percentual. É uma etapa separada da CI, não uma flag.
-- `omit`: `tests/make_fixture.py`, blocos `if __name__ == "__main__"`.
-- **Meta realista da primeira rodada:** os módulos críticos passam de 0 para ≥95%;
-  o global fica **abaixo** de 80%, porque os 11 `main()` (≈1.800 linhas) só são
-  exercitados pelo teste de integração, que roda por `subprocess` e não é contado
-  por padrão. Duas saídas honestas: medir cobertura também no subprocess
-  (`COVERAGE_PROCESS_START`), ou declarar o gate global sobre o subconjunto
-  importável. Prefiro a primeira — é mais trabalho, mas é o número verdadeiro.
-  Ligar o gate em 80% antes disso resolvido seria escolher o número que passa, que
-  é o que a regra 3 proíbe.
+**Medição do subprocess, resolvida.** Boa parte do pipeline só roda por
+subprocess — a fixture ponta a ponta e os testes de contrato de CLI executam os
+scripts como o pipeline os executa. Sem instrumentar isso, os 11 `main()`
+apareciam como não cobertos e o número global media o coletor, não a suíte.
+O `.pth` do `pytest-cov` chama `coverage.process_startup()` em qualquer
+interpretador que suba com `COVERAGE_PROCESS_START` definida; o `conftest.py`
+define a variável quando a medição está ligada, e os helpers de subprocess
+herdam o `os.environ`. Com `parallel = true`, o `pytest-cov` combina tudo.
+
+Efeito medido: **19% → 29%** de cobertura global de branches. Todo script passou
+a aparecer com cobertura diferente de zero, exceto `03_headers.py`, que nenhum
+teste executa.
+
+**Piso por função, não por arquivo.** `tests/check_coverage_floors.py` verifica
+as seis áreas de decisão de §7. O piso é por função porque nos módulos numerados
+a maior parte das linhas é `main()`: um `main()` de 250 linhas a 20% afundaria
+uma `coordinate_columns` de 27 linhas inteiramente coberta, e o gate passaria a
+medir o encanamento. Uma função nomeada no registro que sumir do módulo é
+**falha**, não item pulado — um gate que para de encontrar o que deveria checar
+e continua verde é o modo de falha silenciosa de sempre.
+
+Resultado da primeira execução: **16 de 17 funções de decisão em 100%**, uma
+abaixo:
+
+```
+  FALHA scripts/11_contamination_audit.py::leakage_range      92.3%
+```
+
+A linha que falta é o retorno defensivo final, `"could not bracket the cutoff"`.
+Ele é **inalcançável**: quando o fluxo chega ao laço, já se sabe que a curva não
+está vazia e que `first <= months < last`, e os intervalos consecutivos
+particionam `[first, last)`, então algum par sempre casa. Com um único ponto
+medido, `months >= first` e `months < last` não podem valer ao mesmo tempo, e as
+cláusulas anteriores já retornaram.
+
+Duas saídas, e nenhuma delas é baixar o piso:
+
+1. `# pragma: no cover` na linha, com o motivo escrito ao lado. É anotação, não
+   mudança de comportamento — mas mexe em módulo crítico e precisa de OK.
+2. Deixar o gate vermelho e conviver com isso.
+
+Só há uma forma de cobrir a linha com teste: passar `NaN` em `months_elapsed`,
+porque toda comparação com `NaN` é falsa e o laço inteiro falha em casar. Seria
+um teste artificial para um valor que a curva nunca produz — a mesma objeção que
+o §4.4 faz a matar mutante equivalente com teste inventado.
+
+**Gate global de 80%: não ligado, e o motivo é o número.** A cobertura global é
+29%, e os 51 pontos que faltam estão quase todos nos 11 `main()`. Ligar o
+`--cov-fail-under=80` hoje quebraria a CI em toda execução; ligar em 29% seria
+escolher o número que passa, que é o que a regra 3 proíbe. O gate fica declarado
+no `CLAUDE.md` §3 e **desligado** na configuração, com esta nota, até que
+existam testes que cubram os `main()`. Alternativa honesta, se você preferir um
+gate ativo desde já: aplicá-lo só ao conjunto de módulos de decisão, onde ele
+já passaria com folga, e declarar isso explicitamente em vez de deixar um 80%
+global que ninguém cumpre.
 
 ### 6.2 Mutação (§4.4) — executada
 

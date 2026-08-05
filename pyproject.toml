@@ -25,6 +25,12 @@ markers = [
 branch = true
 source = ["scripts"]
 omit = ["tests/make_fixture.py"]
+# Boa parte do pipeline só é exercitada por subprocess — a fixture ponta a ponta
+# e os testes de contrato de CLI executam os scripts como o pipeline os executa.
+# Sem instrumentar o subprocess, os 11 main() aparecem como não cobertos e o
+# número global mede o coletor, não a suíte. Ver tests/conftest.py.
+parallel = true
+sigterm = true
 
 [tool.coverage.report]
 exclude_also = [
