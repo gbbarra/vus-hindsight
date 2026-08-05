@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "vus-hindsight"
 version = "1.0.0"
@@ -10,6 +14,14 @@ dev = [
   "pytest", "pytest-cov", "pytest-bdd",
   "ruff", "mypy", "radon", "bandit", "detect-secrets", "mutmut",
 ]
+
+[tool.setuptools]
+# Não há pacote importável neste repositório: `scripts/` é um pipeline numerado
+# executado por caminho, e metade dos arquivos nem pode ser importada por nome.
+# Sem esta linha o setuptools tenta descobrir scripts/, tests/ e docs/ como
+# pacotes de topo e aborta. O install existe para trazer as dependências, não
+# para publicar um módulo.
+py-modules = []
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

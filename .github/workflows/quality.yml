@@ -28,11 +28,12 @@ jobs:
         with:
           python-version: '3.11'
 
+      # Instala a partir do pyproject.toml em vez de repetir a lista aqui: uma
+      # segunda lista divergiria em silêncio, e assim as dependências declaradas
+      # são exercitadas a cada execução.
       - name: Install
         run: |
-          pip install --quiet duckdb numpy scikit-learn scipy PyYAML \
-                              pytest pytest-cov pytest-bdd \
-                              ruff mypy bandit detect-secrets
+          pip install --quiet -e ".[dev]"
           python -c "import duckdb; print('duckdb', duckdb.__version__)"
 
       - name: Lint

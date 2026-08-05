@@ -1,0 +1,22 @@
+Metadata-Version: 2.4
+Name: vus-hindsight
+Version: 1.0.0
+Summary: ClinVar VUS reclassification benchmark, with a contamination audit
+Requires-Python: >=3.11
+License-File: LICENSE
+Requires-Dist: duckdb
+Requires-Dist: numpy
+Requires-Dist: scikit-learn
+Requires-Dist: scipy
+Requires-Dist: PyYAML
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
+Requires-Dist: pytest-bdd; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Requires-Dist: radon; extra == "dev"
+Requires-Dist: bandit; extra == "dev"
+Requires-Dist: detect-secrets; extra == "dev"
+Requires-Dist: mutmut; extra == "dev"
+Dynamic: license-file
