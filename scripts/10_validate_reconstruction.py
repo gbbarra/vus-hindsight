@@ -16,14 +16,14 @@ Usage:
                                 --actual data/variant_summary_2021-06.txt.gz \
                                 --label 2021-06
 """
+
 import argparse
 import json
 import os
 import sys
 
 import duckdb
-
-from schema import bucket_sql, stars_sql
+from schema import bucket_sql
 from snapshot import load_snapshot
 
 RESULTS = "results"
@@ -52,7 +52,7 @@ def main():
                classification AS raw_class,
                review_status  AS raw_review,
                stars,
-               {bucket_sql('classification')} AS bucket
+               {bucket_sql("classification")} AS bucket
         FROM read_parquet('{args.reconstructed}')
     """)
 
@@ -74,8 +74,10 @@ def main():
     print(f"\n=== reconstruction vs actual, {args.label} ===")
     print(f"variants in real snapshot (GRCh38, deduped): {n_actual:,}")
     print(f"variants reconstructed (all assemblies)    : {n_recon:,}")
-    print(f"real variants with a reconstruction        : {covered:,} "
-          f"({100.0 * covered / n_actual:.2f}%)")
+    print(
+        f"real variants with a reconstruction        : {covered:,} "
+        f"({100.0 * covered / n_actual:.2f}%)"
+    )
 
     agree = con.execute("""
         SELECT
@@ -124,14 +126,20 @@ def main():
         FROM cmp
     """).fetchone()
     real_cohort, covered_cohort, recovered_vus, recovered_cohort = coh
-    print(f"\n=== the cohort that matters ===")
+    print("\n=== the cohort that matters ===")
     print(f"real VUS cohort (>=1 star)          : {real_cohort:,}")
-    print(f"  with any reconstruction           : {covered_cohort:,} "
-          f"({100.0 * covered_cohort / real_cohort:.2f}%)")
-    print(f"  reconstructed as VUS              : {recovered_vus:,} "
-          f"({100.0 * recovered_vus / real_cohort:.2f}%)")
-    print(f"  reconstructed as VUS with >=1 star: {recovered_cohort:,} "
-          f"({100.0 * recovered_cohort / real_cohort:.2f}%)")
+    print(
+        f"  with any reconstruction           : {covered_cohort:,} "
+        f"({100.0 * covered_cohort / real_cohort:.2f}%)"
+    )
+    print(
+        f"  reconstructed as VUS              : {recovered_vus:,} "
+        f"({100.0 * recovered_vus / real_cohort:.2f}%)"
+    )
+    print(
+        f"  reconstructed as VUS with >=1 star: {recovered_cohort:,} "
+        f"({100.0 * recovered_cohort / real_cohort:.2f}%)"
+    )
 
     out = {
         "label": args.label,
@@ -142,17 +150,24 @@ def main():
         "pct_covered": round(100.0 * covered / n_actual, 4),
         "agreement": {
             "n": n_cov,
-            "bucket": bucket_ok, "pct_bucket": round(100.0 * bucket_ok / n_cov, 4),
-            "stars": stars_ok, "pct_stars": round(100.0 * stars_ok / n_cov, 4),
-            "both": both_ok, "pct_both": round(100.0 * both_ok / n_cov, 4)},
+            "bucket": bucket_ok,
+            "pct_bucket": round(100.0 * bucket_ok / n_cov, 4),
+            "stars": stars_ok,
+            "pct_stars": round(100.0 * stars_ok / n_cov, 4),
+            "both": both_ok,
+            "pct_both": round(100.0 * both_ok / n_cov, 4),
+        },
         "confusion": [{"actual": a, "reconstructed": r, "n": n_} for a, r, n_ in conf],
         "star_drift": [{"delta": d, "n": n_} for d, n_ in drift],
         "cohort": {
-            "real": real_cohort, "covered": covered_cohort,
+            "real": real_cohort,
+            "covered": covered_cohort,
             "recovered_as_vus": recovered_vus,
             "recovered_with_criteria": recovered_cohort,
             "pct_recovered_with_criteria": round(
-                100.0 * recovered_cohort / real_cohort, 4)},
+                100.0 * recovered_cohort / real_cohort, 4
+            ),
+        },
     }
     path = os.path.join(RESULTS, f"_reconstruction_validation_{args.label}.json")
     with open(path, "w") as fh:

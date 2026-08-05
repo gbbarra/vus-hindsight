@@ -14,13 +14,13 @@ Usage:
   09_reconstruct.py --submissions data/submission_summary.txt.gz \
                     --as-of 2021-06-03 --out data/reconstructed_2021-06.parquet
 """
+
 import argparse
 import json
 import os
 import sys
 
 import duckdb
-
 from aggregate import DATE_PARSE, reconstruct_sql
 
 LINE_DELIM = "\x01"
@@ -64,8 +64,10 @@ def main():
     """)
     total = con.execute("SELECT count(*) FROM subs").fetchone()[0]
     if total == 0:
-        print("FATAL: no submission rows parsed — inspect the file layout.",
-              file=sys.stderr)
+        print(
+            "FATAL: no submission rows parsed — inspect the file layout.",
+            file=sys.stderr,
+        )
         return 1
 
     stats = con.execute(f"""
@@ -81,16 +83,20 @@ def main():
     """).fetchone()
     rows_total, contributing, dated, eligible, variants_total = stats
     print(f"submission rows            : {rows_total:,}")
-    print(f"  contributing to aggregate: {contributing:,} "
-          f"({100.0 * contributing / rows_total:.2f}%)")
-    print(f"  with a parseable date    : {dated:,} "
-          f"({100.0 * dated / rows_total:.2f}%)")
+    print(
+        f"  contributing to aggregate: {contributing:,} "
+        f"({100.0 * contributing / rows_total:.2f}%)"
+    )
+    print(f"  with a parseable date    : {dated:,} ({100.0 * dated / rows_total:.2f}%)")
     print(f"  eligible as of {args.as_of}: {eligible:,}")
     print(f"distinct VariationIDs      : {variants_total:,}")
 
     if dated == 0:
-        print("FATAL: no DateLastEvaluated parsed. The date format changed — "
-              "fix aggregate.DATE_PARSE rather than proceeding.", file=sys.stderr)
+        print(
+            "FATAL: no DateLastEvaluated parsed. The date format changed — "
+            "fix aggregate.DATE_PARSE rather than proceeding.",
+            file=sys.stderr,
+        )
         return 1
 
     con.execute(f"""
@@ -115,13 +121,19 @@ def main():
     print(f"\nwrote {args.out}")
 
     with open(os.path.join(RESULTS, f"_reconstruction_{args.as_of}.json"), "w") as fh:
-        json.dump({"as_of": args.as_of,
-                   "submissions_file": os.path.basename(args.submissions),
-                   "submission_rows": rows_total,
-                   "contributing": contributing,
-                   "dated": dated,
-                   "eligible_as_of": eligible,
-                   "variants_reconstructed": n}, fh, indent=2)
+        json.dump(
+            {
+                "as_of": args.as_of,
+                "submissions_file": os.path.basename(args.submissions),
+                "submission_rows": rows_total,
+                "contributing": contributing,
+                "dated": dated,
+                "eligible_as_of": eligible,
+                "variants_reconstructed": n,
+            },
+            fh,
+            indent=2,
+        )
     con.close()
     return 0
 

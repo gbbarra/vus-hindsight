@@ -15,14 +15,13 @@ Usage:
                     --current  data/variant_summary.txt.gz \
                     --label    2021-06
 """
+
 import argparse
 import csv
 import json
 import os
-import sys
 
 import duckdb
-
 from snapshot import load_snapshot
 
 RESULTS = "results"
@@ -33,8 +32,11 @@ def main():
     ap.add_argument("--baseline", required=True)
     ap.add_argument("--current", required=True)
     ap.add_argument("--label", required=True)
-    ap.add_argument("--consequence-map", required=True,
-                    help="parquet from 03b_extract_mc.py (VCF MC field)")
+    ap.add_argument(
+        "--consequence-map",
+        required=True,
+        help="parquet from 03b_extract_mc.py (VCF MC field)",
+    )
     ap.add_argument("--memory-limit", default="6GB")
     ap.add_argument("--temp-dir", default="data/duckdb_tmp")
     args = ap.parse_args()
@@ -46,10 +48,14 @@ def main():
     con.execute(f"PRAGMA memory_limit='{args.memory_limit}'")
     con.execute(f"PRAGMA temp_directory='{args.temp_dir}'")
 
-    meta = {"label": args.label,
-            "baseline_file": os.path.basename(args.baseline),
-            "current_file": os.path.basename(args.current)}
-    meta["baseline"] = load_snapshot(con, "base", args.baseline, f"baseline {args.label}")
+    meta = {
+        "label": args.label,
+        "baseline_file": os.path.basename(args.baseline),
+        "current_file": os.path.basename(args.current),
+    }
+    meta["baseline"] = load_snapshot(
+        con, "base", args.baseline, f"baseline {args.label}"
+    )
     meta["current"] = load_snapshot(con, "cur", args.current, "current")
 
     # Baseline VUS cohort: uncertain at baseline, with assertion criteria.
@@ -62,8 +68,10 @@ def main():
     n_vus_excluded = con.execute("""
         SELECT count(*) FROM base WHERE bucket = 'Still VUS' AND stars = 0
     """).fetchone()[0]
-    print(f"[{args.label}] baseline VUS (criteria provided): {n_vus:,} "
-          f"(excluded {n_vus_excluded:,} with no assertion criteria)")
+    print(
+        f"[{args.label}] baseline VUS (criteria provided): {n_vus:,} "
+        f"(excluded {n_vus_excluded:,} with no assertion criteria)"
+    )
     meta["baseline_vus"] = n_vus
     meta["baseline_vus_excluded_no_criteria"] = n_vus_excluded
 
@@ -72,14 +80,17 @@ def main():
         raise SystemExit(
             f"FATAL: consequence map {args.consequence_map!r} not found. "
             "Run scripts/03b_extract_mc.py against the ClinVar VCF first — "
-            "consequence is sourced from the VCF, never inferred here.")
+            "consequence is sourced from the VCF, never inferred here."
+        )
     con.execute(f"""
         CREATE OR REPLACE TABLE cons AS
         SELECT * FROM read_parquet('{args.consequence_map}')
     """)
     n_cons = con.execute("SELECT count(*) FROM cons").fetchone()[0]
-    print(f"consequence map: {n_cons:,} VariationIDs from "
-          f"{os.path.basename(args.consequence_map)}")
+    print(
+        f"consequence map: {n_cons:,} VariationIDs from "
+        f"{os.path.basename(args.consequence_map)}"
+    )
     meta["consequence_map_rows"] = n_cons
 
     # Follow each baseline VUS into the current snapshot.
@@ -112,20 +123,25 @@ def main():
     print(f"\n=== [{args.label}] transition table ===")
     for bucket, n in rows:
         print(f"  {bucket:16s} {n:>10,}  {100.0 * n / n_vus:5.2f}%")
-    meta["transitions"] = [{"current_bucket": b, "n": n,
-                            "pct": round(100.0 * n / n_vus, 4)} for b, n in rows]
+    meta["transitions"] = [
+        {"current_bucket": b, "n": n, "pct": round(100.0 * n / n_vus, 4)}
+        for b, n in rows
+    ]
 
     # --- VUS -> P/LP arm ------------------------------------------------------
     plp_n = con.execute(
-        "SELECT count(*) FROM followed WHERE current_bucket = 'P/LP'").fetchone()[0]
+        "SELECT count(*) FROM followed WHERE current_bucket = 'P/LP'"
+    ).fetchone()[0]
     genes = con.execute("""
         SELECT count(DISTINCT gene) FROM followed
         WHERE current_bucket = 'P/LP' AND gene IS NOT NULL AND gene NOT IN ('','-')
     """).fetchone()[0]
     meta["vus_to_plp"] = plp_n
     meta["vus_to_plp_distinct_genes"] = genes
-    print(f"\n=== [{args.label}] VUS -> P/LP: {plp_n:,} variants, "
-          f"{genes:,} distinct genes ===")
+    print(
+        f"\n=== [{args.label}] VUS -> P/LP: {plp_n:,} variants, "
+        f"{genes:,} distinct genes ==="
+    )
 
     by_cons = con.execute("""
         SELECT consequence, count(*) n FROM followed
@@ -142,9 +158,11 @@ def main():
     """).fetchone()[0]
     meta["vus_to_plp_not_in_vcf"] = not_in_vcf
     if plp_n:
-        print(f"    ({not_in_vcf:,} of {plp_n:,} have no VCF record — "
-              f"{100.0 * not_in_vcf / plp_n:.2f}% — reported separately, "
-              "not folded into 'other')")
+        print(
+            f"    ({not_in_vcf:,} of {plp_n:,} have no VCF record — "
+            f"{100.0 * not_in_vcf / plp_n:.2f}% — reported separately, "
+            "not folded into 'other')"
+        )
 
     # Diagnostic only: agreement between the VCF MC term and an independent
     # derivation from HGVS. Not used for any published count.
@@ -157,11 +175,15 @@ def main():
     """).fetchone()
     matched, agree = conc
     meta["consequence_concordance"] = {
-        "matched": matched, "agree": agree,
-        "pct": round(100.0 * agree / matched, 4) if matched else None}
+        "matched": matched,
+        "agree": agree,
+        "pct": round(100.0 * agree / matched, 4) if matched else None,
+    }
     if matched:
-        print(f"  cross-check vs HGVS derivation: {agree:,}/{matched:,} agree "
-              f"({100.0 * agree / matched:.2f}%) — diagnostic only")
+        print(
+            f"  cross-check vs HGVS derivation: {agree:,}/{matched:,} agree "
+            f"({100.0 * agree / matched:.2f}%) — diagnostic only"
+        )
 
     by_rev = con.execute("""
         SELECT current_review, current_stars, count(*) n FROM followed
@@ -171,7 +193,8 @@ def main():
     for r, s, n in by_rev:
         print(f"    [{s}*] {str(r):55s} {n:>9,}")
     meta["vus_to_plp_by_review"] = [
-        {"review_status": r, "stars": s, "n": n} for r, s, n in by_rev]
+        {"review_status": r, "stars": s, "n": n} for r, s, n in by_rev
+    ]
 
     # The hard stratum: missense AND >= "criteria provided, multiple submitters".
     hard = con.execute("""
@@ -185,8 +208,10 @@ def main():
     """).fetchone()[0]
     meta["vus_to_plp_missense_2star_plus"] = hard
     meta["vus_to_plp_missense_2star_plus_genes"] = hard_genes
-    print(f"\n  HARD STRATUM (missense AND >=2-star): {hard:,} variants "
-          f"across {hard_genes:,} genes")
+    print(
+        f"\n  HARD STRATUM (missense AND >=2-star): {hard:,} variants "
+        f"across {hard_genes:,} genes"
+    )
 
     # --- Per-variant output ---------------------------------------------------
     # Both arms are exported. The pathogenic arm alone cannot measure whether a
@@ -206,9 +231,19 @@ def main():
         with open(path, "a", newline="") as fh:
             w = csv.writer(fh, delimiter="\t", lineterminator="\n")
             if write_header:
-                w.writerow(["baseline", "VariationID", "gene", "HGVS",
-                            "consequence", "mc_raw", "baseline_class",
-                            "current_class", "review_status"])
+                w.writerow(
+                    [
+                        "baseline",
+                        "VariationID",
+                        "gene",
+                        "HGVS",
+                        "consequence",
+                        "mc_raw",
+                        "baseline_class",
+                        "current_class",
+                        "review_status",
+                    ]
+                )
             while True:
                 batch = cur.fetchmany(50_000)
                 if not batch:

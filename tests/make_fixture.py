@@ -11,15 +11,30 @@ The baseline fixture deliberately uses the OLD column names
 (ClinicalSignificance / ReviewStatus) and the current fixture uses the NEW ones
 (GermlineClassification / GermlineReviewStatus).
 """
+
 import gzip
 import os
 
 OUT = os.path.join(os.path.dirname(__file__), "fixtures")
 
-COLS = ["AlleleID", "Type", "Name", "GeneID", "GeneSymbol", "HGNC_ID",
-        "CLASSIFICATION", "LastEvaluated", "Assembly", "Chromosome",
-        "REVIEW", "NumberSubmitters", "VariationID",
-        "PositionVCF", "ReferenceAlleleVCF", "AlternateAlleleVCF"]
+COLS = [
+    "AlleleID",
+    "Type",
+    "Name",
+    "GeneID",
+    "GeneSymbol",
+    "HGNC_ID",
+    "CLASSIFICATION",
+    "LastEvaluated",
+    "Assembly",
+    "Chromosome",
+    "REVIEW",
+    "NumberSubmitters",
+    "VariationID",
+    "PositionVCF",
+    "ReferenceAlleleVCF",
+    "AlternateAlleleVCF",
+]
 
 VUS = "Uncertain significance"
 CRIT1 = "criteria provided, single submitter"
@@ -39,32 +54,49 @@ PLAIN = "NM_001.1(GENE):c.100A>G (p.Thr34Ala)"
 # (VariationID, gene, name, assembly, baseline_class, baseline_review,
 #  current_class, current_review)  -- current_* None => absent from current
 CASES = [
-    (1,  "BRCA1", MISSENSE_1,   "GRCh38", VUS, CRIT1, "Pathogenic", CRIT2),
-    (2,  "BRCA2", NONSENSE_2,   "GRCh38", VUS, CRIT1, "Likely pathogenic", CRIT1),
-    (3,  "ATM",   PLAIN,        "GRCh38", VUS, CRIT1, "Benign", CRIT2),
-    (4,  "ATM",   PLAIN,        "GRCh38", VUS, CRIT1, VUS, CRIT1),
-    (5,  "PALB2", PLAIN,        "GRCh38", VUS, CRIT1,
-         "Conflicting classifications of pathogenicity", CONFLICT),
-    (6,  "CFTR",  PLAIN,        "GRCh38", VUS, NOCRIT, "Pathogenic", CRIT2),
-    (7,  "RET",   PLAIN,        "GRCh38", VUS, CRIT1, None, None),
-    (8,  "BRCA1", PLAIN,        "GRCh38", "Pathogenic", CRIT2, "Pathogenic", CRIT2),
-    (9,  "BRCA1", PLAIN,        "GRCh37", VUS, CRIT1, "Pathogenic", CRIT2),
-    (10, "BRCA1", MISSENSE_10,  "GRCh38", VUS, CRIT1, "Pathogenic", CRIT2),
-    (11, "TP53",  FRAMESHIFT_11,"GRCh38", VUS, CRIT1, "Likely pathogenic", CRIT2),
-    (12, "MLH1",  SPLICE_12,    "GRCh38", VUS, CRIT1, "Pathogenic", CRIT2),
-    (13, "MSH2",  MISSENSE_13,  "GRCh38", VUS, CRIT1, "Pathogenic", EXPERT),
-    (14, "VKORC1",PLAIN,        "GRCh38", VUS, CRIT1, "drug response", CRIT1),
+    (1, "BRCA1", MISSENSE_1, "GRCh38", VUS, CRIT1, "Pathogenic", CRIT2),
+    (2, "BRCA2", NONSENSE_2, "GRCh38", VUS, CRIT1, "Likely pathogenic", CRIT1),
+    (3, "ATM", PLAIN, "GRCh38", VUS, CRIT1, "Benign", CRIT2),
+    (4, "ATM", PLAIN, "GRCh38", VUS, CRIT1, VUS, CRIT1),
+    (
+        5,
+        "PALB2",
+        PLAIN,
+        "GRCh38",
+        VUS,
+        CRIT1,
+        "Conflicting classifications of pathogenicity",
+        CONFLICT,
+    ),
+    (6, "CFTR", PLAIN, "GRCh38", VUS, NOCRIT, "Pathogenic", CRIT2),
+    (7, "RET", PLAIN, "GRCh38", VUS, CRIT1, None, None),
+    (8, "BRCA1", PLAIN, "GRCh38", "Pathogenic", CRIT2, "Pathogenic", CRIT2),
+    (9, "BRCA1", PLAIN, "GRCh37", VUS, CRIT1, "Pathogenic", CRIT2),
+    (10, "BRCA1", MISSENSE_10, "GRCh38", VUS, CRIT1, "Pathogenic", CRIT2),
+    (11, "TP53", FRAMESHIFT_11, "GRCh38", VUS, CRIT1, "Likely pathogenic", CRIT2),
+    (12, "MLH1", SPLICE_12, "GRCh38", VUS, CRIT1, "Pathogenic", CRIT2),
+    (13, "MSH2", MISSENSE_13, "GRCh38", VUS, CRIT1, "Pathogenic", EXPERT),
+    (14, "VKORC1", PLAIN, "GRCh38", VUS, CRIT1, "drug response", CRIT1),
 ]
 
 
 def row(vid, gene, name, assembly, cls, review):
     d = {
-        "AlleleID": str(vid * 10), "Type": "single nucleotide variant",
-        "Name": name, "GeneID": str(vid), "GeneSymbol": gene, "HGNC_ID": "-",
-        "CLASSIFICATION": cls, "LastEvaluated": "Jan 01, 2020",
-        "Assembly": assembly, "Chromosome": "17", "REVIEW": review,
-        "NumberSubmitters": "3", "VariationID": str(vid),
-        "PositionVCF": str(900000 + vid), "ReferenceAlleleVCF": "C",
+        "AlleleID": str(vid * 10),
+        "Type": "single nucleotide variant",
+        "Name": name,
+        "GeneID": str(vid),
+        "GeneSymbol": gene,
+        "HGNC_ID": "-",
+        "CLASSIFICATION": cls,
+        "LastEvaluated": "Jan 01, 2020",
+        "Assembly": assembly,
+        "Chromosome": "17",
+        "REVIEW": review,
+        "NumberSubmitters": "3",
+        "VariationID": str(vid),
+        "PositionVCF": str(900000 + vid),
+        "ReferenceAlleleVCF": "C",
         "AlternateAlleleVCF": "T",
     }
     return "\t".join(d[c] for c in COLS)
@@ -76,10 +108,10 @@ def row(vid, gene, name, assembly, cls, review):
 #     into 'other'.
 #   * VID 1 carries two terms — proves missense outranks intron_variant.
 VCF_MC = {
-    1:  "SO:0001627|intron_variant,SO:0001583|missense_variant",
-    2:  "SO:0001589|frameshift_variant",
-    3:  "SO:0001819|synonymous_variant",
-    4:  "SO:0001627|intron_variant",
+    1: "SO:0001627|intron_variant,SO:0001583|missense_variant",
+    2: "SO:0001589|frameshift_variant",
+    3: "SO:0001819|synonymous_variant",
+    4: "SO:0001627|intron_variant",
     11: "SO:0001589|frameshift_variant",
     12: "SO:0001575|splice_donor_variant",
     13: "SO:0001583|missense_variant",
@@ -102,7 +134,7 @@ def write_vcf(path):
         for line in VCF_HEADER:
             fh.write(line + "\n")
         for vid, mc in sorted(VCF_MC.items()):
-            info = (f"ALLELEID={vid * 10};GENEINFO={gene_by_vid[vid]}:{vid};MC={mc}")
+            info = f"ALLELEID={vid * 10};GENEINFO={gene_by_vid[vid]}:{vid};MC={mc}"
             fh.write(f"17\t{43000000 + vid}\t{vid}\tG\tA\t.\t.\t{info}\n")
     print(f"wrote {path} ({len(VCF_MC)} records)")
 
@@ -110,12 +142,24 @@ def write_vcf(path):
 # --- submission_summary fixture, for the frozen-date reconstruction ----------
 # One row per SCV. Each case pins down one rule of ClinVar's aggregation, so a
 # regression in aggregate.py fails here instead of in a 366 MB download.
-SUB_COLS = ["VariationID", "ClinicalSignificance", "DateLastEvaluated",
-            "Description", "SubmittedPhenotypeInfo", "ReportedPhenotypeInfo",
-            "ReviewStatus", "CollectionMethod", "OriginCounts", "Submitter",
-            "SCV", "SubmittedGeneSymbol", "ExplanationOfInterpretation",
-            "SomaticClinicalImpact", "Oncogenicity",
-            "ContributesToAggregateClassification"]
+SUB_COLS = [
+    "VariationID",
+    "ClinicalSignificance",
+    "DateLastEvaluated",
+    "Description",
+    "SubmittedPhenotypeInfo",
+    "ReportedPhenotypeInfo",
+    "ReviewStatus",
+    "CollectionMethod",
+    "OriginCounts",
+    "Submitter",
+    "SCV",
+    "SubmittedGeneSymbol",
+    "ExplanationOfInterpretation",
+    "SomaticClinicalImpact",
+    "Oncogenicity",
+    "ContributesToAggregateClassification",
+]
 
 CRIT = "criteria provided, single submitter"
 NOCRIT_SUB = "no assertion criteria provided"
@@ -166,11 +210,17 @@ def write_submissions(path):
         fh.write("#" + "\t".join(SUB_COLS) + "\n")
         for vid, cls, date, review, submitter, contributes in SUBMISSIONS:
             row = {c: "-" for c in SUB_COLS}
-            row.update({"VariationID": str(vid), "ClinicalSignificance": cls,
-                        "DateLastEvaluated": date, "ReviewStatus": review,
-                        "Submitter": submitter,
-                        "SCV": f"SCV{vid}{submitter[-1]}{date[:3]}",
-                        "ContributesToAggregateClassification": contributes})
+            row.update(
+                {
+                    "VariationID": str(vid),
+                    "ClinicalSignificance": cls,
+                    "DateLastEvaluated": date,
+                    "ReviewStatus": review,
+                    "Submitter": submitter,
+                    "SCV": f"SCV{vid}{submitter[-1]}{date[:3]}",
+                    "ContributesToAggregateClassification": contributes,
+                }
+            )
             fh.write("\t".join(row[c] for c in SUB_COLS) + "\n")
     print(f"wrote {path} ({len(SUBMISSIONS)} submissions)")
 
@@ -185,10 +235,26 @@ def write(path, header_cols, rows):
 
 
 def main():
-    base_cols = [("ClinicalSignificance" if c == "CLASSIFICATION" else
-                  "ReviewStatus" if c == "REVIEW" else c) for c in COLS]
-    cur_cols = [("GermlineClassification" if c == "CLASSIFICATION" else
-                 "GermlineReviewStatus" if c == "REVIEW" else c) for c in COLS]
+    base_cols = [
+        (
+            "ClinicalSignificance"
+            if c == "CLASSIFICATION"
+            else "ReviewStatus"
+            if c == "REVIEW"
+            else c
+        )
+        for c in COLS
+    ]
+    cur_cols = [
+        (
+            "GermlineClassification"
+            if c == "CLASSIFICATION"
+            else "GermlineReviewStatus"
+            if c == "REVIEW"
+            else c
+        )
+        for c in COLS
+    ]
 
     base_rows, cur_rows = [], []
     for vid, gene, name, asm, bcls, brev, ccls, crev in CASES:

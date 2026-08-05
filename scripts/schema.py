@@ -44,9 +44,7 @@ def resolve_columns(columns):
 
     review = _pick(cols, REVIEW_CANDIDATES)
     if review is None:
-        raise KeyError(
-            f"no review-status column found; looked for {REVIEW_CANDIDATES}"
-        )
+        raise KeyError(f"no review-status column found; looked for {REVIEW_CANDIDATES}")
     resolved["review_status"] = review
 
     for req in REQUIRED:
@@ -60,11 +58,12 @@ def resolve_columns(columns):
     # Optional coordinate and date columns, needed only by the join export.
     # Absent in the synthetic fixtures, so callers must tolerate None.
     for key, candidates in (
-            ("chromosome", ("Chromosome",)),
-            ("position_vcf", ("PositionVCF",)),
-            ("ref_vcf", ("ReferenceAlleleVCF",)),
-            ("alt_vcf", ("AlternateAlleleVCF",)),
-            ("last_evaluated", ("LastEvaluated",))):
+        ("chromosome", ("Chromosome",)),
+        ("position_vcf", ("PositionVCF",)),
+        ("ref_vcf", ("ReferenceAlleleVCF",)),
+        ("alt_vcf", ("AlternateAlleleVCF",)),
+        ("last_evaluated", ("LastEvaluated",)),
+    ):
         resolved[key] = _pick(cols, candidates)
     return resolved
 
@@ -73,6 +72,7 @@ def resolve_columns(columns):
 # Buckets are matched on the lowercased, trimmed raw value. ClinVar reworded
 # several values over time ("Conflicting interpretations of pathogenicity" ->
 # "Conflicting classifications of pathogenicity"), so both spellings are matched.
+
 
 def bucket_sql(col):
     """SQL CASE expression mapping a raw classification to a coarse bucket."""
@@ -107,6 +107,7 @@ def bucket_sql(col):
 # 3 = reviewed by expert panel
 # 4 = practice guideline
 
+
 def stars_sql(col):
     c = f"lower(trim({col}))"
     return f"""
@@ -130,10 +131,12 @@ def stars_sql(col):
 
 MC_PRECEDENCE = [
     ("frameshift", ["SO:0001589", "frameshift_variant"]),
-    ("nonsense",   ["SO:0001587", "nonsense", "stop_gained"]),
-    ("splice",     ["SO:0001574", "splice_acceptor_variant",
-                    "SO:0001575", "splice_donor_variant"]),
-    ("missense",   ["SO:0001583", "missense_variant"]),
+    ("nonsense", ["SO:0001587", "nonsense", "stop_gained"]),
+    (
+        "splice",
+        ["SO:0001574", "splice_acceptor_variant", "SO:0001575", "splice_donor_variant"],
+    ),
+    ("missense", ["SO:0001583", "missense_variant"]),
 ]
 
 
@@ -158,6 +161,7 @@ def mc_bucket_sql(mc_col):
 # "NM_000059.4(BRCA2):c.1234A>T (p.Lys412Ter)". The concordance rate is reported
 # in the output. This is a diagnostic; it is NOT the source of the published
 # consequence breakdown.
+
 
 def consequence_sql(name_col, type_col, explicit_col=None):
     if explicit_col:

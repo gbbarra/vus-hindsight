@@ -1,0 +1,67 @@
+name: Quality gates
+
+# Separate from benchmark.yml on purpose. That workflow downloads ClinVar and
+# commits results back, so it is manual only; this one just checks the code and
+# runs on every push and pull request.
+#
+# Each step below fails the run on a non-zero exit. The list mirrors
+# CLAUDE.md section 4.6; where a gate is not enforced yet, the reason is stated
+# next to it rather than left as a silent omission.
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Instala a partir do pyproject.toml em vez de repetir a lista aqui: uma
+      # segunda lista divergiria em silêncio, e assim as dependências declaradas
+      # são exercitadas a cada execução.
+      - name: Install
+        run: |
+          pip install --quiet -e ".[dev]"
+          python -c "import duckdb; print('duckdb', duckdb.__version__)"
+
+      - name: Lint
+        run: ruff check .
+
+      # Adopted on 2026-08-05, in one commit that touched 40 of 53 files and
+      # changed no AST. See docs/TEST_PLAN.md section 6.4.
+      - name: Format
+        run: ruff format --check .
+
+      - name: Types
+        run: mypy
+
+      - name: Tests and coverage
+        run: pytest --cov=scripts --cov-branch --cov-report=term-missing
+
+      # 95% per decision function and 80% aggregate over them (CLAUDE.md 4.3).
+      # Reads the data the step above left behind.
+      - name: Coverage floors
+        run: python3 tests/check_coverage_floors.py
+
+      # High severity only, per CLAUDE.md 4.6. The 47 medium findings are all
+      # B608 — SQL assembled by string interpolation, which is what a DuckDB
+      # pipeline is; no user input reaches a query.
+      - name: Security
+        run: bandit -r scripts/ tests/ -lll -q
+
+      - name: Secrets
+        run: |
+          git ls-files -z | xargs -0 detect-secrets-hook \
+              --baseline .secrets.baseline

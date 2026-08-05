@@ -4,6 +4,7 @@ Shared by the transition analysis and the survival curve so both derive their
 cohorts through identical code — a difference between the two would otherwise
 be indistinguishable from a real finding.
 """
+
 import gzip
 import sys
 
@@ -36,13 +37,16 @@ def load_snapshot(con, alias, path, label):
     print(f"=== HEADER: {path} ===")
     print(f"{len(cols)} columns: {cols}")
     res = resolve_columns(cols)
-    print(f"resolved: classification={res['classification']!r} "
-          f"review_status={res['review_status']!r} "
-          f"consequence={res['consequence']!r}")
+    print(
+        f"resolved: classification={res['classification']!r} "
+        f"review_status={res['review_status']!r} "
+        f"consequence={res['consequence']!r}"
+    )
     sys.stdout.flush()
 
-    con.execute(f"CREATE OR REPLACE VIEW {alias}_raw AS "
-                f"SELECT * FROM {reader_sql(path, cols)}")
+    con.execute(
+        f"CREATE OR REPLACE VIEW {alias}_raw AS SELECT * FROM {reader_sql(path, cols)}"
+    )
 
     total = con.execute(f"SELECT count(*) FROM {alias}_raw").fetchone()[0]
     grch38 = con.execute(
@@ -54,30 +58,36 @@ def load_snapshot(con, alias, path, label):
         CREATE OR REPLACE TABLE {alias} AS
         SELECT
             TRY_CAST(VariationID AS BIGINT)          AS variation_id,
-            {res['genesymbol']}                      AS gene,
-            {res['name']}                            AS hgvs,
-            {res['type']}                            AS var_type,
-            {res['classification']}                  AS raw_class,
-            {res['review_status']}                   AS raw_review,
-            {bucket_sql(res['classification'])}      AS bucket,
-            {stars_sql(res['review_status'])}         AS stars,
-            {consequence_sql(res['name'], res['type'], res['consequence'])}
+            {res["genesymbol"]}                      AS gene,
+            {res["name"]}                            AS hgvs,
+            {res["type"]}                            AS var_type,
+            {res["classification"]}                  AS raw_class,
+            {res["review_status"]}                   AS raw_review,
+            {bucket_sql(res["classification"])}      AS bucket,
+            {stars_sql(res["review_status"])}         AS stars,
+            {consequence_sql(res["name"], res["type"], res["consequence"])}
                                                      AS hgvs_consequence,
-            {res['chromosome'] or 'NULL'}            AS chromosome,
-            {res['position_vcf'] or 'NULL'}          AS position_vcf,
-            {res['ref_vcf'] or 'NULL'}               AS ref_vcf,
-            {res['alt_vcf'] or 'NULL'}               AS alt_vcf,
-            {res['last_evaluated'] or 'NULL'}        AS last_evaluated
+            {res["chromosome"] or "NULL"}            AS chromosome,
+            {res["position_vcf"] or "NULL"}          AS position_vcf,
+            {res["ref_vcf"] or "NULL"}               AS ref_vcf,
+            {res["alt_vcf"] or "NULL"}               AS alt_vcf,
+            {res["last_evaluated"] or "NULL"}        AS last_evaluated
         FROM {alias}_raw
         WHERE Assembly = 'GRCh38' AND TRY_CAST(VariationID AS BIGINT) IS NOT NULL
-        QUALIFY row_number() OVER (PARTITION BY VariationID ORDER BY {res['name']}) = 1
+        QUALIFY row_number() OVER (PARTITION BY VariationID ORDER BY {res["name"]}) = 1
     """)
     deduped = con.execute(f"SELECT count(*) FROM {alias}").fetchone()[0]
-    print(f"[{label}] rows={total:,} GRCh38={grch38:,} "
-          f"after dedupe on VariationID={deduped:,} "
-          f"(collapsed {grch38 - deduped:,})")
+    print(
+        f"[{label}] rows={total:,} GRCh38={grch38:,} "
+        f"after dedupe on VariationID={deduped:,} "
+        f"(collapsed {grch38 - deduped:,})"
+    )
     sys.stdout.flush()
-    return {"rows_total": total, "rows_grch38": grch38, "rows_deduped": deduped,
-            "classification_column": res["classification"],
-            "review_column": res["review_status"],
-            "consequence_source": res["consequence"] or "derived from HGVS in Name"}
+    return {
+        "rows_total": total,
+        "rows_grch38": grch38,
+        "rows_deduped": deduped,
+        "classification_column": res["classification"],
+        "review_column": res["review_status"],
+        "consequence_source": res["consequence"] or "derived from HGVS in Name",
+    }

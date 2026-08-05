@@ -9,6 +9,7 @@ the run log before any query executes.
 
 Usage: 03_headers.py FILE.txt.gz [FILE2.txt.gz ...]
 """
+
 import gzip
 import sys
 

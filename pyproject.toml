@@ -1,0 +1,114 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vus-hindsight"
+version = "1.0.0"
+description = "ClinVar VUS reclassification benchmark, with a contamination audit"
+requires-python = ">=3.11"
+dependencies = ["duckdb", "numpy", "scikit-learn", "scipy", "PyYAML"]
+
+[project.optional-dependencies]
+dev = [
+  "pytest", "pytest-cov", "pytest-bdd",
+  "ruff", "mypy", "radon", "bandit", "detect-secrets", "mutmut",
+]
+
+[tool.setuptools]
+# Não há pacote importável neste repositório: `scripts/` é um pipeline numerado
+# executado por caminho, e metade dos arquivos nem pode ser importada por nome.
+# Sem esta linha o setuptools tenta descobrir scripts/, tests/ e docs/ como
+# pacotes de topo e aborta. O install existe para trazer as dependências, não
+# para publicar um módulo.
+py-modules = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# The pipeline scripts are not a package; `schema`, `aggregate` and `snapshot`
+# are imported directly and the numbered ones are loaded by path. See
+# tests/conftest.py and tests/unit/loader.py.
+addopts = "-q --strict-markers"
+markers = [
+  "integration: runs the whole pipeline over the synthetic fixture (slow)",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["scripts"]
+omit = ["tests/make_fixture.py"]
+# Boa parte do pipeline só é exercitada por subprocess — a fixture ponta a ponta
+# e os testes de contrato de CLI executam os scripts como o pipeline os executa.
+# Sem instrumentar o subprocess, os 11 main() aparecem como não cobertos e o
+# número global mede o coletor, não a suíte. Ver tests/conftest.py.
+parallel = true
+sigterm = true
+
+[tool.coverage.report]
+exclude_also = [
+  'if __name__ == .__main__.:',
+  'if TYPE_CHECKING:',
+]
+# No `fail_under` here on purpose. The threshold lives on the command line
+# (CLAUDE.md section 3) and is not switched on until the pipeline running under
+# subprocess is actually measured — turning the gate on at whatever number
+# happens to pass is what rule 3 forbids. See docs/TEST_PLAN.md section 6.1.
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "C90", "UP", "SIM"]
+
+[tool.ruff.lint.mccabe]
+# CLAUDE.md section 4.5. This is the gate for new code; the existing violations
+# are inventoried in docs/TEST_PLAN.md section 6.3 and have their own plan.
+max-complexity = 10
+
+[tool.ruff.lint.per-file-ignores]
+# Dívida existente, congelada e enumerada. Re-derivada em 2026-08-05 depois de
+# adotar `ruff format`, que sozinho resolveu 8 violações e eliminou a regra
+# inteira de cinco pares arquivo/regra: 48 caíram para 39.
+#
+# CLAUDE.md §4.5: os limites valem como gate para código NOVO, e a dívida
+# estrutural tem plano próprio (docs/TEST_PLAN.md §6.3) em vez de ser refatorada
+# de surpresa no meio de outra tarefa.
+#
+# As três que restam não são automatizáveis:
+#   C901    main() entre 12 e 38 de complexidade — exige quebrar a função
+#   SIM115  json.load(open(...)) — exige reestruturar o fluxo de leitura
+#   E501    linha longa que o formatador não quebra: string e comentário
+#
+# O RISCO desta lista fica declarado: ela também silencia violação NOVA da mesma
+# regra nestes arquivos. Arquivo novo entra com o conjunto completo, e encurtar
+# esta lista é o objetivo — não mantê-la.
+"scripts/04_transitions.py" = ["C901", "E501"]
+"scripts/05b_submission_dates.py" = ["E501"]
+"scripts/06_report.py" = ["SIM115"]
+"scripts/07_survival.py" = ["SIM115"]
+"scripts/08_survival_report.py" = ["SIM115"]
+"scripts/09_reconstruct.py" = ["E501"]
+"scripts/10_validate_reconstruction.py" = ["E501"]
+"scripts/11_contamination_audit.py" = ["C901", "SIM115"]
+"scripts/12_export_for_join.py" = ["C901"]
+"scripts/13_alphamissense_overlap.py" = ["C901", "E501"]
+"scripts/14_overlap_test.py" = ["C901"]
+"scripts/15_evaluate.py" = ["C901", "E501", "SIM115"]
+"scripts/16_dbnsfp_to_scores.py" = ["C901"]
+"scripts/aggregate.py" = ["E501"]
+"scripts/schema.py" = ["E501"]
+# A suíte legada saiu de 30 violações para 1: só a complexidade do main(), que
+# não some sem quebrar um harness que as regras 1 e 2 protegem.
+"tests/test_pipeline.py" = ["C901"]
+
+[tool.mypy]
+python_version = "3.11"
+files = ["scripts"]
+# Starting permissive and tightening module by module, as agreed. The code
+# carries no annotations today, so --strict would report hundreds of errors on
+# day one and teach nobody anything.
+ignore_missing_imports = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unreachable = true

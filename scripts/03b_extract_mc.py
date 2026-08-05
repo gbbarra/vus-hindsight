@@ -15,13 +15,13 @@ essentially nothing parses, it exits non-zero instead of returning a map full of
 
 Usage: 03b_extract_mc.py data/clinvar.vcf.gz [--out data/consequence_map.parquet]
 """
+
 import argparse
 import json
 import os
 import sys
 
 import duckdb
-
 from schema import mc_bucket_sql
 
 # A byte that cannot appear in a VCF text line, so read_csv yields whole lines.
@@ -58,19 +58,23 @@ def main():
     """)
     n_rows = con.execute("SELECT count(*) FROM vcf_rows").fetchone()[0]
     n_ids = con.execute(
-        "SELECT count(*) FROM vcf_rows WHERE variation_id IS NOT NULL").fetchone()[0]
+        "SELECT count(*) FROM vcf_rows WHERE variation_id IS NOT NULL"
+    ).fetchone()[0]
     print(f"VCF data lines: {n_rows:,}; with a numeric ID (VariationID): {n_ids:,}")
     if n_ids == 0:
-        print("FATAL: no numeric IDs parsed from the VCF ID column. The VCF layout "
-              "is not what this script expects — inspect the file before trusting "
-              "any downstream count.", file=sys.stderr)
+        print(
+            "FATAL: no numeric IDs parsed from the VCF ID column. The VCF layout "
+            "is not what this script expects — inspect the file before trusting "
+            "any downstream count.",
+            file=sys.stderr,
+        )
         return 1
 
     con.execute(f"""
         CREATE OR REPLACE TABLE consequence_map AS
         SELECT variation_id,
                mc_raw,
-               {mc_bucket_sql('mc_raw')} AS consequence
+               {mc_bucket_sql("mc_raw")} AS consequence
         FROM (
             SELECT variation_id,
                    regexp_extract(info, '(^|;)MC=([^;]*)', 2) AS mc_raw
@@ -82,12 +86,18 @@ def main():
 
     n_map = con.execute("SELECT count(*) FROM consequence_map").fetchone()[0]
     n_with_mc = con.execute(
-        "SELECT count(*) FROM consequence_map WHERE mc_raw <> ''").fetchone()[0]
-    print(f"VariationIDs in map: {n_map:,}; carrying an MC field: {n_with_mc:,} "
-          f"({100.0 * n_with_mc / n_map:.2f}%)")
+        "SELECT count(*) FROM consequence_map WHERE mc_raw <> ''"
+    ).fetchone()[0]
+    print(
+        f"VariationIDs in map: {n_map:,}; carrying an MC field: {n_with_mc:,} "
+        f"({100.0 * n_with_mc / n_map:.2f}%)"
+    )
     if n_with_mc == 0:
-        print("FATAL: the VCF carries no MC= field. Consequence cannot be sourced "
-              "from it. Stop — do not fall back silently.", file=sys.stderr)
+        print(
+            "FATAL: the VCF carries no MC= field. Consequence cannot be sourced "
+            "from it. Stop — do not fall back silently.",
+            file=sys.stderr,
+        )
         return 1
 
     print("\nconsequence distribution across the whole VCF:")

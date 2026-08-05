@@ -1,7 +1,9 @@
 # Raw ClinVar snapshots — never committed (hundreds of MB each, re-fetchable)
 *.txt.gz
 *.txt
-# Working data is disposable, EXCEPT the committed exports.
+# Working data is disposable, EXCEPT the committed exports. Third-party
+# predictor scores land in data/scores/ and stay ignored on purpose — most of
+# them carry licences that forbid redistribution.
 data/*
 !data/exports/
 
@@ -28,3 +30,13 @@ tests/fixtures/
 __pycache__/
 *.pyc
 .venv/
+
+# Artefatos das ferramentas de qualidade (§4.6) — nenhum é fonte.
+.coverage
+coverage.json
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.mutmut-cache
+mutants/

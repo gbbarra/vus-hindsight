@@ -1,0 +1,61 @@
+# Os mesmos gates de .github/workflows/quality.yml, para pegar antes do push.
+#
+# Hooks locais em vez de repositórios com revisão fixada: as ferramentas já
+# estão instaladas no ambiente de desenvolvimento, e assim a versão que roda
+# aqui é exatamente a que roda na CI, em vez de duas listas de versões que
+# divergem em silêncio.
+#
+# Instalação:  pre-commit install
+#
+# A fixture ponta a ponta e a suíte completa NÃO estão aqui: levam cerca de um
+# minuto, o que é caro demais para um hook de commit. A CI as roda.
+
+repos:
+  - repo: local
+    hooks:
+      - id: ruff
+        name: ruff check
+        entry: ruff check --force-exclude
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+
+      - id: ruff-format
+        name: ruff format
+        entry: ruff format --check --force-exclude
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+
+      - id: mypy
+        name: mypy
+        entry: mypy
+        language: system
+        types: [python]
+        pass_filenames: false
+
+      - id: bandit
+        name: bandit (severidade alta)
+        entry: bandit -lll -q
+        language: system
+        types: [python]
+
+      - id: detect-secrets
+        name: detect-secrets
+        entry: detect-secrets-hook --baseline .secrets.baseline
+        language: system
+
+      # Só os unitários e o BDD. O teste de integração roda o pipeline inteiro
+      # por subprocess e fica para a CI.
+      - id: pytest-rapido
+        name: pytest (unitários + BDD)
+        entry: pytest tests/unit tests/features -q
+        language: system
+        types: [python]
+        pass_filenames: false
+
+# Não há hooks de repositório externo aqui. Eles exigiriam fixar uma `rev`, e o
+# ambiente onde este arquivo foi escrito não alcança o github.com para conferir
+# que a tag existe — fixar uma versão não verificada é o tipo de número plausível
+# que a regra 8 proíbe. Acrescente-os você, com a rev conferida, se quiser
+# higiene de espaço em branco além dos gates do §4.6.
