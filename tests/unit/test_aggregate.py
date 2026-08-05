@@ -8,7 +8,8 @@ O SQL roda num DuckDB em memória. Isso é a lógica sendo exercitada, não um m
 dela: a regra de consolidação *é* o SQL.
 """
 import pytest
-from aggregate import reconstruct_sql
+
+from scripts.aggregate import reconstruct_sql
 
 CRITERIOS = "criteria provided, single submitter"
 SEM_CRITERIOS = "no assertion criteria provided"

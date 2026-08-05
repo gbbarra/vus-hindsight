@@ -4,7 +4,8 @@ As expectativas aqui vêm do vocabulário do ClinVar, não do output do código:
 teste escrito a partir do que a função devolve hoje não detecta nada.
 """
 import pytest
-from schema import (
+
+from scripts.schema import (
     CLASSIFICATION_CANDIDATES,
     REVIEW_CANDIDATES,
     _pick,
@@ -71,6 +72,32 @@ def test_resolve_columns_recusa_cabecalho_sem_coluna_obrigatoria(ausente):
 def test_resolve_columns_recusa_cabecalho_vazio_pela_classificacao():
     with pytest.raises(KeyError, match="no classification column found"):
         resolve_columns([])
+
+
+def test_colunas_obrigatorias_sao_mapeadas_para_si_mesmas_em_minusculas():
+    # O pipeline monta o SQL com `res['genesymbol']`, `res['name']` e
+    # `res['type']`. Se o valor virar nulo, o SQL sai com None no lugar do nome
+    # da coluna; se a chave virar maiúscula, a montagem levanta KeyError. Os dois
+    # eram invisíveis para a suíte — mutantes sobreviventes apontaram a falta.
+    resolvido = resolve_columns(CABECALHO_ATUAL)
+
+    assert {chave: resolvido[chave] for chave in
+            ("variationid", "genesymbol", "name", "assembly", "type")} == {
+        "variationid": "VariationID", "genesymbol": "GeneSymbol",
+        "name": "Name", "assembly": "Assembly", "type": "Type"}
+
+
+def test_a_mensagem_de_erro_diz_o_que_foi_procurado():
+    # Quem lê essa exceção está com um snapshot que não abre. A mensagem precisa
+    # começar dizendo o que faltou e nomear os candidatos, não só conter as
+    # palavras em algum lugar.
+    with pytest.raises(KeyError) as erro:
+        resolve_columns(["VariationID"])
+
+    mensagem = erro.value.args[0]
+    assert mensagem.startswith("no classification column found; looked for ")
+    assert "GermlineClassification" in mensagem
+    assert "ClinicalSignificance" in mensagem
 
 
 def test_colunas_de_coordenada_ausentes_viram_none_e_nao_erro():

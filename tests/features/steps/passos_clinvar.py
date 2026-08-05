@@ -6,8 +6,9 @@ cenário chama de "consolidar" é a mesma função que o pipeline usa.
 """
 import duckdb
 import pytest
-from aggregate import reconstruct_sql
 from pytest_bdd import given, parsers, then, when
+
+from scripts.aggregate import reconstruct_sql
 
 COM_CRITERIOS = "criteria provided, single submitter"
 SEM_CRITERIOS = "no assertion criteria provided"

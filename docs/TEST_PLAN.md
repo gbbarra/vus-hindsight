@@ -462,7 +462,57 @@ vocabulário de genética clínica, como §4.2 exige.
   Ligar o gate em 80% antes disso resolvido seria escolher o número que passa, que
   é o que a regra 3 proíbe.
 
-### 6.2 Mutação (§4.4)
+### 6.2 Mutação (§4.4) — executada
+
+Rodada em 2026-08-05 sobre `scripts/aggregate.py` e `scripts/schema.py`:
+
+```
+79 mutantes:  78 mortos, 1 sobrevivente
+```
+
+O `mutmut 3.x` copia o código para `mutants/` e casa cada mutante pelo nome
+totalmente qualificado do módulo. Com `scripts/` injetado no `sys.path`, os
+testes importavam `schema` e o mutmut procurava `scripts.schema`; ele **parou
+sozinho** avisando da divergência, em vez de reportar tudo como sobrevivente.
+Resolvido importando `scripts.schema` nos testes — `scripts/` funciona como
+namespace package, então nenhum arquivo novo entrou no código de produção.
+
+**Primeira rodada: 4 sobreviventes.** Dois eram gap real de teste:
+
+```
+-        resolved[req.lower()] = req
++        resolved[req.lower()] = None        # mutmut_28
+
+-        resolved[req.lower()] = req
++        resolved[req.upper()] = req         # mutmut_29
+```
+
+Nenhum teste verificava o mapeamento das colunas obrigatórias, embora
+`snapshot.py` monte o SQL com `res['genesymbol']`, `res['name']` e
+`res['type']`. Com o valor nulo o SQL sai com `None` no lugar do nome da coluna;
+com a chave em maiúscula a montagem levanta `KeyError`. Morto por
+`test_colunas_obrigatorias_sao_mapeadas_para_si_mesmas_em_minusculas`.
+
+O terceiro corrompia o início da mensagem de erro, e passava porque o
+`pytest.raises(match=...)` procura a frase em qualquer posição. Morto por
+`test_a_mensagem_de_erro_diz_o_que_foi_procurado`, que exige que a mensagem
+**comece** dizendo o que faltou e nomeie os candidatos procurados.
+
+**Sobrevivente restante: `x_mc_bucket_sql__mutmut_5`, genuinamente equivalente.**
+
+```
+-        tests = " OR ".join(f"{mc_col} LIKE '%{n}%'" for n in needles)
++        tests = " or ".join(f"{mc_col} LIKE '%{n}%'" for n in needles)
+```
+
+Palavra-chave de SQL não diferencia caixa. Verificado no motor, não assumido:
+as duas formas foram avaliadas lado a lado sobre dez entradas cobrindo cada
+bucket, os termos múltiplos, a string vazia, o nulo e um termo desconhecido —
+**zero divergências**. Escrever um teste para matá-lo exigiria afirmar a grafia
+da string SQL em vez do comportamento dela, que é exatamente o teste inútil que
+o §4.1 proíbe.
+
+### 6.2.1 Escopo da mutação
 
 - Alvo: `scripts/aggregate.py` e `scripts/schema.py` na primeira rodada. São puros,
   pequenos, e concentram a decisão clínica.

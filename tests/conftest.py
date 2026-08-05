@@ -14,8 +14,13 @@ import pytest
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCRIPTS = os.path.join(ROOT, "scripts")
 
-if SCRIPTS not in sys.path:
-    sys.path.insert(0, SCRIPTS)
+# Duas entradas, de propósito. ROOT permite `import scripts.schema`, o nome
+# totalmente qualificado que o mutmut usa para casar um mutante com o módulo que
+# o teste importou. SCRIPTS permite `import snapshot`, que é como o próprio
+# código de produção se importa quando o pipeline roda.
+for caminho in (ROOT, SCRIPTS):
+    if caminho not in sys.path:
+        sys.path.insert(0, caminho)
 
 
 @pytest.fixture
